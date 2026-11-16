@@ -1,0 +1,1002 @@
+/* =====================================================================
+   CONTENIDOS DEL CURSO · Exploradores de la Naturaleza
+   © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+   ---------------------------------------------------------------------
+   Cada tema tiene misiones (con tarjetas "learn" y retos "ch") y un jefe
+   final. Un tema sin misiones aparece en el mapa como "Próximamente".
+
+   Para añadir un tema: rellena "missions" y "boss" copiando el modelo del
+   Tema 1. Tipos de reto disponibles:
+     mc       elegir una respuesta        {t:'mc', q, opts:[...], a:índice, hint}
+     tf       verdadero o falso           {t:'tf', q, a:true|false, hint}
+     pick     seleccionar varias          {t:'pick', q, opts:[...], a:[índices], hint}
+     order    ordenar una secuencia       {t:'order', q, items:[en orden correcto], hint}
+     classify clasificar en grupos        {t:'classify', q, bins:[...], items:[[texto, grupo],...], hint}
+     match    unir parejas                {t:'match', q, pairs:[[izq, der],...], hint}
+     fill     completar huecos            {t:'fill', q, parts:['texto ',0,' texto ',1], answers:[...], bank:[distractores], hint}
+   Los "id" de misiones y jefes deben ser únicos en todo el curso.
+   ===================================================================== */
+
+/* ---------- CURRÍCULO: criterios de evaluación y saberes básicos ----------
+   Se rellenan aquí y se asocian:
+     · a cada tema:   criterios:['1.1','2.3'], saberes:['A.1']      (en EVALUACION, al final)
+     · a cada misión: cr:['1.1']   → todos sus retos cuentan para ese criterio
+     · a un reto:     cr:['2.3']   → sustituye al de la misión solo para ese reto
+   Mientras no haya criterios, el panel del docente evalúa por misión. */
+const CURRICULO = {
+  /* Ciencias de la Naturaleza · Segundo ciclo. Numeración: competencia específica.criterio */
+  criterios: [
+    { id:'1.1', texto:'Utilizar dispositivos y recursos digitales, de acuerdo con las necesidades del contexto educativo de forma segura, buscando información, comunicándose y trabajando de forma individual y en equipo, reelaborando y creando contenidos digitales sencillos.' },
+    { id:'2.1', texto:'Formular preguntas y realizar predicciones razonadas, demostrando curiosidad por el medio natural cercano.' },
+    { id:'2.2', texto:'Buscar y seleccionar información de diferentes fuentes seguras y fiables, utilizándola en investigaciones relacionadas con el medio natural y adquiriendo léxico científico básico.' },
+    { id:'2.3', texto:'Realizar experimentos guiados, cuando la investigación lo requiera, utilizando diferentes técnicas de indagación y modelos, empleando de forma segura instrumentos y dispositivos, realizando observaciones y mediciones precisas y registrándolas correctamente.' },
+    { id:'2.4', texto:'Proponer posibles respuestas a las preguntas planteadas, a través de la interpretación de la información y los resultados obtenidos, comparándolos con las predicciones realizadas.' },
+    { id:'2.5', texto:'Presentar los resultados de las investigaciones en diferentes formatos, utilizando lenguaje científico básico y explicando los pasos seguidos.' },
+    { id:'3.1', texto:'Construir en equipo un producto final sencillo que dé solución a un problema de diseño, proponiendo posibles soluciones, probando diferentes prototipos y utilizando de forma segura las herramientas, técnicas y materiales adecuados.' },
+    { id:'3.2', texto:'Presentar el producto final de los proyectos de diseño en diferentes formatos y explicando los pasos seguidos.' },
+    { id:'3.3', texto:'Resolver, de forma guiada, problemas sencillos de programación, modificando algoritmos de acuerdo con los principios básicos del pensamiento computacional.' },
+    { id:'4.1', texto:'Mostrar actitudes que fomenten el bienestar emocional y social, identificando las emociones propias y las de los demás, mostrando empatía y estableciendo relaciones afectivas saludables.' },
+    { id:'5.1', texto:'Identificar las características, la organización y las propiedades de los elementos del medio natural a través de la indagación y utilizando las herramientas y procesos adecuados.' },
+    { id:'5.2', texto:'Identificar conexiones sencillas entre diferentes elementos del medio natural mostrando comprensión de las relaciones que se establecen.' },
+    { id:'5.3', texto:'Proteger el patrimonio natural y valorarlo como un bien común, adoptando conductas respetuosas para su disfrute y proponiendo acciones para su conservación y mejora.' }
+  ],
+  /* Numeración: bloque (A Cultura científica, B Tecnología y digitalización).apartado.saber */
+  saberes: [
+    { id:'A.1.1', bloque:'Iniciación en la actividad científica', texto:'Procedimientos de indagación adecuados a las necesidades de la investigación (observación en el tiempo, identificación y clasificación, búsqueda de patrones, creación de modelos, investigación a través de búsqueda de información, experimentos con control de variables...).' },
+    { id:'A.1.2', bloque:'Iniciación en la actividad científica', texto:'Instrumentos y dispositivos apropiados para realizar observaciones y mediciones precisas de acuerdo a las necesidades de la investigación.' },
+    { id:'A.1.3', bloque:'Iniciación en la actividad científica', texto:'Vocabulario científico básico relacionado con las diferentes investigaciones.' },
+    { id:'A.1.4', bloque:'Iniciación en la actividad científica', texto:'Fomento de la curiosidad, la iniciativa y la constancia en la realización de las diferentes investigaciones.' },
+    { id:'A.1.5', bloque:'Iniciación en la actividad científica', texto:'Avances en el pasado relacionados con la ciencia y la tecnología que han contribuido a transformar nuestra sociedad mostrando modelos que incorporen una perspectiva de género.' },
+    { id:'A.1.6', bloque:'Iniciación en la actividad científica', texto:'La importancia del uso de la ciencia y la tecnología para ayudar a comprender las causas de las propias acciones, tomar decisiones razonadas y realizar tareas de forma más eficiente.' },
+    { id:'A.1.7', bloque:'Iniciación en la actividad científica', texto:'Técnicas de estudio y trabajo. Desarrollo de hábitos de trabajo. Esfuerzo y responsabilidad.' },
+    { id:'A.2.1', bloque:'La vida en nuestro planeta', texto:'Los reinos de la naturaleza desde una perspectiva general e integrada a partir del estudio y análisis de las características de diferentes ecosistemas.' },
+    { id:'A.2.2', bloque:'La vida en nuestro planeta', texto:'Características propias de los animales que permiten su clasificación y diferenciación en subgrupos relacionados con su capacidad adaptativa al medio: obtención de energía, relación con el entorno y perpetuación de la especie.' },
+    { id:'A.2.3', bloque:'La vida en nuestro planeta', texto:'Características propias de las plantas que permiten su clasificación en relación con su capacidad adaptativa al medio: obtención de energía, fotosíntesis, relación con el entorno y perpetuación de la especie.' },
+    { id:'A.2.4', bloque:'La vida en nuestro planeta', texto:'Los ecosistemas como lugar donde intervienen factores bióticos y abióticos, manteniéndose un equilibrio entre los diferentes elementos y recursos. Importancia de la biodiversidad.' },
+    { id:'A.2.5', bloque:'La vida en nuestro planeta', texto:'Las funciones y servicios de los ecosistemas.' },
+    { id:'A.3.1', bloque:'Materia, fuerzas y energía', texto:'El calor. Cambios de estado, materiales conductores y aislantes, instrumentos de medición y aplicaciones en la vida cotidiana.' },
+    { id:'A.3.2', bloque:'Materia, fuerzas y energía', texto:'Los cambios reversibles e irreversibles que experimenta la materia desde un estado inicial a uno final identificando los procesos y transformaciones que experimenta en situaciones de la vida cotidiana.' },
+    { id:'A.3.3', bloque:'Materia, fuerzas y energía', texto:'Fuerzas de contacto y a distancia (el magnetismo). Las fuerzas y sus efectos.' },
+    { id:'A.3.4', bloque:'Materia, fuerzas y energía', texto:'Propiedades de las máquinas simples y su efecto sobre las fuerzas. Aplicaciones y usos en la vida cotidiana.' },
+    { id:'B.1.1', bloque:'Digitalización del entorno personal de aprendizaje', texto:'Dispositivos y recursos digitales de acuerdo con las necesidades del contexto educativo.' },
+    { id:'B.1.2', bloque:'Digitalización del entorno personal de aprendizaje', texto:'Estrategias de búsquedas guiadas de información seguras y eficientes en Internet (valoración, discriminación, selección y organización).' },
+    { id:'B.2.1', bloque:'Proyectos de diseño y pensamiento computacional', texto:'Fases de los proyectos de diseño: diseño, prototipado, prueba y comunicación.' },
+    { id:'B.2.2', bloque:'Proyectos de diseño y pensamiento computacional', texto:'Materiales, herramientas y objetos adecuados a la consecución de un proyecto de diseño.' },
+    { id:'B.2.3', bloque:'Proyectos de diseño y pensamiento computacional', texto:'Técnicas cooperativas sencillas para el trabajo en equipo y estrategias para la gestión de conflictos y promoción de conductas empáticas e inclusivas.' },
+    { id:'B.2.4', bloque:'Proyectos de diseño y pensamiento computacional', texto:'Iniciación en la programación a través de recursos analógicos (actividades desenchufadas) o digitales (plataformas digitales de iniciación en la programación, aplicaciones de programación por bloques, robótica educativa...).' }
+  ]
+};
+
+/* ---------- TEMA 1 · Agentes del cuerpo humano (libro, págs. 6-23) ---------- */
+const T1_MISIONES = [
+  {
+    id:'vida3', badge:'Detector de vida', title:'Señales de vida', short:'Funciones vitales y emociones', pages:'Págs. 8-9',
+    color:'--sense', icon:'heart',
+    learn:[
+      {h:'Somos seres vivos', p:'Las personas somos seres vivos y realizamos las tres <mark>funciones vitales</mark>: <mark>nutrición</mark>, <mark>relación</mark> y <mark>reproducción</mark>.'},
+      {h:'Las tres funciones vitales', p:'Cada función vital consiste en algo distinto:',
+        extra:'<div class="senses"><b>Nutrición</b><span>tomar alimentos y conseguir de ellos todo lo que necesitamos.</span><b>Relación</b><span>obtener información del entorno y responder a ella.</span><b>Reproducción</b><span>tener hijos e hijas, que suelen parecerse a sus madres y padres.</span></div>'},
+      {h:'¿Qué nos dan los alimentos?', p:'Gracias a los alimentos obtenemos la <mark>energía</mark> que necesitamos para correr o pensar, y los <mark>materiales</mark> que empleamos para crecer.'},
+      {h:'Tenemos emociones', p:'Las <mark>emociones</mark> reflejan nuestros sentimientos. No podemos verlas, pero son una parte muy importante de nosotros.',
+        extra:'<div class="tags"><span class="tag">😄 alegría</span><span class="tag">😢 tristeza</span><span class="tag">😠 enfado</span><span class="tag">😲 sorpresa</span></div>'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca las tres funciones vitales.', opts:['Nutrición','Relación','Reproducción','Respiración','Emoción'], a:[0,1,2], hint:'Son nutrición, relación y reproducción.'},
+      {t:'match', q:'Une cada función vital con lo que consiste.', pairs:[['Nutrición','Tomar alimentos y aprovecharlos'],['Relación','Recibir información del entorno y responder'],['Reproducción','Tener hijos e hijas']], hint:'Repasa la tarjeta de las tres funciones vitales.'},
+      {t:'classify', q:'¿Qué función vital realizas en cada situación?', bins:['Nutrición','Relación','Reproducción'],
+        items:[['🍎 Comer una manzana',0],['🚦 Pararte cuando el semáforo está en rojo',1],['👶 Unos padres tienen un bebé',2],['🥛 Beber un vaso de leche',0],['🔔 Salir al recreo al oír el timbre',1],['👀 Mirar a ambos lados antes de cruzar',1]],
+        hint:'Relación: captamos lo que pasa y respondemos. Nutrición: tomamos alimentos.'},
+      {t:'mc', q:'Gracias a los alimentos obtenemos…', opts:['energía y materiales para crecer','solo agua','emociones'], a:0, hint:'Nos dan energía para movernos y pensar, y materiales para crecer.'},
+      {t:'mc', q:'Correr detrás de una cometa necesita…', opts:['energía','emociones','reproducción'], a:0, hint:'Para correr o pensar usamos la energía de los alimentos.'},
+      {t:'tf', q:'Las emociones se pueden ver igual que un brazo o una pierna.', a:false, hint:'No podemos verlas, pero son una parte importante de nosotros.'},
+      {t:'match', q:'Une cada situación con la emoción que suele provocar.', pairs:[['Te regalan algo que deseabas','Alegría'],['Se pierde tu mascota','Tristeza'],['Alguien rompe tu dibujo a propósito','Enfado'],['Te preparan una fiesta que no esperabas','Sorpresa']], hint:'Piensa cómo te sentirías tú.'},
+      {t:'pick', q:'Toca las cuatro emociones principales que has aprendido.', opts:['Alegría','Tristeza','Hambre','Enfado','Sorpresa','Sueño'], a:[0,1,3,4], hint:'El hambre y el sueño no son emociones.'},
+      {t:'tf', q:'Todas las personas necesitamos tomar exactamente la misma cantidad de alimentos.', a:false, hint:'Depende de la edad, del tamaño y de la actividad de cada persona.'}
+    ]
+  },
+  {
+    id:'mapa3', badge:'Cartógrafo del cuerpo', title:'El mapa del cuerpo humano', short:'Partes del cuerpo y órganos', pages:'Págs. 10-11',
+    color:'--ok', icon:'person',
+    learn:[
+      {h:'Las tres partes del cuerpo', p:'El cuerpo humano tiene tres partes:',
+        extra:'<div class="senses"><b>Cabeza</b><span>por delante tiene la cara.</span><b>Tronco</b><span>formado por el <mark>tórax</mark> (el pecho) y el <mark>abdomen</mark> (la tripa).</span><b>Extremidades</b><span>superiores o <mark>brazos</mark> e inferiores o <mark>piernas</mark>.</span></div>'},
+      {h:'Por fuera', p:'Algunas zonas del cuerpo:',
+        extra:'<div class="tags"><span class="tag">frente</span><span class="tag">mejillas</span><span class="tag">barbilla</span><span class="tag">cuello</span><span class="tag">hombro</span><span class="tag">codo</span><span class="tag">antebrazo</span><span class="tag">muñeca</span><span class="tag">cintura</span><span class="tag">cadera</span><span class="tag">muslo</span><span class="tag">rodilla</span><span class="tag">tobillo</span></div>'},
+      {h:'Por dentro: los órganos', p:'Los <mark>órganos</mark> realizan las funciones vitales. La mayoría no se ven porque están en nuestro <mark>interior</mark>.'},
+      {h:'Órganos de cada función', p:'Cada función vital tiene sus órganos:',
+        extra:'<div class="senses"><b>Nutrición</b><span>boca, corazón, pulmones, estómago e intestino.</span><b>Relación</b><span>ojos, oídos, nariz, lengua, piel, cerebro, nervios, huesos y músculos.</span><b>Reproducción</b><span>testículos y pene; ovarios y vagina.</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Cuáles son las tres partes del cuerpo humano?', opts:['Cabeza, tronco y extremidades','Cabeza, brazos y pies','Cara, pecho y tripa'], a:0, hint:'Brazos y piernas son las extremidades.'},
+      {t:'match', q:'Une cada nombre con lo que significa.', pairs:[['Tórax','El pecho'],['Abdomen','La tripa'],['Extremidades superiores','Los brazos'],['Extremidades inferiores','Las piernas']], hint:'El tronco tiene tórax y abdomen.'},
+      {t:'classify', q:'¿En qué parte del cuerpo está?', bins:['Cabeza','Tronco','Extremidades'],
+        items:[['Frente',0],['Mejillas',0],['Barbilla',0],['Cintura',1],['Codo',2],['Muñeca',2],['Rodilla',2],['Tobillo',2],['Abdomen',1]],
+        hint:'La cara está en la cabeza. Brazos y piernas son las extremidades.'},
+      {t:'pick', q:'Toca las zonas que están en el brazo.', opts:['Hombro','Codo','Antebrazo','Muslo','Muñeca','Tobillo'], a:[0,1,2,4], hint:'El muslo y el tobillo están en la pierna.'},
+      {t:'tf', q:'La mayoría de los órganos no se ven porque están en el interior del cuerpo.', a:true, hint:'Sí: corazón, pulmones o estómago están dentro.'},
+      {t:'classify', q:'¿A qué función vital pertenece cada órgano?', bins:['Nutrición','Relación','Reproducción'],
+        items:[['Corazón',0],['Pulmones',0],['Estómago',0],['Cerebro',1],['Ojos',1],['Nervios',1],['Ovarios',2],['Testículos',2],['Intestino',0],['Músculos',1]],
+        hint:'Relación: sentidos, cerebro, nervios, huesos y músculos.'},
+      {t:'mc', q:'¿Qué órgano está en la cabeza y recibe la información de los sentidos?', opts:['El cerebro','El estómago','El corazón'], a:0, hint:'Está protegido por el cráneo.'},
+      {t:'pick', q:'Toca los órganos de los sentidos.', opts:['Ojos','Oídos','Nariz','Lengua','Piel','Pulmones','Intestino'], a:[0,1,2,3,4], hint:'Pulmones e intestino son de la nutrición.'}
+    ]
+  },
+  {
+    id:'motor3', badge:'Motor humano', title:'Palancas y motores', short:'El esqueleto y la musculatura', pages:'Págs. 12-13',
+    color:'--bone', icon:'bone',
+    learn:[
+      {h:'¿Cómo nos movemos?', p:'Nos movemos gracias al trabajo conjunto del <mark>esqueleto</mark> y la <mark>musculatura</mark>.'},
+      {h:'El esqueleto', p:'El esqueleto está formado por los <mark>huesos</mark> y las <mark>articulaciones</mark>. Los huesos son órganos <mark>rígidos y resistentes</mark>.',
+        extra:'<div class="tags"><span class="tag">cráneo</span><span class="tag">costillas</span><span class="tag">columna vertebral</span><span class="tag">húmero</span><span class="tag">cúbito</span><span class="tag">radio</span><span class="tag">fémur</span><span class="tag">tibia</span><span class="tag">peroné</span></div>'},
+      {h:'Las articulaciones', p:'Son las <mark>uniones de los huesos</mark>. Gracias a ellas podemos <mark>girar o doblar</mark> distintas partes del cuerpo, como el codo o la rodilla.'},
+      {h:'La musculatura', p:'Está formada por los <mark>músculos</mark>: órganos blandos que se pueden <mark>encoger y estirar</mark> y hacen que los huesos se muevan.',
+        extra:'<div class="tags"><span class="tag">masetero</span><span class="tag">pectoral</span><span class="tag">bíceps</span><span class="tag">tríceps</span><span class="tag">abdominales</span><span class="tag">trapecio</span><span class="tag">glúteo</span><span class="tag">cuádriceps</span><span class="tag">gemelo</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'El movimiento del cuerpo se produce gracias a…', opts:['el esqueleto y la musculatura','el corazón y los pulmones','los ojos y los oídos'], a:0, hint:'Huesos, articulaciones y músculos trabajan juntos.'},
+      {t:'classify', q:'¿Es un hueso, una articulación o un músculo?', bins:['Hueso','Articulación','Músculo'],
+        items:[['Fémur',0],['Húmero',0],['Codo',1],['Rodilla',1],['Bíceps',2],['Gemelo',2],['Peroné',0],['Cuádriceps',2],['Cúbito',0],['Trapecio',2]],
+        hint:'Las articulaciones unen huesos, como el codo o la rodilla.'},
+      {t:'match', q:'Une cada parte con su característica.', pairs:[['Huesos','Rígidos y resistentes'],['Articulaciones','Uniones de los huesos'],['Músculos','Blandos, se encogen y se estiran']], hint:'Repasa las tarjetas de la lección.'},
+      {t:'pick', q:'Toca los huesos del brazo.', opts:['Húmero','Cúbito','Radio','Fémur','Tibia'], a:[0,1,2], hint:'Fémur y tibia están en la pierna.'},
+      {t:'pick', q:'Toca los huesos de la pierna.', opts:['Fémur','Tibia','Peroné','Cráneo','Costillas'], a:[0,1,2], hint:'El cráneo protege el cerebro y las costillas, el tórax.'},
+      {t:'mc', q:'¿Qué articulación usamos cuando doblamos el brazo?', opts:['El codo','La rodilla','El tobillo'], a:0, hint:'Está en la mitad del brazo.'},
+      {t:'mc', q:'¿Qué hueso protege el cerebro?', opts:['El cráneo','El fémur','El radio'], a:0, hint:'Es el hueso de la cabeza.'},
+      {t:'tf', q:'Si no tuviéramos articulaciones, no podríamos doblar ni girar las partes del cuerpo.', a:true, hint:'Las articulaciones permiten girar y doblar.'},
+      {t:'mc', q:'Los músculos hacen que los huesos se muevan porque…', opts:['se encogen y se estiran','son rígidos','están fuera del cuerpo'], a:0, hint:'Al encogerse tiran de los huesos.'}
+    ]
+  },
+  {
+    id:'etapas3', badge:'Viajero del tiempo', title:'La línea del tiempo de la vida', short:'Las etapas de la vida', pages:'Págs. 14-15',
+    color:'--food', icon:'star',
+    learn:[
+      {h:'Cuatro etapas', p:'A lo largo de la vida pasamos por cuatro etapas:',
+        extra:'<ol class="steps"><li><mark>Infancia</mark>: de 0 a 12 años.</li><li><mark>Adolescencia</mark>: de 12 a 16 años.</li><li><mark>Edad adulta</mark>: de 16 a 65 años.</li><li><mark>Ancianidad</mark>: desde los 65 años.</li></ol>'},
+      {h:'La infancia', p:'Es la etapa en la que <mark>más se crece y se cambia</mark>. Los bebés se alimentan de leche y dependen de otras personas. Poco a poco aprendemos a caminar, hablar, leer y escribir.'},
+      {h:'La adolescencia', p:'Se <mark>diferencia el cuerpo</mark> de las mujeres y de los hombres. Desarrollamos gustos personales y somos <mark>más independientes</mark>.'},
+      {h:'Edad adulta y ancianidad', p:'En la <mark>edad adulta</mark> dejamos de crecer y cambiamos lentamente; podemos tener hijos y asumir responsabilidades. En la <mark>ancianidad</mark> se pierde agilidad, fuerza y resistencia, pero se tiene mucha <mark>experiencia</mark>.'}
+    ],
+    ch:[
+      {t:'order', q:'Ordena las etapas de la vida.', items:['Infancia','Adolescencia','Edad adulta','Ancianidad'], hint:'Empieza por los bebés y termina por las personas mayores.'},
+      {t:'match', q:'Une cada etapa con sus años.', pairs:[['Infancia','0-12 años'],['Adolescencia','12-16 años'],['Edad adulta','16-65 años'],['Ancianidad','Desde los 65 años']], hint:'Repasa la tarjeta de las cuatro etapas.'},
+      {t:'match', q:'Une cada etapa con una característica.', pairs:[['Infancia','Es cuando más se crece y se cambia'],['Adolescencia','Se diferencia el cuerpo de mujeres y hombres'],['Edad adulta','Se cambia lentamente'],['Ancianidad','Se pierde agilidad, fuerza y resistencia']], hint:'Repasa las tarjetas de cada etapa.'},
+      {t:'classify', q:'¿En qué etapa está cada persona?', bins:['Infancia','Adolescencia','Edad adulta','Ancianidad'],
+        items:[['Persona de 32 años',2],['Persona de 15 años',1],['Persona de 66 años',3],['Persona de 8 años',0],['Persona de 45 años',2],['Bebé de 1 año',0]],
+        hint:'Infancia hasta 12, adolescencia hasta 16, adulta hasta 65.'},
+      {t:'mc', q:'¿En qué etapa estás tú?', opts:['Infancia','Adolescencia','Edad adulta'], a:0, hint:'La infancia va de 0 a 12 años.'},
+      {t:'tf', q:'Los bebés recién nacidos se alimentan de leche y dependen de otras personas para casi todo.', a:true, hint:'Necesitan que los cuiden.'},
+      {t:'mc', q:'¿Qué podemos aprender de las personas ancianas?', opts:['De su experiencia y conocimientos','A ser más ágiles','A crecer más deprisa'], a:0, hint:'Tienen mucha experiencia.'},
+      {t:'fill', q:'Completa la frase.', parts:['En la ',0,' dejamos de crecer y vamos cambiando más ',1,'.'], answers:['edad adulta','lentamente'],  bank:['infancia','deprisa'], hint:'Es la etapa de los 16 a los 65 años.'}
+    ]
+  },
+  {
+    id:'bienestar3', badge:'Guardián del bienestar', title:'El código del bienestar', short:'Hábitos saludables', pages:'Págs. 16-17',
+    color:'--lung', icon:'heartplus',
+    learn:[
+      {h:'¿Qué es la salud?', p:'Cuando tenemos <mark>salud</mark> nos encontramos bien: el cuerpo funciona correctamente y estamos alegres y relajados. Para mantenerla, debemos tener <mark>hábitos saludables</mark>.'},
+      {h:'Higiene y ejercicio', p:'La <mark>higiene</mark> evita enfermedades: ducha diaria, limpieza de dientes y manos, lavar los alimentos crudos y limpiar los objetos de casa. El <mark>ejercicio físico</mark> con regularidad mejora nuestra salud.'},
+      {h:'Ocio y descanso', p:'El <mark>ocio</mark> son las actividades que hacemos en nuestro <mark>tiempo libre</mark> porque nos gustan y nos divierten. A tu edad conviene <mark>dormir unas diez horas</mark>.'},
+      {h:'Alimentación y postura', p:'Una <mark>alimentación adecuada</mark> nos ayuda a estar sanos. Una <mark>postura correcta</mark> evita dolores y lesiones en la espalda.'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca los cinco hábitos saludables.', opts:['Higiene','Ejercicio físico','Ocio y descanso','Alimentación adecuada','Postura correcta','Ver la tele toda la tarde'], a:[0,1,2,3,4], hint:'Pasar mucho tiempo delante de una pantalla no es saludable.'},
+      {t:'match', q:'Une cada hábito con lo que nos aporta.', pairs:[['Higiene','Evita enfermedades'],['Ejercicio físico','Mejora la salud'],['Postura correcta','Evita dolores de espalda'],['Descanso','Despertar con energía']], hint:'Repasa las tarjetas de la lección.'},
+      {t:'classify', q:'¿Es un hábito saludable o no?', bins:['Saludable','No saludable'],
+        items:[['🚿 Ducharse cada día',0],['🦷 Cepillarse los dientes',0],['🥗 Lavar la fruta antes de comerla',0],['📱 Jugar con el móvil hasta muy tarde',1],['🪑 Sentarse encorvado',1],['🚲 Montar en bici',0],['🍬 Comer golosinas a todas horas',1]],
+        hint:'Los hábitos saludables nos ayudan a estar bien.'},
+      {t:'mc', q:'¿Cuántas horas conviene dormir a tu edad?', opts:['Unas diez horas','Unas cinco horas','Unas dos horas'], a:0, hint:'Así te despiertas con energía.'},
+      {t:'mc', q:'¿Qué es el ocio?', opts:['Las actividades que hacemos en el tiempo libre porque nos gustan','Hacer los deberes','Dormir'], a:0, hint:'Por ejemplo, leer, jugar o patinar.'},
+      {t:'tf', q:'Tener una buena higiene ayuda a evitar enfermedades.', a:true, hint:'La higiene nos protege.'},
+      {t:'tf', q:'Una mala alimentación no influye en la salud.', a:false, hint:'Puede causar graves problemas de salud.'},
+      {t:'mc', q:'Para sentarte bien en la silla debes…', opts:['tener la espalda recta y apoyada','encorvarte hacia delante','sentarte en el borde'], a:0, hint:'La buena postura evita dolores de espalda.'}
+    ]
+  }
+];
+const T1_JEFE = {
+  id:'reto-cuerpo3', boss:true, villain:'Doctor Pereza', badge:'Agente del cuerpo', title:'El Gran Reto del cuerpo', short:'Repaso de todo el tema', pages:'Págs. 8-17',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es un hueso, un órgano de la nutrición o una etapa de la vida?', bins:['Hueso','Órgano de nutrición','Etapa de la vida'],
+      items:[['Tibia',0],['Costillas',0],['Estómago',1],['Corazón',1],['Adolescencia',2],['Ancianidad',2]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+/* ---------- TEMA 2 · Patrulla animal (libro, págs. 24-39) ---------- */
+const T2_MISIONES = [
+  {
+    id:'superviv3', badge:'Experto en supervivencia', title:'Supervivencia animal', short:'Las funciones vitales de los animales', pages:'Págs. 26-27',
+    color:'--food', icon:'paw',
+    learn:[
+      {h:'La nutrición', p:'Con la nutrición, los animales obtienen la <mark>energía</mark> y las sustancias que necesitan. El primer paso es <mark>tomar alimentos</mark>.',
+        extra:'<div class="senses"><b>Herbívoros</b><span>se alimentan de plantas (oruga).</span><b>Carnívoros</b><span>se alimentan de otros animales (tiburón).</span><b>Omnívoros</b><span>comen plantas y animales (zorro).</span></div>'},
+      {h:'La respiración', p:'Los animales necesitan <mark>oxígeno</mark>, un gas que está en el aire y en el agua. Unos lo toman del aire con los <mark>pulmones</mark>; otros, del agua con las <mark>branquias</mark>, unas láminas en contacto con el agua.'},
+      {h:'La relación', p:'Los animales reciben información con los <mark>órganos de los sentidos</mark>. El <mark>cerebro</mark> la interpreta y da una respuesta: si una gacela ve un guepardo, su cerebro le ordena huir.'},
+      {h:'La reproducción', p:'Los animales tienen crías semejantes a ellos. En la mayoría intervienen una <mark>hembra</mark> y un <mark>macho</mark>.',
+        extra:'<div class="senses"><b>Ovíparos</b><span>ponen huevos, de los que nacen sus crías.</span><b>Vivíparos</b><span>las crías crecen en el vientre de su madre y nacen de ella.</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Es herbívoro, carnívoro u omnívoro?', bins:['Herbívoro','Carnívoro','Omnívoro'],
+        items:[['🐛 Oruga',0],['🦈 Tiburón',1],['🦊 Zorro',2],['🐄 Vaca',0],['🦁 León',1],['🐻 Oso',2],['🐇 Conejo',0]],
+        hint:'Herbívoros: plantas. Carnívoros: animales. Omnívoros: de todo.'},
+      {t:'mc', q:'Las personas comemos fruta, verdura, carne y pescado. Según la alimentación somos…', opts:['omnívoros','herbívoros','carnívoros'], a:0, hint:'Comemos alimentos vegetales y animales.'},
+      {t:'match', q:'Une cada órgano con dónde toma el oxígeno.', pairs:[['Pulmones','Del aire'],['Branquias','Del agua']], hint:'Los peces respiran con branquias.'},
+      {t:'classify', q:'¿Respira con pulmones o con branquias?', bins:['Pulmones','Branquias'],
+        items:[['🐭 Ratón',0],['🐟 Atún',1],['🐦 Paloma',0],['🦈 Tiburón',1],['🐕 Perro',0]],
+        hint:'Los peces respiran con branquias.'},
+      {t:'order', q:'Una gacela ve un guepardo. Ordena lo que ocurre.', items:['Los ojos ven al guepardo','El cerebro recibe e interpreta la información','El cerebro da la orden de huir','La gacela corre rápidamente'], hint:'Primero los sentidos, después el cerebro y al final la respuesta.'},
+      {t:'classify', q:'Clasifica estos animales según su reproducción.', bins:['Ovíparos','Vivíparos'],
+        items:[['Avestruz',0],['🐅 Tigre',1],['🐴 Caballo',1],['Merluza',0],['🐞 Mariquita',0],['🕊️ Paloma',0],['Buitre',0],['🦌 Ciervo',1]],
+        hint:'Los ovíparos ponen huevos. Los mamíferos son vivíparos.'},
+      {t:'tf', q:'Los mamíferos son vivíparos.', a:true, hint:'Sus crías crecen en el vientre de la madre.'},
+      {t:'pick', q:'Toca las tres funciones vitales de los animales.', opts:['Nutrición','Relación','Reproducción','Hibernación','Migración'], a:[0,1,2], hint:'Son las mismas que en las personas.'}
+    ]
+  },
+  {
+    id:'censo3', badge:'Censista animal', title:'El gran censo animal', short:'Vertebrados e invertebrados', pages:'Págs. 28-29',
+    color:'--sense', icon:'bone',
+    learn:[
+      {h:'Los vertebrados', p:'Tienen un <mark>esqueleto interno</mark> formado por huesos con una <mark>columna vertebral</mark>. Su cuerpo tiene <mark>cabeza</mark> (con la boca, los sentidos y el cráneo), <mark>tronco</mark> (del que salen patas, aletas o alas) y <mark>cola</mark>.'},
+      {h:'Piel y grupos', p:'Algunos tienen la <mark>piel desnuda</mark>; otros, cubierta por <mark>pelos, plumas o escamas</mark>. Hay cinco grupos:',
+        extra:'<div class="tags"><span class="tag">peces</span><span class="tag">anfibios</span><span class="tag">reptiles</span><span class="tag">aves</span><span class="tag">mamíferos</span></div>'},
+      {h:'Los invertebrados', p:'Son grupos muy distintos. Lo que comparten es que <mark>no tienen esqueleto de huesos</mark> y que son <mark>ovíparos</mark>.'},
+      {h:'Grupos de invertebrados', p:'Algunos grupos:',
+        extra:'<div class="senses"><b>Esponjas</b><span>cuerpo irregular; viven fijas en el fondo del mar.</span><b>Medusas</b><span>forma de paraguas; sus tentáculos pican.</span><b>Gusanos</b><span>alargados y sin patas.</span><b>Moluscos</b><span>cuerpo blando, casi siempre con concha.</span><b>Artrópodos</b><span>caparazón duro; los más abundantes son los insectos.</span><b>Equinodermos</b><span>placas duras bajo la piel y espinas (estrella de mar).</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Es vertebrado o invertebrado?', bins:['Vertebrado','Invertebrado'],
+        items:[['🐬 Delfín',0],['🐊 Cocodrilo',0],['🐸 Rana',0],['🐞 Mariquita',1],['Medusa',1],['⭐ Estrella de mar',1],['🐟 Sardina',0],['🪱 Lombriz',1]],
+        hint:'Los vertebrados tienen columna vertebral.'},
+      {t:'mc', q:'¿Qué tienen en común todos los vertebrados?', opts:['Un esqueleto interno de huesos con columna vertebral','Que todos tienen plumas','Que todos viven en el agua'], a:0, hint:'Su nombre viene de las vértebras.'},
+      {t:'match', q:'Une cada parte del cuerpo de los vertebrados con lo que tiene.', pairs:[['Cabeza','Boca, sentidos y cráneo'],['Tronco','Columna y extremidades'],['Cola','La recorre la columna vertebral']], hint:'Repasa la primera tarjeta.'},
+      {t:'pick', q:'Toca cómo puede estar cubierta la piel de los vertebrados.', opts:['Pelos','Plumas','Escamas','Desnuda','Concha'], a:[0,1,2,3], hint:'La concha es de los moluscos.'},
+      {t:'pick', q:'Toca los cinco grupos de vertebrados.', opts:['Peces','Anfibios','Reptiles','Aves','Mamíferos','Insectos','Moluscos'], a:[0,1,2,3,4], hint:'Insectos y moluscos son invertebrados.'},
+      {t:'match', q:'Une cada grupo de invertebrados con su característica.', pairs:[['Esponjas','Viven fijas en el fondo del mar'],['Medusas','Forma de paraguas y tentáculos que pican'],['Gusanos','Alargados y sin patas'],['Moluscos','Cuerpo blando, casi siempre con concha'],['Equinodermos','Placas duras y espinas']], hint:'Repasa la tarjeta de los grupos.'},
+      {t:'mc', q:'¿Cuál es el grupo de artrópodos más abundante?', opts:['Los insectos','Las esponjas','Los gusanos'], a:0, hint:'Hormigas, moscas y mariposas son de este grupo.'},
+      {t:'tf', q:'Los invertebrados tienen un esqueleto formado por huesos.', a:false, hint:'No tienen huesos.'}
+    ]
+  },
+  {
+    id:'blandos3', badge:'Buceador de conchas', title:'Cuerpos blanditos', short:'Los moluscos', pages:'Págs. 30-31',
+    color:'--lung', icon:'drop',
+    learn:[
+      {h:'¿Cómo son los moluscos?', p:'Son invertebrados de <mark>cuerpo blando</mark>. La mayoría tienen <mark>una o dos conchas</mark> (almeja); algunos, una <mark>concha interna</mark> (sepia), y otros tienen <mark>tentáculos</mark> (pulpo).'},
+      {h:'¿Dónde viven?', p:'Muchos viven en el agua: <mark>dulce</mark> (almeja de río) o <mark>salada</mark> (mejillón). Otros viven en la <mark>tierra</mark>, como muchos caracoles.'},
+      {h:'¿Cómo se reproducen?', p:'Son <mark>ovíparos</mark>. En algunos, del huevo sale una cría parecida al adulto, pero en la mayoría salen crías muy diferentes llamadas <mark>larvas</mark>.'},
+      {h:'Grupos de moluscos', p:'Hay tres grupos principales:',
+        extra:'<div class="senses"><b>Bivalvos</b><span>dos conchas; acuáticos: mejillón, almeja, ostra, vieira.</span><b>Gasterópodos</b><span>concha en espiral (las babosas no tienen); terrestres o acuáticos: caracol.</span><b>Cefalópodos</b><span>marinos, con tentáculos con ventosas: pulpo, calamar, sepia.</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Qué tienen todos los moluscos?', opts:['El cuerpo blando','Dos conchas','Ocho tentáculos'], a:0, hint:'Algunos no tienen concha, pero todos son blandos.'},
+      {t:'match', q:'Une cada molusco con su característica.', pairs:[['Almeja','Dos conchas que protegen su cuerpo'],['Sepia','Concha interna'],['Pulpo','Tentáculos y sin concha']], hint:'Repasa la primera tarjeta.'},
+      {t:'classify', q:'¿A qué grupo de moluscos pertenece?', bins:['Bivalvo','Gasterópodo','Cefalópodo'],
+        items:[['Mejillón',0],['Almeja',0],['Ostra',0],['🐌 Caracol',1],['Babosa',1],['🐙 Pulpo',2],['🦑 Calamar',2],['Sepia',2],['Vieira',0]],
+        hint:'Bivalvos: dos conchas. Gasterópodos: concha en espiral o ninguna. Cefalópodos: tentáculos.'},
+      {t:'classify', q:'¿Dónde vive?', bins:['Agua dulce','Agua salada','Tierra'],
+        items:[['Almeja de río',0],['Mejillón',1],['🐌 Caracol de huerta',2],['🐙 Pulpo',1]],
+        hint:'El mar es agua salada; los ríos, agua dulce.'},
+      {t:'mc', q:'Las crías de muchos moluscos son muy diferentes del adulto. Se llaman…', opts:['larvas','renacuajos','pollitos'], a:0, hint:'Por ejemplo, la larva de caracol marino.'},
+      {t:'tf', q:'Los moluscos son vivíparos.', a:false, hint:'Son ovíparos: ponen huevos.'},
+      {t:'tf', q:'Las babosas son gasterópodos que no tienen concha.', a:true, hint:'Casi todos los gasterópodos tienen concha, pero las babosas no.'},
+      {t:'mc', q:'Para capturar su alimento, los cefalópodos usan…', opts:['tentáculos con ventosas','dos conchas','una concha en espiral'], a:0, hint:'Piensa en el pulpo.'}
+    ]
+  },
+  {
+    id:'armadura3', badge:'Entomólogo', title:'Seis patas y armadura', short:'Los insectos y los artrópodos', pages:'Págs. 32-33',
+    color:'--ok', icon:'bug',
+    learn:[
+      {h:'¿Cómo son los insectos?', p:'Su cuerpo está dividido en tres partes: <mark>cabeza, tórax y abdomen</mark>. Tienen <mark>dos antenas</mark> y <mark>seis patas</mark>. Muchos tienen, además, dos o cuatro <mark>alas</mark>.'},
+      {h:'Metamorfosis', p:'Los insectos son <mark>ovíparos</mark>. En la mariposa, del huevo sale una <mark>larva</mark> llamada <mark>oruga</mark>. Tras varios cambios, se transforma en adulto. Esa transformación se llama <mark>metamorfosis</mark>.',
+        extra:'<ol class="steps"><li>Huevo</li><li>Oruga</li><li>Crisálida</li><li>Mariposa</li></ol>'},
+      {h:'Grupos de insectos', p:'Son muy numerosos y diversos:',
+        extra:'<div class="senses"><b>Mariposas</b><span>cuatro alas iguales para volar.</span><b>Moscas y mosquitos</b><span>vuelan muy deprisa.</span><b>Escarabajos</b><span>dos alas duras que protegen otras dos finas con las que vuelan.</span></div>'},
+      {h:'Los artrópodos', p:'Los insectos son un grupo de <mark>artrópodos</mark>. Los artrópodos están revestidos por piezas unidas, como una <mark>armadura</mark>, y tienen <mark>patas con articulaciones</mark>: escarabajo, araña, ciempiés, cangrejo.'}
+    ],
+    ch:[
+      {t:'order', q:'Ordena las partes del cuerpo de un insecto, de delante hacia atrás.', items:['Cabeza','Tórax','Abdomen'], hint:'Las antenas están en la cabeza.'},
+      {t:'mc', q:'¿Cuántas patas tienen los insectos?', opts:['Seis','Ocho','Cuatro'], a:0, hint:'Las arañas tienen ocho y no son insectos.'},
+      {t:'pick', q:'Toca las características de los insectos.', opts:['Dos antenas','Seis patas','Cabeza, tórax y abdomen','Columna vertebral','Ocho patas','Plumas'], a:[0,1,2], hint:'Son invertebrados: no tienen columna.'},
+      {t:'order', q:'Ordena la metamorfosis de la mariposa.', items:['Huevo','Oruga','Crisálida','Mariposa'], hint:'Del huevo sale la oruga.'},
+      {t:'fill', q:'Completa.', parts:['La transformación de la ',0,' en mariposa se llama ',1,'.'], answers:['oruga','metamorfosis'], bank:['araña','digestión'], hint:'La oruga es la larva de la mariposa.'},
+      {t:'match', q:'Une cada insecto con sus alas.', pairs:[['Mariposa','Cuatro alas iguales'],['Escarabajo','Dos alas duras que protegen otras dos finas']], hint:'Repasa la tarjeta de los grupos de insectos.'},
+      {t:'pick', q:'Toca los artrópodos.', opts:['Escarabajo','Araña','Ciempiés','Cangrejo','Caracol','Lombriz'], a:[0,1,2,3], hint:'El caracol es un molusco y la lombriz, un gusano.'},
+      {t:'mc', q:'¿Qué tienen todos los artrópodos?', opts:['Patas con articulaciones y una armadura','Concha en espiral','Cuerpo blando sin patas'], a:0, hint:'Sus piezas están unidas como una armadura.'},
+      {t:'tf', q:'La araña es un insecto.', a:false, hint:'Es un artrópodo, pero tiene ocho patas.'}
+    ]
+  }
+];
+const T2_JEFE = {
+  id:'reto-animales3', boss:true, villain:'Furtivón', badge:'Patrulla animal', title:'El Gran Reto animal', short:'Repaso de todo el tema', pages:'Págs. 26-33',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es un molusco, un insecto o un vertebrado?', bins:['Molusco','Insecto','Vertebrado'],
+      items:[['🐙 Pulpo',0],['Mejillón',0],['🦋 Mariposa',1],['🐜 Hormiga',1],['🦅 Águila',2],['🐸 Rana',2]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+/* ---------- TEMA 3 · Los de la columna (libro, págs. 44-59) ---------- */
+const T3_MISIONES = [
+  {
+    id:'vert3a', badge:'Amigo de los mamíferos', title:'Pelo y leche', short:'Los mamíferos', pages:'Págs. 46-47',
+    color:'--food', icon:'paw',
+    learn:[
+      {h:'¿Cómo son los mamíferos?', p:'Su piel está cubierta de <mark>pelo</mark>. La mayoría tiene <mark>cuatro patas</mark> y dos <mark>orejas</mark> que protegen los oídos. Tienen <mark>labios y dientes</mark> en la boca.'},
+      {h:'¿Cómo viven?', p:'Respiran el oxígeno del aire con <mark>pulmones</mark>. Las crías se forman en el interior del cuerpo de la madre (son <mark>vivíparos</mark>) y, al nacer, se alimentan de la <mark>leche</mark> que producen las <mark>mamas</mark> de la madre.'},
+      {h:'Grupos de mamíferos', p:'Hay diferentes grupos:',
+        extra:'<div class="senses"><b>Carnívoros</b><span>colmillos afilados y garras: gatos, osos, lobos.</span><b>Con pezuñas</b><span>terrestres y herbívoros: cabras, ciervos.</span><b>Primates</b><span>cinco dedos en manos y pies. Las personas somos primates.</span><b>Murciélagos</b><span>sus patas delanteras son alas; son nocturnos.</span><b>Delfines y ballenas</b><span>nadan con la cola y las aletas; salen a respirar aire.</span></div>'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca las características de los mamíferos.', opts:['Piel cubierta de pelo','Labios y dientes','Respiran con pulmones','Piel con plumas','Ponen huevos'], a:[0,1,2], hint:'Las plumas son de las aves.'},
+      {t:'mc', q:'¿De qué se alimentan las crías de los mamíferos al nacer?', opts:['De la leche de su madre','De insectos','De semillas'], a:0, hint:'Por eso se llaman mamíferos: maman.'},
+      {t:'tf', q:'Las crías de los mamíferos se forman en el interior del cuerpo de la madre.', a:true, hint:'Son vivíparos.'},
+      {t:'match', q:'Une cada grupo de mamíferos con su característica.', pairs:[['Carnívoros','Colmillos afilados y garras'],['Con pezuñas','Terrestres y herbívoros'],['Primates','Cinco dedos en manos y pies'],['Murciélagos','Sus patas delanteras son alas'],['Delfines y ballenas','Nadan con la cola y las aletas']], hint:'Repasa la tarjeta de los grupos.'},
+      {t:'classify', q:'¿A qué grupo de mamíferos pertenece?', bins:['Carnívoro','Con pezuñas','Primate'],
+        items:[['🐯 Tigre',0],['🐺 Lobo',0],['🐐 Cabra',1],['🦌 Ciervo',1],['🐒 Mono',2],['🧑 Persona',2],['🐆 Leopardo',0]],
+        hint:'Las personas somos primates.'},
+      {t:'mc', q:'¿Por qué el delfín es un mamífero y no un pez?', opts:['Porque respira aire con pulmones y sus crías maman','Porque vive en el mar','Porque tiene aletas'], a:0, hint:'Sale del agua para tomar aire.'},
+      {t:'tf', q:'Los murciélagos son aves.', a:false, hint:'Tienen pelo y sus crías maman: son mamíferos.'},
+      {t:'mc', q:'¿Cómo respiran las ballenas?', opts:['Salen del agua para tomar aire por un orificio','Con branquias','No respiran'], a:0, hint:'Son mamíferos, como los delfines.'}
+    ]
+  },
+  {
+    id:'vert3b', badge:'Plumas y escamas', title:'Plumas y escamas', short:'Las aves y los reptiles', pages:'Págs. 48-49',
+    color:'--sense', icon:'feather',
+    learn:[
+      {h:'¿Cómo son las aves?', p:'Están cubiertas de <mark>plumas</mark>, sus extremidades anteriores son <mark>alas</mark> y tienen un <mark>pico</mark> duro. Respiran con <mark>pulmones</mark> y ponen <mark>huevos</mark>; cuidan los huevos y a sus polluelos.'},
+      {h:'Grupos de aves', p:'Algunos grupos:',
+        extra:'<div class="senses"><b>Corredoras</b><span>no pueden volar; patas muy fuertes (avestruz).</span><b>Ánades</b><span>dedos unidos por una membrana para nadar (pato).</span><b>Rapaces</b><span>carnívoras con garras y pico fuertes (águila).</span><b>Pájaros</b><span>el grupo más numeroso; pequeños y muchos cantan.</span></div>'},
+      {h:'¿Cómo son los reptiles?', p:'Su piel está cubierta de <mark>escamas</mark>, la mayoría tiene cuatro patas y una cola larga. Respiran con <mark>pulmones</mark> y ponen <mark>huevos</mark>, que no suelen cuidar.'},
+      {h:'Grupos de reptiles', p:'Hay lagartos, <mark>tortugas</mark> (terrestres o acuáticas, con caparazón), <mark>serpientes</mark> (se desplazan reptando, sin patas) y <mark>cocodrilos</mark> (carnívoros acuáticos de gran tamaño).'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Es una característica de las aves o de los reptiles?', bins:['Aves','Reptiles'],
+        items:[['Plumas',0],['Pico',0],['Alas',0],['Escamas',1],['Cola larga',1],['Cuidan a sus polluelos',0]],
+        hint:'Los reptiles no suelen cuidar sus huevos.'},
+      {t:'match', q:'Une cada grupo de aves con su característica.', pairs:[['Corredoras','No pueden volar'],['Ánades','Dedos unidos por una membrana'],['Rapaces','Garras y pico para cazar'],['Pájaros','Pequeños y muchos cantan']], hint:'Repasa la tarjeta de los grupos de aves.'},
+      {t:'classify', q:'¿A qué grupo de aves pertenece?', bins:['Corredora','Ánade','Rapaz'],
+        items:[['Avestruz',0],['🦆 Pato',1],['🦅 Águila',2],['Halcón',2],['Ganso',1]], hint:'Los ánades nadan.'},
+      {t:'mc', q:'¿Qué características nos dicen que el pingüino es un ave?', opts:['Tiene plumas, pico y pone huevos','Nada en el mar','Vive en el frío'], a:0, hint:'Aunque no vuele, es un ave.'},
+      {t:'match', q:'¿Qué reptil es?', pairs:[['No tiene patas','Serpiente'],['Tiene caparazón','Tortuga'],['Carnívoro acuático de gran tamaño','Cocodrilo']], hint:'Repasa la tarjeta de los grupos de reptiles.'},
+      {t:'mc', q:'¿Por qué las tortugas marinas salen del agua de vez en cuando?', opts:['Porque respiran aire con pulmones','Porque tienen frío','Porque no saben nadar'], a:0, hint:'Los reptiles respiran con pulmones.'},
+      {t:'tf', q:'Los reptiles cuidan siempre a sus crías.', a:false, hint:'La mayoría no las cuida.'},
+      {t:'tf', q:'Aves y reptiles ponen huevos.', a:true, hint:'Los dos son ovíparos.'}
+    ]
+  },
+  {
+    id:'vert3c', badge:'Anfibio honorario', title:'Entre el agua y la tierra', short:'Los anfibios y los peces', pages:'Págs. 50-51',
+    color:'--lung', icon:'fish',
+    learn:[
+      {h:'¿Cómo son los anfibios?', p:'Tienen la piel <mark>desnuda</mark>: sin pelos, plumas ni escamas. De adultos se desplazan con sus <mark>cuatro patas</mark>. Algunos tienen una lengua larga para cazar insectos.'},
+      {h:'¿Cómo viven los anfibios?', p:'Los adultos respiran con <mark>pulmones</mark>. Son <mark>ovíparos</mark>. Sus crías, los <mark>renacuajos</mark>, tienen cola, nadan y respiran con <mark>branquias</mark>. El cambio de renacuajo a adulto se llama <mark>metamorfosis</mark>.',
+        extra:'<div class="senses"><b>Sin cola</b><span>ranas y sapos.</span><b>Con cola</b><span>salamandras y tritones.</span></div>'},
+      {h:'¿Cómo son los peces?', p:'Están cubiertos de <mark>escamas</mark>, se desplazan con <mark>aletas</mark> y respiran en el agua con <mark>branquias</mark>. Las hembras ponen huevos que no suelen cuidar; las crías se llaman <mark>alevines</mark>.'},
+      {h:'Tipos de peces', p:'Según su esqueleto:',
+        extra:'<div class="senses"><b>Óseos</b><span>esqueleto de huesos (espinas): la mayoría, como el pez payaso.</span><b>Cartilaginosos</b><span>esqueleto de cartílago: mantas, rayas y tiburones.</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Cómo es la piel de los anfibios?', opts:['Desnuda','Con escamas','Con plumas'], a:0, hint:'No tienen pelos, plumas ni escamas.'},
+      {t:'order', q:'Ordena la metamorfosis de la rana.', items:['Huevo','Renacuajo con cola','Renacuajo con patas','Rana adulta'], hint:'Del huevo sale el renacuajo.'},
+      {t:'classify', q:'¿Cómo respira?', bins:['Pulmones','Branquias'],
+        items:[['Rana adulta',0],['Renacuajo',1],['Sardina',1],['Salamandra adulta',0],['Tiburón',1]],
+        hint:'Las crías de los anfibios respiran como los peces.'},
+      {t:'classify', q:'¿Anfibio con cola o sin cola?', bins:['Sin cola','Con cola'],
+        items:[['🐸 Rana',0],['Sapo',0],['Salamandra',1],['Tritón',1]], hint:'Ranas y sapos no tienen cola de adultos.'},
+      {t:'pick', q:'Toca las características de los peces.', opts:['Escamas','Aletas','Branquias','Plumas','Piel desnuda'], a:[0,1,2], hint:'La piel desnuda es de los anfibios.'},
+      {t:'classify', q:'¿Pez óseo o cartilaginoso?', bins:['Óseo','Cartilaginoso'],
+        items:[['🐠 Pez payaso',0],['🦈 Tiburón',1],['Raya',1],['Sardina',0],['Manta',1]], hint:'Mantas, rayas y tiburones son cartilaginosos.'},
+      {t:'mc', q:'¿Cómo se llaman las crías de los peces?', opts:['Alevines','Renacuajos','Polluelos'], a:0, hint:'Los renacuajos son de los anfibios.'},
+      {t:'mc', q:'Salí de un huevo en el agua y respiraba con branquias, pero ahora respiro con pulmones. ¿Quién soy?', opts:['Una rana','Una sardina','Una serpiente'], a:0, hint:'He pasado por la metamorfosis.'}
+    ]
+  },
+  {
+    id:'vert3d', badge:'Protector animal', title:'Animales imprescindibles', short:'La importancia de los animales', pages:'Págs. 52-53',
+    color:'--ok', icon:'heart',
+    learn:[
+      {h:'Los animales y el medioambiente', p:'Todos los animales son importantes:',
+        extra:'<div class="senses"><b>Alimento</b><span>muchos animales sirven de alimento a otros.</span><b>Abejas</b><span>son fundamentales para la reproducción de muchas plantas.</span><b>Carroñeros</b><span>hienas y buitres comen animales muertos y limpian el campo.</span><b>Lombrices</b><span>comen restos de seres vivos; sus desechos alimentan a las plantas.</span></div>'},
+      {h:'Los animales y las personas', p:'Los animales nos dan muchas cosas:',
+        extra:'<div class="senses"><b>Alimento</b><span>carne, leche, huevos y miel.</span><b>Compañía</b><span>perros y gatos.</span><b>Defensa</b><span>perros que vigilan el ganado.</span><b>Materiales</b><span>lana, seda y cuero.</span><b>Ocio</b><span>observar o fotografiar animales.</span></div>'},
+      {h:'Hay que cuidarlos', p:'Los animales siguen siendo <mark>imprescindibles</mark> para las personas. Por eso debemos <mark>respetarlos y cuidarlos</mark>.'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada animal con su importancia en la naturaleza.', pairs:[['Abeja','Ayuda a que se reproduzcan las plantas'],['Buitre','Limpia el campo de animales muertos'],['Lombriz','Sus desechos alimentan a las plantas']], hint:'Repasa la primera tarjeta.'},
+      {t:'classify', q:'¿Qué nos da cada animal?', bins:['Alimento','Compañía','Materiales'],
+        items:[['Vaca: leche',0],['Gallina: huevos',0],['Abeja: miel',0],['Gato',1],['Oveja: lana',2],['Gusano de seda',2]],
+        hint:'La lana y la seda sirven para hacer ropa.'},
+      {t:'mc', q:'¿Para qué se usan algunos perros en el campo?', opts:['Para defender el ganado','Para dar leche','Para dar lana'], a:0, hint:'Vigilan las ovejas.'},
+      {t:'mc', q:'¿Por qué son importantes las hienas y los buitres?', opts:['Limpian el campo de animales muertos','Porque son malos','Porque dan miel'], a:0, hint:'Son carroñeros.'},
+      {t:'tf', q:'Las lombrices de tierra son buenas para las plantas de un huerto.', a:true, hint:'Sus desechos alimentan a las plantas.'},
+      {t:'pick', q:'Toca lo que podemos hacer para cuidar a los animales.', opts:['Respetar su hábitat','Observarlos sin molestarlos','Cuidar bien a las mascotas','Asustarlos por diversión'], a:[0,1,2], hint:'Hay que respetarlos.'},
+      {t:'mc', q:'¿Qué le dirías a alguien que dice que las hienas son «malas»?', opts:['Que son importantes para limpiar el campo','Que tiene razón','Que hay que eliminarlas'], a:0, hint:'Todos los animales son importantes.'}
+    ]
+  }
+];
+const T3_JEFE = {
+  id:'reto-vert3', boss:true, villain:'Cazador Sombrío', badge:'Guardián de los vertebrados', title:'El Gran Reto de los vertebrados', short:'Repaso de todo el tema', pages:'Págs. 46-53',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿A qué grupo de vertebrados pertenece?', bins:['Mamífero','Ave','Reptil','Anfibio','Pez'],
+      items:[['🐬 Delfín',0],['🦇 Murciélago',0],['🐧 Pingüino',1],['🐢 Tortuga',2],['🐍 Serpiente',2],['🐸 Rana',3],['🦈 Tiburón',4]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+/* ---------- TEMA 4 · Redes de la vida (libro, págs. 60-75) ---------- */
+const T4_MISIONES = [
+  {
+    id:'eco3a', badge:'Explorador de ecosistemas', title:'Un mundo en equipo', short:'¿Qué es un ecosistema?', pages:'Págs. 62-63',
+    color:'--ok', icon:'tree',
+    learn:[
+      {h:'El ecosistema', p:'Un <mark>ecosistema</mark> es un conjunto formado por tres componentes: los <mark>seres vivos</mark>, el <mark>medio físico</mark> y las <mark>relaciones</mark> entre ellos. Un bosque, una pradera o un río son ecosistemas.'},
+      {h:'Los seres vivos', p:'Todos pertenecen a una <mark>especie</mark>. Los de la misma especie que viven en un ecosistema forman una <mark>población</mark> (por ejemplo, los jabalíes de un bosque). Todas las poblaciones juntas forman una <mark>comunidad</mark>.'},
+      {h:'El medio físico', p:'Son los <mark>componentes no vivos</mark>: las rocas, el agua o el aire. Puede ser <mark>terrestre</mark> o <mark>acuático</mark>. Los seres vivos dependen del medio físico: cada planta solo vive donde encuentra la humedad y la temperatura que necesita.'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca los tres componentes de un ecosistema.', opts:['Seres vivos','Medio físico','Relaciones','Ciudades','Ordenadores'], a:[0,1,2], hint:'Seres vivos, lo que no está vivo y cómo se relacionan.'},
+      {t:'classify', q:'¿Es un ser vivo o parte del medio físico?', bins:['Ser vivo','Medio físico'],
+        items:[['🐿️ Ardilla',0],['🌳 Encina',0],['🪨 Roca',1],['💧 Agua',1],['💨 Aire',1],['🌸 Amapola',0]],
+        hint:'El medio físico son los componentes no vivos.'},
+      {t:'match', q:'Une cada palabra con lo que significa.', pairs:[['Especie','Seres vivos de un mismo tipo'],['Población','Los de la misma especie en un ecosistema'],['Comunidad','Todas las poblaciones de un ecosistema']], hint:'Repasa la tarjeta de los seres vivos.'},
+      {t:'order', q:'Ordena de lo más pequeño a lo más grande.', items:['Ser vivo','Población','Comunidad','Ecosistema'], hint:'El ecosistema lo incluye todo.'},
+      {t:'mc', q:'Los jabalíes que viven en un bosque forman…', opts:['una población','una comunidad','un medio físico'], a:0, hint:'Son todos de la misma especie.'},
+      {t:'mc', q:'¿Puede existir un ecosistema solo con seres vivos?', opts:['No, también necesita un medio físico','Sí, sin problema'], a:0, hint:'Los seres vivos dependen del medio físico.'},
+      {t:'classify', q:'¿Es un medio terrestre o acuático?', bins:['Terrestre','Acuático'],
+        items:[['Bosque',0],['Río',1],['Desierto',0],['Mar',1],['Pradera',0],['Laguna',1]], hint:'Los acuáticos están en el agua.'},
+      {t:'tf', q:'La mayoría de los seres vivos solo pueden vivir en un medio terrestre o en uno acuático.', a:true, hint:'Pocos pueden vivir en los dos.'}
+    ]
+  },
+  {
+    id:'eco3b', badge:'Rey de la cadena', title:'¿Quién come a quién?', short:'Las relaciones de alimentación', pages:'Págs. 64-65',
+    color:'--food', icon:'apple',
+    learn:[
+      {h:'Productores', p:'Las <mark>plantas</mark> producen su propio alimento. Por eso son los <mark>productores</mark> del ecosistema.'},
+      {h:'Consumidores', p:'Los animales tienen que tomar alimentos: son <mark>consumidores</mark>.',
+        extra:'<div class="senses"><b>Primarios</b><span>comen plantas: son herbívoros (jirafa, conejo).</span><b>Secundarios</b><span>comen consumidores primarios: son carnívoros.</span><b>Terciarios</b><span>comen consumidores secundarios: también carnívoros.</span></div>'},
+      {h:'Cadenas alimentarias', p:'Representan quién se come a quién. Las <mark>flechas</mark> van del que sirve de alimento al que se alimenta.',
+        extra:'<div class="flow"><span class="box">🌿 Hierba</span><span class="arrow">→</span><span class="box">🐇 Conejo</span><span class="arrow">→</span><span class="box">🐈 Lince</span></div>'},
+      {h:'Redes alimentarias', p:'Un mismo ser vivo está en varias cadenas. Todas juntas forman una <mark>red alimentaria</mark>.'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Por qué las plantas son productores?', opts:['Porque fabrican su propio alimento','Porque comen animales','Porque viven en el agua'], a:0, hint:'No necesitan comer a otros.'},
+      {t:'classify', q:'¿Productor, consumidor primario o consumidor secundario?', bins:['Productor','Consumidor primario','Consumidor secundario'],
+        items:[['🌿 Hierba',0],['🌳 Encina',0],['🐇 Conejo',1],['🦒 Jirafa',1],['🐈 Lince',2],['🦊 Zorro',2]],
+        hint:'Los consumidores primarios son herbívoros.'},
+      {t:'order', q:'Ordena la cadena alimentaria.', items:['Hierba','Conejo','Lince'], hint:'Empieza por el productor.'},
+      {t:'order', q:'Ordena: «Los pulgones comen rosales, las mariquitas comen pulgones y los petirrojos comen mariquitas».', items:['Rosal','Pulgón','Mariquita','Petirrojo'], hint:'El productor va primero.'},
+      {t:'order', q:'Ordena la cadena con saltamontes, hierba, gavilán y petirrojo.', items:['Hierba','Saltamontes','Petirrojo','Gavilán'], hint:'El gavilán es una rapaz que caza pájaros.'},
+      {t:'mc', q:'En una cadena alimentaria, las flechas van…', opts:['del que sirve de alimento al que se alimenta','del más grande al más pequeño','al revés, del que come al que es comido'], a:0, hint:'Hierba → conejo: el conejo come hierba.'},
+      {t:'mc', q:'¿Qué es una red alimentaria?', opts:['Varias cadenas alimentarias unidas','Una red para pescar','Un solo animal'], a:0, hint:'Un ser vivo puede estar en varias cadenas.'},
+      {t:'tf', q:'Los consumidores secundarios y terciarios son carnívoros.', a:true, hint:'Se alimentan de otros animales.'}
+    ]
+  },
+  {
+    id:'eco3c', badge:'Socio de la naturaleza', title:'Socios y rivales', short:'Otras relaciones en los ecosistemas', pages:'Págs. 66-67',
+    color:'--lung', icon:'bug',
+    learn:[
+      {h:'Dentro de la misma especie', p:'Los animales de una especie se relacionan:',
+        extra:'<div class="senses"><b>Grupos familiares</b><span>se ayudan con las crías y se defienden (gorilas).</span><b>Asociaciones</b><span>se agrupan un tiempo para defenderse o viajar (bancos de peces, bandadas).</span><b>Sociedades</b><span>se reparten las funciones (colmena de abejas, hormiguero).</span></div>'},
+      {h:'Entre distintas especies', p:'También se relacionan especies distintas:',
+        extra:'<div class="senses"><b>Mutualismo</b><span>las dos se benefician (pulgones y hormigas).</span><b>Comensalismo</b><span>una se beneficia y a la otra ni le beneficia ni le perjudica (peces rémora y tiburón).</span><b>Parasitismo</b><span>una se beneficia y la otra sale perjudicada (pulgas).</span><b>Competencia</b><span>las dos tienen las mismas necesidades y salen perjudicadas (plantas que compiten por la luz).</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Relación dentro de la misma especie o entre especies distintas?', bins:['Misma especie','Distintas especies'],
+        items:[['Grupo familiar',0],['Sociedad',0],['Asociación',0],['Mutualismo',1],['Parasitismo',1],['Competencia',1]],
+        hint:'Mutualismo, comensalismo, parasitismo y competencia son entre especies.'},
+      {t:'match', q:'Une cada relación con lo que ocurre.', pairs:[['Mutualismo','Las dos especies se benefician'],['Comensalismo','Una se beneficia y la otra ni gana ni pierde'],['Parasitismo','Una se beneficia y la otra sale perjudicada'],['Competencia','Las dos salen perjudicadas']], hint:'Repasa la tarjeta.'},
+      {t:'match', q:'¿Qué relación es?', pairs:[['Pulgas que chupan la sangre de un perro','Parasitismo'],['Peces rémora que comen los restos del tiburón','Comensalismo'],['Hormigas que defienden a los pulgones','Mutualismo'],['Plantas muy juntas que se quitan la luz','Competencia']], hint:'Piensa quién gana y quién pierde.'},
+      {t:'mc', q:'En una colmena, unas abejas se reproducen y otras recogen alimento o defienden. Es una…', opts:['sociedad','asociación','competencia'], a:0, hint:'Se reparten las funciones.'},
+      {t:'mc', q:'Los estorninos que vuelan juntos en una bandada forman una…', opts:['asociación','sociedad','relación de parasitismo'], a:0, hint:'Se agrupan un tiempo para viajar o defenderse.'},
+      {t:'mc', q:'Un pájaro come los restos de comida entre los dientes de un cocodrilo y lo deja limpio. ¿Qué relación es?', opts:['Mutualismo','Parasitismo','Competencia'], a:0, hint:'El pájaro come y el cocodrilo queda limpio: los dos ganan.'},
+      {t:'mc', q:'Unas moscas se alimentan de las heces de una vaca. A la vaca no le afecta. ¿Qué relación es?', opts:['Comensalismo','Parasitismo','Sociedad'], a:0, hint:'Las moscas ganan y la vaca ni gana ni pierde.'},
+      {t:'tf', q:'En la competencia, las dos especies salen beneficiadas.', a:false, hint:'Las dos resultan perjudicadas.'}
+    ]
+  },
+  {
+    id:'eco3d', badge:'Viajero del planeta', title:'La vuelta al mundo', short:'Los principales ecosistemas', pages:'Págs. 68-69',
+    color:'--sense', icon:'drop',
+    learn:[
+      {h:'Ecosistemas terrestres', p:'Algunos ecosistemas en tierra:',
+        extra:'<div class="senses"><b>Bosques</b><span>muchos árboles que dan refugio y alimento a ardillas, pájaros carpinteros y osos.</span><b>Praderas</b><span>mucha hierba; herbívoros como elefantes y cebras, y los carnívoros que los cazan.</span><b>Desiertos</b><span>casi no llueve; camellos, escorpiones y algunos reptiles.</span><b>Zonas polares</b><span>cubiertas de hielo; osos polares, focas y pingüinos.</span></div>'},
+      {h:'Ecosistemas acuáticos', p:'Pueden ser de dos tipos:',
+        extra:'<div class="senses"><b>Agua dulce</b><span>ríos, arroyos y lagunas: plantas acuáticas, peces, anfibios e invertebrados.</span><b>Agua salada</b><span>costa y mar abierto. En la costa hay más seres vivos.</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Ecosistema terrestre o acuático?', bins:['Terrestre','Acuático'],
+        items:[['Bosque',0],['Pradera',0],['Desierto',0],['Zona polar',0],['Río',1],['Mar abierto',1],['Laguna',1]],
+        hint:'Las zonas polares son terrestres, aunque haya hielo.'},
+      {t:'match', q:'Une cada animal con su ecosistema.', pairs:[['🐿️ Ardilla','Bosque'],['🦓 Cebra','Pradera'],['🐪 Camello','Desierto'],['🐻‍❄️ Oso polar','Zona polar']], hint:'Repasa la tarjeta de los terrestres.'},
+      {t:'match', q:'Une cada ecosistema con su característica.', pairs:[['Bosque','Muchos árboles'],['Pradera','Abunda la hierba'],['Desierto','Casi no llueve'],['Zona polar','Cubierta de hielo']], hint:'Repasa la tarjeta.'},
+      {t:'classify', q:'¿Agua dulce o agua salada?', bins:['Agua dulce','Agua salada'],
+        items:[['Río',0],['Arroyo',0],['Laguna',0],['Costa',1],['Mar abierto',1]], hint:'El mar es de agua salada.'},
+      {t:'mc', q:'¿En qué ecosistema hay más animales herbívoros?', opts:['En la pradera','En el desierto','En la zona polar'], a:0, hint:'Allí abunda la hierba, que es su alimento.'},
+      {t:'mc', q:'¿Por qué a las zonas polares se les llama «desiertos helados»?', opts:['Porque hay pocas plantas y pocos animales','Porque hace mucho calor','Porque hay mucha arena'], a:0, hint:'Como en los desiertos, hay muy poca vida.'},
+      {t:'tf', q:'En la costa hay más seres vivos que en el mar abierto.', a:true, hint:'Así lo explica la lección.'},
+      {t:'pick', q:'Toca los animales que viven en las zonas polares.', opts:['Oso polar','Foca','Pingüino','Camello','Escorpión'], a:[0,1,2], hint:'Camellos y escorpiones viven en el desierto.'}
+    ]
+  }
+];
+const T4_JEFE = {
+  id:'reto-eco3', boss:true, villain:'Contaminator', badge:'Héroe de los ecosistemas', title:'El Gran Reto de los ecosistemas', short:'Repaso de todo el tema', pages:'Págs. 62-69',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es un componente del ecosistema, una relación o un tipo de ecosistema?', bins:['Componente','Relación','Tipo de ecosistema'],
+      items:[['Seres vivos',0],['Medio físico',0],['Mutualismo',1],['Parasitismo',1],['Pradera',2],['Desierto',2]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+/* ---------- TEMA 5 · Taller de la materia (libro, págs. 80-97) ---------- */
+const T5_MISIONES = [
+  {
+    id:'mat3a', badge:'Detective de la materia', title:'¿De qué está hecho todo?', short:'La materia, sus propiedades y sus estados', pages:'Págs. 82-83',
+    color:'--sense', icon:'flask',
+    learn:[
+      {h:'¿Qué es la materia?', p:'Casi todo lo que nos rodea está hecho de <mark>materia</mark>: los árboles, las personas, las rocas, el mar, el aire… Pero hay cosas que <mark>no son materia</mark>: la luz, la música, los pensamientos y los sentimientos.'},
+      {h:'Las sustancias', p:'No todo está formado por la misma materia. Cada tipo de materia se llama <mark>sustancia</mark>: la madera, el aluminio, el papel o el agua.'},
+      {h:'Masa y volumen', p:'Todo lo que está hecho de materia tiene dos propiedades:',
+        extra:'<div class="senses"><b>Masa</b><span>la cantidad de materia. Se mide en gramos (g) o kilogramos (kg).</span><b>Volumen</b><span>el espacio que ocupa. Se mide en litros (L).</span></div>'},
+      {h:'Los tres estados', p:'La materia puede estar en tres estados:',
+        extra:'<div class="senses"><b>Sólido</b><span>forma y volumen fijos.</span><b>Líquido</b><span>volumen fijo; toma la forma del recipiente.</span><b>Gaseoso</b><span>se adapta a la forma y al volumen del recipiente.</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Es materia o no es materia?', bins:['Es materia','No es materia'],
+        items:[['🌳 Un árbol',0],['🪨 Una roca',0],['💡 La luz',1],['🎵 La música',1],['💨 El aire',0],['💭 Un pensamiento',1],['🌊 El mar',0],['😊 La alegría',1]],
+        hint:'La luz, la música, los pensamientos y los sentimientos no son materia.'},
+      {t:'mc', q:'¿Cómo se llama cada tipo de materia, como la madera o el agua?', opts:['Sustancia','Volumen','Estado'], a:0, hint:'La madera, el aluminio y el papel son sustancias distintas.'},
+      {t:'match', q:'Une cada propiedad con lo que es.', pairs:[['Masa','La cantidad de materia'],['Volumen','El espacio que ocupa la materia']], hint:'La masa se mide en kilogramos y el volumen en litros.'},
+      {t:'classify', q:'¿Con qué unidad se mide?', bins:['Masa','Volumen'],
+        items:[['Gramos',0],['Kilogramos',0],['Litros',1]], hint:'Una botella de agua tiene un litro; una bolsa de arroz pesa un kilogramo.'},
+      {t:'match', q:'Une cada estado con su característica.', pairs:[['Sólido','Forma y volumen fijos'],['Líquido','Volumen fijo y la forma del recipiente'],['Gaseoso','La forma y el volumen del recipiente']], hint:'Repasa la tarjeta de los tres estados.'},
+      {t:'classify', q:'¿En qué estado está?', bins:['Sólido','Líquido','Gaseoso'],
+        items:[['🥄 Una cuchara',0],['💧 El agua de un vaso',1],['🎈 El aire de un globo',2],['🪨 Una piedra',0],['🥛 La leche',1],['🧃 El zumo',1]],
+        hint:'Los sólidos no cambian de forma al moverlos.'},
+      {t:'fill', q:'Completa.', parts:['Los ',0,' tienen volumen fijo pero no forma propia. Los ',1,' tienen forma propia.'], answers:['líquidos','sólidos'], bank:['gases'], hint:'El agua toma la forma del vaso.'},
+      {t:'mc', q:'Se pincha la rueda de una bici. ¿Qué pasa con el aire?', opts:['Sale y se reparte por todo el espacio','Se queda dentro con la misma forma','Se convierte en líquido'], a:0, hint:'Los gases ocupan todo el espacio que pueden.'},
+      {t:'tf', q:'El brillo, el color y la dureza dependen de la sustancia de la que está hecho un objeto.', a:true, hint:'Por ejemplo, los objetos de hierro son duros.'}
+    ]
+  },
+  {
+    id:'mat3b', badge:'Jefe de almacén', title:'El almacén de materiales', short:'Materiales naturales y artificiales y sus propiedades', pages:'Págs. 84-85',
+    color:'--bone', icon:'gear',
+    learn:[
+      {h:'Los materiales', p:'Los <mark>materiales</mark> son sustancias que utilizamos para fabricar objetos. Pueden ser <mark>naturales</mark> o <mark>artificiales</mark>.'},
+      {h:'Materiales naturales', p:'Se usan tal y como están en la naturaleza o tras ligeras transformaciones:',
+        extra:'<div class="senses"><b>Origen animal</b><span>seda, lana y cuero.</span><b>Origen vegetal</b><span>madera y algodón.</span><b>Origen mineral</b><span>rocas como el granito o el mármol.</span></div>'},
+      {h:'Materiales artificiales', p:'Se elaboran a partir de sustancias de la naturaleza llamadas <mark>materias primas</mark>. El papel se obtiene de la madera, el vidrio de la arena y la mayoría de los plásticos, del petróleo.'},
+      {h:'Propiedades', p:'Cada material tiene propiedades útiles:',
+        extra:'<div class="senses"><b>Frágil</b><span>se rompe con facilidad (vidrio).</span><b>Flexible</b><span>se dobla sin romperse (tela).</span><b>Ligero</b><span>pesa poco (aluminio).</span><b>Resistente</b><span>soporta mucha fuerza (hormigón).</span><b>Elástico</b><span>recupera su forma (goma).</span><b>Impermeable</b><span>no deja pasar los líquidos (algunos plásticos).</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿De qué origen es cada material natural?', bins:['Animal','Vegetal','Mineral'],
+        items:[['Lana',0],['Seda',0],['Cuero',0],['Madera',1],['Algodón',1],['Granito',2],['Mármol',2]],
+        hint:'La lana viene de las ovejas y el algodón, de una planta.'},
+      {t:'classify', q:'¿Es un material natural o artificial?', bins:['Natural','Artificial'],
+        items:[['Madera',0],['Papel',1],['Lana',0],['Vidrio',1],['Plástico',1],['Mármol',0]],
+        hint:'Los artificiales se fabrican a partir de materias primas.'},
+      {t:'match', q:'Une cada material con su materia prima.', pairs:[['Papel','Madera'],['Vidrio','Arena'],['Plástico','Petróleo']], hint:'Repasa la tarjeta de los materiales artificiales.'},
+      {t:'match', q:'Une cada propiedad con lo que significa.', pairs:[['Frágil','Se rompe con facilidad'],['Flexible','Se dobla sin romperse'],['Ligero','Pesa poco'],['Resistente','Soporta mucha fuerza'],['Elástico','Recupera su forma'],['Impermeable','No deja pasar los líquidos']], hint:'Repasa la tarjeta de las propiedades.'},
+      {t:'mc', q:'¿Qué propiedad necesita la madera de una estantería llena de libros?', opts:['Resistencia','Elasticidad','Fragilidad'], a:0, hint:'Tiene que soportar mucho peso.'},
+      {t:'mc', q:'¿Qué propiedad necesita la madera de un arco para lanzar flechas?', opts:['Flexibilidad','Fragilidad','Impermeabilidad'], a:0, hint:'Tiene que doblarse sin romperse.'},
+      {t:'mc', q:'¿Por qué los paraguas se hacen de plástico o de tela especial?', opts:['Porque son impermeables','Porque son frágiles','Porque son muy pesados'], a:0, hint:'No deben dejar pasar el agua.'},
+      {t:'mc', q:'¿Qué pasaría si un puente fuera de goma?', opts:['Se deformaría con el peso','Sería más resistente','No pasaría nada'], a:0, hint:'La goma es elástica, no resistente.'},
+      {t:'tf', q:'Un vaso de vidrio es más frágil que un vaso de plástico.', a:true, hint:'El vidrio se rompe con facilidad.'}
+    ]
+  },
+  {
+    id:'mat3c', badge:'Maestro del termómetro', title:'Caliente, caliente', short:'El calor y la temperatura', pages:'Págs. 86-87',
+    color:'--food', icon:'flame',
+    learn:[
+      {h:'¿Qué es el calor?', p:'Cuando algo frío y algo caliente están cerca, el <mark>calor pasa</mark> de lo que está más caliente a lo que está más frío. El pan tostado caliente funde la mantequilla; el refresco da calor al hielo y por eso se enfría.'},
+      {h:'Conductores y aislantes', p:'El calor no se transmite igual en todos los materiales.',
+        extra:'<div class="senses"><b>Conductores</b><span>transmiten el calor con facilidad: los metales.</span><b>Aislantes</b><span>no lo transmiten bien: vidrio, madera y plásticos.</span></div>'},
+      {h:'La temperatura', p:'La <mark>temperatura</mark> indica exactamente cómo de caliente está algo. Se mide en <mark>grados Celsius (°C)</mark> con un <mark>termómetro</mark>.'},
+      {h:'Algunas temperaturas', p:'Para recordar:',
+        extra:'<div class="senses"><b>0 °C</b><span>el agua empieza a congelarse.</span><b>37 °C</b><span>nuestra temperatura habitual.</span><b>100 °C</b><span>el agua hierve.</span><b>Más de 1000 °C</b><span>la lava de los volcanes.</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'El calor pasa siempre…', opts:['de lo más caliente a lo más frío','de lo más frío a lo más caliente','solo entre metales'], a:0, hint:'El pan caliente da calor a la mantequilla.'},
+      {t:'mc', q:'Pones un cubito de hielo en un refresco. ¿Qué ocurre?', opts:['El refresco da calor al hielo y se enfría','El hielo da calor al refresco','No pasa calor'], a:0, hint:'El refresco está más caliente que el hielo.'},
+      {t:'classify', q:'¿Conductor o aislante del calor?', bins:['Conductor','Aislante'],
+        items:[['Hierro',0],['Aluminio',0],['Madera',1],['Vidrio',1],['Plástico',1],['Cobre',0]],
+        hint:'Los metales son conductores.'},
+      {t:'mc', q:'¿Por qué el mango de muchas sartenes es de madera o de plástico?', opts:['Porque son aislantes y no queman','Porque son conductores','Porque pesan más'], a:0, hint:'Los aislantes no transmiten bien el calor.'},
+      {t:'match', q:'Une cada temperatura con lo que ocurre.', pairs:[['0 °C','El agua empieza a congelarse'],['37 °C','Temperatura habitual del cuerpo'],['100 °C','El agua hierve'],['Más de 1000 °C','La lava de un volcán']], hint:'Repasa la tarjeta de las temperaturas.'},
+      {t:'order', q:'Ordena de más frío a más caliente.', items:['Hielo','Nuestro cuerpo','Agua hirviendo','Lava de un volcán'], hint:'0, 37, 100 y más de 1000 grados.'},
+      {t:'fill', q:'Completa.', parts:['La temperatura se mide con un ',0,' en grados ',1,'.'], answers:['termómetro','Celsius'], bank:['litros','reloj'], hint:'Se escribe °C.'},
+      {t:'mc', q:'¿Dónde servirías un chocolate muy caliente para no quemarte las manos?', opts:['En una taza de vidrio','En una taza metálica'], a:0, hint:'El vidrio es aislante y el metal, conductor.'},
+      {t:'tf', q:'Cuanto más caliente está un cuerpo, más alta es su temperatura.', a:true, hint:'Así funciona la temperatura.'}
+    ]
+  },
+  {
+    id:'mat3d', badge:'Gran transformador', title:'Transformaciones', short:'Cambios de estado, dilatación y cambios químicos', pages:'Págs. 88-89',
+    color:'--lung', icon:'drop',
+    learn:[
+      {h:'Los cambios de estado', p:'Un helado fuera del congelador se derrite: pasa de sólido a líquido. Es un <mark>cambio de estado</mark>. Unos ocurren cuando la materia <mark>recibe calor</mark> y otros cuando lo <mark>pierde</mark>.',
+        extra:'<div class="senses"><b>Fusión</b><span>de sólido a líquido.</span><b>Vaporización</b><span>de líquido a gas.</span><b>Condensación</b><span>de gas a líquido.</span><b>Solidificación</b><span>de líquido a sólido.</span></div>'},
+      {h:'La dilatación', p:'Cuando un objeto se calienta, aumenta su tamaño: se <mark>dilata</mark>. Cuando se enfría, recupera el tamaño que tenía.'},
+      {h:'Los cambios químicos', p:'En un <mark>cambio químico</mark>, unas sustancias se transforman en <mark>otras diferentes</mark>. Si quemas un papel, se convierte en humo y cenizas y ya no se puede recuperar.'},
+      {h:'Oxidación y combustión', p:'Dos cambios químicos:',
+        extra:'<div class="senses"><b>Oxidación</b><span>una sustancia se combina con el oxígeno del aire: el hierro se convierte en óxido rojizo.</span><b>Combustión</b><span>un combustible se combina muy rápido con el oxígeno y produce calor y gases.</span></div>'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada cambio de estado con lo que ocurre.', pairs:[['Fusión','De sólido a líquido'],['Vaporización','De líquido a gas'],['Condensación','De gas a líquido'],['Solidificación','De líquido a sólido']], hint:'Repasa la tarjeta de los cambios de estado.'},
+      {t:'classify', q:'¿Ocurre al recibir calor o al perder calor?', bins:['Recibe calor','Pierde calor'],
+        items:[['Fusión',0],['Vaporización',0],['Condensación',1],['Solidificación',1]], hint:'El hielo se funde al calentarse; el agua se congela al enfriarse.'},
+      {t:'match', q:'¿Qué cambio de estado ocurre?', pairs:[['Metes un vaso de agua en el congelador','Solidificación'],['Pones agua a hervir','Vaporización'],['Echas mantequilla en una sartén caliente','Fusión']], hint:'Piensa en qué estado empieza y en cuál termina.'},
+      {t:'mc', q:'Tiendes la ropa mojada y se seca. El agua ha pasado de líquido a gas. ¿Qué cambio es?', opts:['Vaporización','Fusión','Solidificación'], a:0, hint:'De líquido a gas.'},
+      {t:'mc', q:'Una bola de metal se calienta y ya no pasa por el aro. ¿Por qué?', opts:['Porque se ha dilatado','Porque se ha fundido','Porque se ha oxidado'], a:0, hint:'Al calentarse aumenta de tamaño.'},
+      {t:'classify', q:'¿Cambio de estado o cambio químico?', bins:['Cambio de estado','Cambio químico'],
+        items:[['Se derrite la cera de una vela',0],['Arde la mecha de una vela',1],['Se oxida un clavo',1],['Se congela el agua',0],['Se quema un papel',1],['Las gotas de cera se endurecen',0]],
+        hint:'En un cambio químico aparece una sustancia diferente.'},
+      {t:'mc', q:'El hierro se combina con el oxígeno del aire y se vuelve rojizo. Es una…', opts:['oxidación','fusión','dilatación'], a:0, hint:'Se forma óxido de hierro.'},
+      {t:'tf', q:'Después de quemar un papel, podemos recuperarlo.', a:false, hint:'Se ha transformado en humo y cenizas.'},
+      {t:'mc', q:'¿Cómo funciona un termómetro de vidrio?', opts:['El líquido se dilata al calentarse y sube','El vidrio se funde','El líquido se quema'], a:0, hint:'Recuerda la dilatación.'}
+    ]
+  },
+  {
+    id:'mat3e', badge:'Ingeniero de energía', title:'Central de energía', short:'Formas de energía y energía eléctrica', pages:'Págs. 90-91',
+    color:'--ok', icon:'star',
+    learn:[
+      {h:'¿Qué es la energía?', p:'La <mark>energía</mark> es una propiedad que tienen los cuerpos para <mark>producir cambios</mark>. El calor, por ejemplo, es una forma de energía que produce cambios de estado.'},
+      {h:'Formas de energía', p:'Hay varias formas:',
+        extra:'<div class="senses"><b>Térmica</b><span>la que se emite en forma de calor.</span><b>Luminosa</b><span>la de la luz, como la del Sol.</span><b>Química</b><span>almacenada en alimentos, combustibles o explosivos.</span><b>Eléctrica</b><span>la de los rayos, los cables, las pilas y las baterías.</span><b>Mecánica</b><span>la de los cuerpos en movimiento; también la del sonido.</span></div>'},
+      {h:'La energía se transforma', p:'Unas formas de energía se pueden <mark>transformar</mark> en otras. La energía eléctrica se transforma muy fácilmente: por eso es tan útil.'},
+      {h:'Las centrales eléctricas', p:'La electricidad llega a casa desde las <mark>centrales eléctricas</mark>:',
+        extra:'<div class="senses"><b>Térmicas</b><span>queman carbón, gasóleo o gas natural. Contaminan.</span><b>Solares</b><span>usan la luz o el calor del sol.</span><b>Hidroeléctricas</b><span>usan el agua en movimiento.</span><b>Eólicas</b><span>usan el viento.</span></div>'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Qué es la energía?', opts:['Una propiedad de los cuerpos para producir cambios','Un tipo de material','Un estado de la materia'], a:0, hint:'Gracias a ella ocurren cambios.'},
+      {t:'match', q:'Une cada forma de energía con su ejemplo.', pairs:[['Térmica','El calor de una hoguera'],['Luminosa','La luz del Sol'],['Química','Los alimentos'],['Eléctrica','Una pila'],['Mecánica','Un martillo en movimiento']], hint:'Repasa la tarjeta de las formas de energía.'},
+      {t:'match', q:'¿Qué forma de energía tiene sobre todo?', pairs:[['🎢 Una montaña rusa en marcha','Mecánica'],['🌱 La luz que usa una planta','Luminosa'],['⛽ La gasolina','Química']], hint:'La gasolina es un combustible.'},
+      {t:'match', q:'Une cada central con lo que emplea.', pairs:[['Térmica','Carbón, gasóleo o gas'],['Solar','La luz del sol'],['Hidroeléctrica','El agua en movimiento'],['Eólica','El viento']], hint:'Repasa la tarjeta de las centrales.'},
+      {t:'mc', q:'¿En qué se transforma la energía eléctrica en una farola?', opts:['En energía luminosa','En energía química','En energía mecánica'], a:0, hint:'La farola da luz.'},
+      {t:'mc', q:'¿En qué se transforma la energía eléctrica en un tren eléctrico?', opts:['En energía mecánica','En energía luminosa','En energía química'], a:0, hint:'El tren se mueve.'},
+      {t:'mc', q:'¿Qué centrales producen dióxido de carbono, que contamina?', opts:['Las térmicas','Las eólicas','Las solares'], a:0, hint:'Son las que queman combustibles.'},
+      {t:'classify', q:'¿Ahorra o malgasta electricidad?', bins:['Ahorra','Malgasta'],
+        items:[['Apagar la luz al salir',0],['Dejar la tele encendida sin verla',1],['Aprovechar la luz del día',0],['Dejar el cargador siempre enchufado',1]],
+        hint:'Hay que hacer un uso responsable.'},
+      {t:'tf', q:'El dióxido de carbono es el principal culpable del calentamiento global.', a:true, hint:'Se produce al quemar combustibles.'}
+    ]
+  }
+];
+const T5_JEFE = {
+  id:'reto-materia3', boss:true, villain:'Barón Apagón', badge:'Maestro de la materia', title:'El Gran Reto de la materia', short:'Repaso de todo el tema', pages:'Págs. 82-91',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es un estado, un cambio de estado o una forma de energía?', bins:['Estado','Cambio de estado','Forma de energía'],
+      items:[['Sólido',0],['Gaseoso',0],['Fusión',1],['Condensación',1],['Luminosa',2],['Mecánica',2]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+/* ---------- TEMA 6 · Código digital (libro, págs. 98-113) ---------- */
+const T6_MISIONES = [
+  {
+    id:'dig3a', badge:'Técnico informático', title:'Pieza a pieza', short:'El ordenador y la tableta', pages:'Págs. 100-101',
+    color:'--sense', icon:'gear',
+    learn:[
+      {h:'La torre', p:'En la <mark>torre</mark> o caja están las piezas necesarias para que el ordenador funcione. Dentro está el <mark>disco duro</mark>, donde se almacenan las imágenes y otros documentos.'},
+      {h:'Las partes del ordenador', p:'Cada elemento sirve para algo:',
+        extra:'<div class="senses"><b>Monitor</b><span>muestra textos, imágenes y vídeos. Lo que aparece al encender se llama escritorio.</span><b>Teclado</b><span>para escribir texto y números.</span><b>Ratón</b><span>mueve el cursor por la pantalla.</span><b>Cámara</b><span>para hacer videollamadas.</span><b>Impresora</b><span>saca copias en papel.</span><b>Altavoces o auriculares</b><span>emiten sonidos.</span><b>Cables</b><span>conectan unos elementos con otros.</span></div>'},
+      {h:'Las tabletas', p:'Son más pequeñas, pesan menos y pueden funcionar sin estar enchufadas. Los ordenadores son <mark>más potentes</mark>. Para que la tableta funcione hay que recargar su <mark>batería</mark>.'},
+      {h:'Pantalla táctil e iconos', p:'Las tabletas y los móviles tienen <mark>pantalla táctil</mark>: se controlan tocando la pantalla. Al pulsar un <mark>icono</mark> se abre un juego o una aplicación.'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada parte del ordenador con su función.', pairs:[['Teclado','Escribir texto'],['Ratón','Seleccionar un icono en la pantalla'],['Altavoces','Escuchar una canción'],['Cámara','Realizar una videollamada'],['Monitor','Ver un vídeo']], hint:'Repasa la tarjeta de las partes del ordenador.'},
+      {t:'mc', q:'¿Dónde se almacenan las imágenes y los documentos?', opts:['En el disco duro','En el ratón','En los altavoces'], a:0, hint:'Está dentro de la torre.'},
+      {t:'mc', q:'¿Qué parte permite obtener copias en papel?', opts:['La impresora','El monitor','La cámara'], a:0, hint:'Imprime los documentos.'},
+      {t:'fill', q:'Completa.', parts:['La ',0,' es la parte a la que se conectan los demás elementos. En su interior está el ',1,'.'], answers:['torre','disco duro'], bank:['impresora','teclado'], hint:'También se llama caja.'},
+      {t:'classify', q:'¿Es una característica del ordenador o de la tableta?', bins:['Ordenador','Tableta'],
+        items:[['Es más pesado',0],['Es más potente',0],['Puede funcionar sin estar enchufada',1],['Es táctil',1]],
+        hint:'La tableta es pequeña y se controla tocando la pantalla.'},
+      {t:'mc', q:'¿Qué significa que una pantalla es táctil?', opts:['Que se controla tocándola','Que es muy grande','Que necesita teclado'], a:0, hint:'Como la de los móviles.'},
+      {t:'mc', q:'¿Cómo se llama lo que aparece en el monitor al encender el ordenador?', opts:['Escritorio','Cursor','Icono'], a:0, hint:'Como la mesa de trabajo.'},
+      {t:'tf', q:'Para que una tableta funcione hay que recargar su batería.', a:true, hint:'Se conecta a un enchufe para recargarla.'},
+      {t:'pick', q:'Toca lo que emite sonidos.', opts:['Altavoces','Auriculares','Teclado','Ratón'], a:[0,1], hint:'Sirven para escuchar.'}
+    ]
+  },
+  {
+    id:'dig3b', badge:'Multitarea', title:'Una máquina, mil tareas', short:'Las funciones de los ordenadores', pages:'Págs. 102-103',
+    color:'--food', icon:'star',
+    learn:[
+      {h:'Para muchas tareas', p:'Los primeros ordenadores los usaban especialistas para hacer <mark>cálculos muy complicados</mark>. Hoy los usa casi todo el mundo.'},
+      {h:'Cinco funciones', p:'Los ordenadores sirven para:',
+        extra:'<div class="senses"><b>Crear contenido</b><span>escribir textos, dibujar, retocar fotos o vídeos.</span><b>Comunicarnos</b><span>enviar textos, imágenes o vídeos y hacer videollamadas.</span><b>Aprender</b><span>ver animaciones y vídeos y hacer actividades.</span><b>Divertirnos</b><span>leer, escuchar música, ver vídeos o jugar.</span><b>Trabajar</b><span>elaborar documentos y almacenar información.</span></div>'},
+      {h:'Las aplicaciones', p:'Para trabajar con un ordenador hay que instalar <mark>aplicaciones</mark> o <mark>programas</mark>. Por ejemplo, una aplicación para escribir documentos.'},
+      {h:'Cuidado con las pantallas', p:'No estés mucho tiempo seguido mirando la pantalla. <mark>Relaja la vista</mark> de vez en cuando y alterna el trabajo con pantallas y sin ellas.'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Para qué se está usando el ordenador?', bins:['Crear','Comunicarse','Divertirse'],
+        items:[['Escribir un cuento',0],['Hacer una videollamada',1],['Jugar a un videojuego',2],['Retocar una fotografía',0],['Enviar un mensaje',1],['Escuchar música',2]],
+        hint:'Crear es hacer algo nuevo: un texto, un dibujo…'},
+      {t:'pick', q:'Toca las cinco funciones de los ordenadores.', opts:['Crear','Comunicarse','Aprender','Divertirse','Trabajar','Cocinar'], a:[0,1,2,3,4], hint:'Un ordenador no cocina.'},
+      {t:'mc', q:'¿Para qué se usaban los primeros ordenadores?', opts:['Para hacer cálculos muy complicados','Para jugar','Para hacer videollamadas'], a:0, hint:'Los usaban especialistas.'},
+      {t:'mc', q:'¿Qué hay que instalar para trabajar con un ordenador?', opts:['Aplicaciones o programas','Más cables','Otra pantalla'], a:0, hint:'Por ejemplo, una para escribir documentos.'},
+      {t:'mc', q:'¿Por qué es útil un ordenador en una tienda?', opts:['Para almacenar información y comunicarse con clientes','Para decorar','Para dar luz'], a:0, hint:'Es la función de trabajar.'},
+      {t:'pick', q:'Toca lo que cuida tu vista.', opts:['Relajar la vista de vez en cuando','Alternar trabajo con pantallas y sin ellas','Mirar la pantalla durante horas sin parar'], a:[0,1], hint:'No hay que estar mucho tiempo seguido.'},
+      {t:'tf', q:'Con un ordenador podemos aprender viendo vídeos y haciendo actividades.', a:true, hint:'Es la función de aprender.'},
+      {t:'mc', q:'Un médico mira una radiografía en una tableta. ¿Qué función es?', opts:['Trabajar','Divertirse','Crear dibujos animados'], a:0, hint:'La usa en su profesión.'}
+    ]
+  },
+  {
+    id:'dig3c', badge:'Navegante experto', title:'La gran red', short:'Internet y sus usos', pages:'Págs. 104-105',
+    color:'--lung', icon:'wifi',
+    learn:[
+      {h:'¿Qué es internet?', p:'Los ordenadores se pueden conectar unos con otros formando <mark>redes</mark>. <mark>Internet</mark> está formada por millones de ordenadores de todo el mundo conectados entre sí y con otros aparatos: tabletas, móviles, televisores o videoconsolas.'},
+      {h:'Los usos de internet', p:'Gracias a internet podemos:',
+        extra:'<div class="senses"><b>Buscar información</b><span>en las páginas web.</span><b>Comunicarnos</b><span>enviando texto, fotos o vídeos.</span><b>Comprar</b><span>en empresas de todo el mundo.</span><b>Hacer gestiones</b><span>con bancos o ayuntamientos sin ir a ellos.</span><b>Divertirnos</b><span>con series, películas o videojuegos.</span><b>Trabajar</b><span>desde casa.</span></div>'},
+      {h:'Noticias falsas', p:'En internet es muy fácil publicar textos, fotos o vídeos. Algunas personas la usan para propagar <mark>noticias falsas</mark>. ¡No creas que es cierto todo lo que veas o leas!'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Qué es internet?', opts:['Millones de ordenadores conectados entre sí','Un ordenador muy grande','Una aplicación de mensajes'], a:0, hint:'Es una red de redes.'},
+      {t:'pick', q:'Toca los aparatos que pueden conectarse a internet.', opts:['Tableta','Teléfono móvil','Televisor','Videoconsola','Un libro de papel'], a:[0,1,2,3], hint:'Un libro de papel no se conecta.'},
+      {t:'match', q:'Une cada uso de internet con su ejemplo.', pairs:[['Buscar información','Leer una página web sobre los volcanes'],['Comunicarnos','Enviar una foto a la familia'],['Comprar','Pedir unos zapatos en una tienda en línea'],['Divertirnos','Ver una película'],['Trabajar','Reunirse por videollamada desde casa']], hint:'Repasa la tarjeta de los usos.'},
+      {t:'mc', q:'¿Qué es una red de ordenadores?', opts:['Varios ordenadores conectados entre sí','Un ordenador roto','Una pantalla táctil'], a:0, hint:'Así pueden compartir información.'},
+      {t:'mc', q:'Lees una noticia muy rara en internet. ¿Qué haces?', opts:['Compruebo si es cierta y pregunto a un adulto','Me la creo','Se la envío a todo el mundo'], a:0, hint:'Hay noticias falsas.'},
+      {t:'tf', q:'Todo lo que se publica en internet es verdad.', a:false, hint:'Algunas personas propagan noticias falsas.'},
+      {t:'mc', q:'Hacer un trámite del banco sin ir a la oficina es…', opts:['realizar gestiones','divertirse','buscar información'], a:0, hint:'También se puede con el ayuntamiento.'},
+      {t:'tf', q:'Gracias a internet muchas personas pueden trabajar desde casa.', a:true, hint:'No necesitan acudir a su lugar de trabajo.'}
+    ]
+  },
+  {
+    id:'dig3d', badge:'Escudo digital', title:'Escudo digital', short:'Los riesgos del mundo digital', pages:'Págs. 106-107',
+    color:'--ok', icon:'shield',
+    learn:[
+      {h:'Ciberacoso', p:'Es el envío de mensajes con <mark>amenazas o insultos</mark> por internet. Para evitarlo: no dar datos personales, bloquear contactos y <mark>hablar con la familia</mark> u otras personas adultas.'},
+      {h:'Virus', p:'Los <mark>virus</mark> dañan el ordenador o el teléfono: borran datos o lo dejan inutilizable. Para evitarlos: visitar solo páginas de confianza, no abrir mensajes de desconocidos y usar un <mark>antivirus</mark>.'},
+      {h:'Adicción', p:'Se produce cuando una persona pasa <mark>demasiado tiempo</mark> con el ordenador o el teléfono y desatiende a su familia, sus amistades o sus obligaciones. Para evitarla: controlar el tiempo de uso y hacer deporte, leer o jugar con amigos.'},
+      {h:'Contenidos inadecuados', p:'En internet hay información ilegal o <mark>no adecuada para menores</mark>. Para evitarla: páginas de confianza, <mark>filtros</mark> y hablar con una persona adulta si ves algo extraño.'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada riesgo con lo que es.', pairs:[['Ciberacoso','Mensajes con amenazas o insultos'],['Virus','Daña el ordenador o borra datos'],['Adicción','Pasar demasiado tiempo con las pantallas'],['Contenidos inadecuados','Información no apta para menores']], hint:'Repasa las tarjetas.'},
+      {t:'match', q:'Une cada riesgo con una forma de evitarlo.', pairs:[['Ciberacoso','No dar datos personales y bloquear contactos'],['Virus','Instalar un antivirus'],['Adicción','Controlar el tiempo de uso'],['Contenidos inadecuados','Emplear filtros']], hint:'Repasa las tarjetas.'},
+      {t:'mc', q:'Un compañero recibe insultos por internet. ¿Qué debe hacer?', opts:['Contárselo a su familia o a un adulto','Contestar con más insultos','No decir nada'], a:0, hint:'Los adultos pueden ayudar.'},
+      {t:'pick', q:'Toca lo que ayuda a evitar los virus.', opts:['Visitar solo páginas de confianza','No abrir mensajes de desconocidos','Instalar un antivirus','Abrir documentos de origen desconocido'], a:[0,1,2], hint:'Lo desconocido puede traer virus.'},
+      {t:'mc', q:'Encuentras una página web con contenido que te asusta. ¿Qué haces?', opts:['La cierro y se lo cuento a un adulto','Sigo mirando','Se la enseño a mis amigos'], a:0, hint:'Habla con una persona adulta.'},
+      {t:'classify', q:'¿Es un uso seguro o un riesgo?', bins:['Uso seguro','Riesgo'],
+        items:[['Dar tu dirección a un desconocido',1],['Pedir ayuda a un adulto',0],['Jugar con la tableta toda la tarde y toda la noche',1],['Usar páginas de confianza',0],['Abrir un mensaje de un desconocido',1]],
+        hint:'Piensa en los cuatro riesgos.'},
+      {t:'pick', q:'Toca buenas formas de ocupar el tiempo libre sin pantallas.', opts:['Practicar deporte','Leer','Jugar con amigas y amigos','Mirar el móvil mientras estudias'], a:[0,1,2], hint:'Hay que limitar el uso del móvil al estudiar.'},
+      {t:'tf', q:'Es buena idea dar tus datos personales al usar internet.', a:false, hint:'No hay que proporcionar datos personales.'}
+    ]
+  }
+];
+const T6_JEFE = {
+  id:'reto-digital3', boss:true, villain:'Troyano Tramposo', badge:'Guardián digital', title:'El Gran Reto digital', short:'Repaso de todo el tema', pages:'Págs. 100-107',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es una parte del ordenador, un uso de internet o un riesgo?', bins:['Parte del ordenador','Uso de internet','Riesgo'],
+      items:[['Teclado',0],['Monitor',0],['Comprar',1],['Buscar información',1],['Ciberacoso',2],['Virus',2]],
+      hint:'Repasa las misiones del tema.'}
+  ]
+};
+
+const CURSO = {
+  asignatura: 'Ciencias de la Naturaleza 3',
+  /* Situaciones de aprendizaje (con títulos propios): agrupan los temas en el mapa */
+  situaciones: [
+    { title:'Base de entrenamiento', temas:['cuerpo3','animales3'] },
+    { title:'Rescate en la naturaleza', temas:['vertebrados3','ecosistemas3'] },
+    { title:'Taller de inventos', temas:['materia3','ordenadores3'] }
+  ],
+  temas: [
+    { id:'cuerpo3', n:1, title:'Agentes del cuerpo humano', short:'Funciones vitales, órganos, movimiento, etapas y salud', pages:'Págs. 6-23',
+      color:'--lung', icon:'person', map:'cuerpo', starsBadge:'Constelación humana',
+      missions: T1_MISIONES, boss: T1_JEFE,
+      /* Minijuego de premio: se desbloquea al vencer al jefe del tema (ok = respuesta correcta) */
+      minijuego: { tipo:'carrera', titulo:'Carrera saludable', preguntas:[
+        {q:'¿Cuántas horas conviene dormir a tu edad?', ok:'Unas 10 horas', no:'Unas 5 horas'},
+        {q:'¿Qué hábito ayuda a evitar enfermedades?', ok:'La higiene', no:'Comer golosinas'},
+        {q:'¿Cómo debes sentarte en la silla?', ok:'Con la espalda recta', no:'Encorvado'},
+        {q:'¿Qué es el ocio?', ok:'Lo que hacemos en el tiempo libre', no:'Hacer los deberes'},
+        {q:'¿Qué mejora nuestra salud?', ok:'Hacer ejercicio a menudo', no:'Estar siempre sentado'},
+        {q:'¿Qué hay que hacer con la fruta antes de comerla?', ok:'Lavarla', no:'Guardarla en la mochila'},
+        {q:'Cuando tenemos salud, estamos…', ok:'Alegres y relajados', no:'Cansados y tristes'} ] } },
+    { id:'animales3', n:2, title:'Patrulla animal', short:'Funciones vitales, vertebrados, moluscos e insectos', pages:'Págs. 24-43',
+      color:'--ok', icon:'paw', map:'bosque', starsBadge:'Estrella salvaje',
+      missions: T2_MISIONES, boss: T2_JEFE,
+      /* Minijuego de premio: llevar cada animal al refugio de su grupo (g = posición del refugio, empezando en 0) */
+      minijuego: { tipo:'rescate', titulo:'Rescate en el bosque', refugios:['Vertebrados','Moluscos','Insectos'], animales:[
+        {e:'🦅', n:'Águila', g:0}, {e:'🐸', n:'Rana', g:0}, {e:'🦎', n:'Lagartija', g:0}, {e:'🦊', n:'Zorro', g:0}, {e:'🐟', n:'Sardina', g:0},
+        {e:'🐌', n:'Caracol', g:1}, {e:'🐙', n:'Pulpo', g:1}, {e:'🦑', n:'Calamar', g:1}, {e:'🦪', n:'Ostra', g:1},
+        {e:'🦋', n:'Mariposa', g:2}, {e:'🐜', n:'Hormiga', g:2}, {e:'🐝', n:'Abeja', g:2}, {e:'🐞', n:'Mariquita', g:2}, {e:'🦟', n:'Mosquito', g:2} ] } },
+    { id:'vertebrados3', n:3, title:'Los de la columna', short:'Mamíferos, aves, reptiles, anfibios, peces y su importancia', pages:'Págs. 44-59',
+      color:'--food', icon:'feather', map:'rio', starsBadge:'Manada de estrellas',
+      missions: T3_MISIONES, boss: T3_JEFE,
+      /* Minijuego de premio: parejas de cartas (en cada partida salen 6 al azar) */
+      minijuego: { tipo:'memoria', titulo:'Parejas de vertebrados', parejas:[
+        ['🐻 Mamíferos','Pelo y leche'], ['🦅 Aves','Plumas y pico'], ['🦎 Reptiles','Escamas y pulmones'], ['🐸 Anfibios','Piel desnuda'],
+        ['🐟 Peces','Aletas y branquias'], ['🦇 Murciélago','Mamífero que vuela'], ['Renacuajo','Cría de la rana'], ['Alevín','Cría de un pez'] ] } },
+    { id:'ecosistemas3', n:4, title:'Redes de la vida', short:'Ecosistemas, cadenas alimentarias y relaciones', pages:'Págs. 60-75',
+      color:'--virus', icon:'tree', map:'mundo', starsBadge:'Bosque de estrellas',
+      missions: T4_MISIONES, boss: T4_JEFE,
+      /* Minijuego de premio: llevar cada animal a su ecosistema (g = posición del refugio, empezando en 0) */
+      minijuego: { tipo:'rescate', titulo:'Cada uno a su hogar', refugios:['Bosque','Pradera','Desierto','Zona polar'],
+        intro:'¡Estos animales se han perdido! Acércate a cada uno para recogerlo y llévalo a su ecosistema antes de que se acabe el tiempo. ¡Cuidado con Contaminator!',
+        animales:[
+        {e:'🐿️', n:'Ardilla', g:0}, {e:'🐻', n:'Oso pardo', g:0}, {e:'🐦', n:'Pájaro carpintero', g:0},
+        {e:'🐘', n:'Elefante', g:1}, {e:'🦓', n:'Cebra', g:1}, {e:'🦁', n:'León', g:1},
+        {e:'🐪', n:'Camello', g:2}, {e:'🦂', n:'Escorpión', g:2},
+        {e:'🐻‍❄️', n:'Oso polar', g:3}, {e:'🦭', n:'Foca', g:3}, {e:'🐧', n:'Pingüino', g:3} ] } },
+    { id:'materia3', n:5, title:'Taller de la materia', short:'Materia, materiales, calor, cambios y energía', pages:'Págs. 80-97',
+      color:'--sense', icon:'flame', map:'energia', starsBadge:'Chispa estelar',
+      missions: T5_MISIONES, boss: T5_JEFE,
+      /* Minijuego de premio: atrapar solo lo que pide cada ronda (ok = se atrapa, no = se deja caer) */
+      minijuego: { tipo:'lluvia', titulo:'Lluvia de materia', fondo:'lab', necesarios:5, rondas:[
+        { meta:'Atrapa los SÓLIDOS', ok:[{e:'🪨',n:'Piedra'},{e:'🥄',n:'Cuchara'},{e:'🧊',n:'Hielo'},{e:'🔑',n:'Llave'},{e:'🪑',n:'Silla'}],
+          no:[{e:'💧',n:'Agua'},{e:'🥛',n:'Leche'},{e:'💨',n:'Aire'},{e:'♨️',n:'Vapor'},{e:'🧃',n:'Zumo'}] },
+        { meta:'Atrapa los LÍQUIDOS', ok:[{e:'💧',n:'Agua'},{e:'🥛',n:'Leche'},{e:'🧃',n:'Zumo'},{e:'🥤',n:'Refresco'},{e:'🍵',n:'Té'}],
+          no:[{e:'🪨',n:'Piedra'},{e:'🧊',n:'Hielo'},{e:'💨',n:'Aire'},{e:'♨️',n:'Vapor'},{e:'🔑',n:'Llave'}] },
+        { meta:'Atrapa los materiales NATURALES', ok:[{e:'🌳',n:'Madera'},{e:'🧶',n:'Lana'},{e:'🪨',n:'Granito'},{e:'👞',n:'Cuero'},{e:'🧵',n:'Algodón'}],
+          no:[{e:'📄',n:'Papel'},{e:'🧪',n:'Vidrio'},{e:'🧴',n:'Plástico'}] } ] } },
+    { id:'ordenadores3', n:6, title:'Código digital', short:'Ordenadores, internet y riesgos digitales', pages:'Págs. 98-113',
+      color:'--bone', icon:'wifi', map:'digital', starsBadge:'Red de estrellas',
+      missions: T6_MISIONES, boss: T6_JEFE,
+      /* Minijuego de premio: carrera con hábitos digitales seguros (buenos) y riesgos (malos) */
+      minijuego: { tipo:'carrera', titulo:'Carrera segura', fondo:'digital',
+        intro:'Corre por la red, recoge los hábitos que te protegen y salta los riesgos. En las puertas de pregunta, salta para cruzar la de arriba o sigue por el suelo para la de abajo.',
+        fin:'Recuerda: no des datos personales, usa páginas de confianza y cuéntale a un adulto lo que te preocupe.',
+        buenos:[{e:'🛡️',n:'Antivirus'},{e:'🔒',n:'Datos protegidos'},{e:'👨‍👩‍👧',n:'Hablar con la familia'},{e:'⏰',n:'Tiempo controlado'},{e:'✅',n:'Página de confianza'},{e:'⚽',n:'Hacer deporte'},{e:'📚',n:'Leer'}],
+        malos:[{e:'🦠',n:'Virus'},{e:'📩',n:'Mensaje de un desconocido'},{e:'😡',n:'Insultos'},{e:'📢',n:'Publicidad rara'},{e:'🕹️',n:'Jugar sin parar'},{e:'🤥',n:'Noticia falsa'}],
+        preguntas:[
+        {q:'¿Qué haces si recibes insultos por internet?', ok:'Contárselo a un adulto', no:'Contestar con insultos'},
+        {q:'¿Qué protege el ordenador de los virus?', ok:'Un antivirus', no:'Un teclado nuevo'},
+        {q:'¿Debes dar tus datos personales en internet?', ok:'No', no:'Sí, a cualquiera'},
+        {q:'¿Qué es internet?', ok:'Ordenadores conectados', no:'Un solo ordenador'},
+        {q:'¿Dónde se guardan los documentos?', ok:'En el disco duro', no:'En el ratón'},
+        {q:'¿Todo lo que hay en internet es verdad?', ok:'No, hay noticias falsas', no:'Sí, todo'},
+        {q:'¿Con qué se escribe en el ordenador?', ok:'Con el teclado', no:'Con el monitor'} ] } }
+  ]
+};
+
+/* ---------- ESQUEMAS: uno por misión, como último reto ----------
+   tipo 'arbol': título arriba y ramas con sus detalles. tipo 'flujo': pasos en orden.
+   [[palabra]] es un hueco que el alumno completa. «extra» son palabras para despistar. */
+const ESQUEMAS = {
+  /* Tema 1 */
+  vida3: { titulo:'Somos seres [[vivos]]', nodos:[
+    {txt:'Funciones [[vitales]]', hijos:[{txt:'[[Nutrición]]: tomar alimentos'},{txt:'[[Relación]]: responder al entorno'},{txt:'[[Reproducción]]: tener hijos'}]},
+    {txt:'[[Emociones]]', hijos:[{txt:'Alegría, tristeza, [[enfado]] y sorpresa'}]} ], extra:['huesos','branquias'] },
+  mapa3: { titulo:'Nuestro [[cuerpo]]', nodos:[
+    {txt:'Partes', hijos:[{txt:'[[Cabeza]]'},{txt:'[[Tronco]]: tórax y abdomen'},{txt:'[[Extremidades]]: brazos y piernas'}]},
+    {txt:'Órganos [[internos]]', hijos:[{txt:'[[Corazón]] y pulmones'},{txt:'[[Cerebro]] y nervios'},{txt:'[[Estómago]] e intestino'}]} ], extra:['alas','aletas'] },
+  motor3: { titulo:'Nos [[movemos]]', nodos:[
+    {txt:'El [[esqueleto]]', hijos:[{txt:'[[Huesos]]: rígidos y resistentes'},{txt:'[[Articulaciones]]: uniones de los huesos'}]},
+    {txt:'La [[musculatura]]', hijos:[{txt:'Los músculos se encogen y se [[estiran]]'},{txt:'Ej.: bíceps y [[gemelo]]'}]} ], extra:['fémur','pulmón'] },
+  etapas3: { tipo:'flujo', titulo:'Las [[etapas]] de la vida', nodos:[
+    {txt:'[[Infancia]]: de 0 a 12 años'}, {txt:'[[Adolescencia]]: de 12 a 16 años'}, {txt:'Edad [[adulta]]: de 16 a 65 años'}, {txt:'[[Ancianidad]]: desde los 65 años'} ], extra:['bebé','juventud'] },
+  bienestar3: { titulo:'Hábitos [[saludables]]', nodos:[
+    {txt:'[[Higiene]]', hijos:[{txt:'Evita [[enfermedades]]'}]},
+    {txt:'[[Ejercicio]] físico'},
+    {txt:'Ocio y [[descanso]]', hijos:[{txt:'Dormir unas [[diez]] horas'}]},
+    {txt:'[[Alimentación]] adecuada'},
+    {txt:'Buena [[postura]]'} ], extra:['cinco','pantallas'] },
+  /* Tema 2 */
+  superviv3: { titulo:'Tipos de [[animales]]', nodos:[
+    {txt:'Según su [[alimentación]]', hijos:[{txt:'[[Herbívoros]]'},{txt:'[[Carnívoros]]'},{txt:'[[Omnívoros]]'}]},
+    {txt:'Según su [[reproducción]]', hijos:[{txt:'[[Ovíparos]]: ponen huevos'},{txt:'[[Vivíparos]]: nacen del vientre'}]} ], extra:['vertebrados','branquias'] },
+  censo3: { titulo:'Según su [[esqueleto]]', nodos:[
+    {txt:'[[Vertebrados]]', hijos:[{txt:'Tienen [[columna]] vertebral'},{txt:'Peces, anfibios, reptiles, aves y [[mamíferos]]'}]},
+    {txt:'[[Invertebrados]]', hijos:[{txt:'No tienen [[huesos]]'},{txt:'Esponjas, medusas, gusanos, [[moluscos]]...'}]} ], extra:['plumas','pulmones'] },
+  blandos3: { titulo:'Los [[moluscos]]', nodos:[
+    {txt:'Cuerpo [[blando]]'},
+    {txt:'[[Bivalvos]]: dos conchas', hijos:[{txt:'[[Mejillón]], almeja'}]},
+    {txt:'[[Gasterópodos]]: concha en espiral', hijos:[{txt:'[[Caracol]], babosa'}]},
+    {txt:'[[Cefalópodos]]: tentáculos', hijos:[{txt:'[[Pulpo]], calamar'}]} ], extra:['plumas','escarabajo'] },
+  armadura3: { titulo:'Los [[insectos]]', nodos:[
+    {txt:'Cuerpo: cabeza, [[tórax]] y abdomen'},
+    {txt:'Dos [[antenas]] y seis [[patas]]'},
+    {txt:'[[Metamorfosis]]', hijos:[{txt:'Huevo, [[oruga]], crisálida, mariposa'}]},
+    {txt:'Son [[artrópodos]]: patas con articulaciones'} ], extra:['ocho','concha'] },
+  /* Tema 3 */
+  vert3a: { titulo:'Los [[mamíferos]]', nodos:[
+    {txt:'Piel cubierta de [[pelo]]'},
+    {txt:'Respiran con [[pulmones]]'},
+    {txt:'Las crías maman [[leche]]'},
+    {txt:'Grupos', hijos:[{txt:'Carnívoros, con [[pezuñas]] y primates'},{txt:'[[Murciélagos]], delfines y ballenas'}]} ], extra:['plumas','branquias'] },
+  vert3b: { titulo:'Aves y [[reptiles]]', nodos:[
+    {txt:'[[Aves]]', hijos:[{txt:'[[Plumas]], alas y [[pico]]'},{txt:'Cuidan a sus [[polluelos]]'}]},
+    {txt:'Reptiles', hijos:[{txt:'Piel con [[escamas]]'},{txt:'Lagartos, tortugas, [[serpientes]] y cocodrilos'}]} ], extra:['pelo','aletas'] },
+  vert3c: { titulo:'Anfibios y [[peces]]', nodos:[
+    {txt:'[[Anfibios]]', hijos:[{txt:'Piel [[desnuda]]'},{txt:'Sus crías son [[renacuajos]]'},{txt:'Cambian por [[metamorfosis]]'}]},
+    {txt:'Peces', hijos:[{txt:'[[Escamas]] y aletas'},{txt:'Respiran con [[branquias]]'},{txt:'Óseos y [[cartilaginosos]]'}]} ], extra:['plumas','pulmones'] },
+  vert3d: { titulo:'Los animales son [[importantes]]', nodos:[
+    {txt:'Para la [[naturaleza]]', hijos:[{txt:'Las [[abejas]] ayudan a las plantas'},{txt:'Los [[carroñeros]] limpian el campo'}]},
+    {txt:'Para las [[personas]]', hijos:[{txt:'[[Alimento]]: leche, huevos y miel'},{txt:'[[Compañía]]: perros y gatos'},{txt:'Materiales: [[lana]] y cuero'}]} ], extra:['plástico','petróleo'] },
+  /* Tema 4 */
+  eco3a: { titulo:'El [[ecosistema]]', nodos:[
+    {txt:'Seres [[vivos]]', hijos:[{txt:'Misma especie: [[población]]'},{txt:'Todas las poblaciones: [[comunidad]]'}]},
+    {txt:'Medio [[físico]]', hijos:[{txt:'Rocas, [[agua]] y aire'}]},
+    {txt:'[[Relaciones]] entre ellos'} ], extra:['ordenador','calor'] },
+  eco3b: { tipo:'flujo', titulo:'Una cadena [[alimentaria]]', nodos:[
+    {txt:'[[Productor]]: la hierba'}, {txt:'Consumidor [[primario]]: el conejo'}, {txt:'Consumidor [[secundario]]: el lince'},
+    {txt:'Varias cadenas forman una [[red]] alimentaria'} ], extra:['terciario','piedra'] },
+  eco3c: { titulo:'Relaciones entre [[especies]]', nodos:[
+    {txt:'[[Mutualismo]]: las dos ganan'},
+    {txt:'[[Comensalismo]]: una gana y la otra ni gana ni pierde'},
+    {txt:'[[Parasitismo]]: una gana y la otra pierde'},
+    {txt:'[[Competencia]]: las dos pierden'} ], extra:['sociedad','bandada'] },
+  eco3d: { titulo:'Principales [[ecosistemas]]', nodos:[
+    {txt:'[[Terrestres]]', hijos:[{txt:'[[Bosques]] y praderas'},{txt:'[[Desiertos]] y zonas polares'}]},
+    {txt:'[[Acuáticos]]', hijos:[{txt:'Agua [[dulce]]: ríos y lagunas'},{txt:'Agua [[salada]]: costa y mar abierto'}]} ], extra:['ciudad','volcán'] },
+  /* Tema 5 */
+  mat3a: { titulo:'La [[materia]]', nodos:[
+    {txt:'Propiedades', hijos:[{txt:'[[Masa]]: cantidad de materia'},{txt:'[[Volumen]]: espacio que ocupa'}]},
+    {txt:'Estados', hijos:[{txt:'[[Sólido]]: forma y volumen fijos'},{txt:'[[Líquido]]: toma la forma del recipiente'},{txt:'[[Gaseoso]]: ocupa todo el recipiente'}]} ], extra:['luz','música'] },
+  mat3b: { titulo:'Los [[materiales]]', nodos:[
+    {txt:'[[Naturales]]', hijos:[{txt:'Origen [[animal]]: lana'},{txt:'Origen [[vegetal]]: madera'},{txt:'Origen [[mineral]]: mármol'}]},
+    {txt:'[[Artificiales]]', hijos:[{txt:'Se hacen con [[materias primas]]'},{txt:'Papel, [[vidrio]] y plástico'}]} ], extra:['calor','energía'] },
+  mat3c: { titulo:'El [[calor]] y la temperatura', nodos:[
+    {txt:'El calor pasa de lo [[caliente]] a lo frío', hijos:[{txt:'[[Conductores]]: los metales'},{txt:'[[Aislantes]]: madera, vidrio y plástico'}]},
+    {txt:'La [[temperatura]]', hijos:[{txt:'Se mide con el [[termómetro]]'},{txt:'En [[grados]] Celsius'}]} ], extra:['litros','masa'] },
+  mat3d: { titulo:'La materia [[cambia]]', nodos:[
+    {txt:'Cambios de [[estado]]', hijos:[{txt:'[[Fusión]]: de sólido a líquido'},{txt:'[[Vaporización]]: de líquido a gas'},{txt:'[[Condensación]]: de gas a líquido'},{txt:'[[Solidificación]]: de líquido a sólido'}]},
+    {txt:'[[Dilatación]]: aumenta el tamaño con el calor'},
+    {txt:'Cambios [[químicos]]', hijos:[{txt:'Oxidación y [[combustión]]'}]} ], extra:['masa','volumen'] },
+  mat3e: { titulo:'La [[energía]]', nodos:[
+    {txt:'Formas', hijos:[{txt:'[[Térmica]]: calor'},{txt:'[[Luminosa]]: luz'},{txt:'[[Química]]: alimentos'},{txt:'[[Eléctrica]]: pilas'},{txt:'[[Mecánica]]: movimiento'}]},
+    {txt:'Centrales [[eléctricas]]', hijos:[{txt:'Térmicas, solares, hidroeléctricas y [[eólicas]]'}]} ], extra:['sólida','frágil'] },
+  /* Tema 6 */
+  dig3a: { titulo:'El [[ordenador]]', nodos:[
+    {txt:'[[Torre]]: dentro está el [[disco duro]]'},
+    {txt:'[[Monitor]]: muestra textos e imágenes'},
+    {txt:'[[Teclado]]: escribir'},
+    {txt:'[[Ratón]]: mover el cursor'},
+    {txt:'[[Impresora]]: copias en papel'},
+    {txt:'La [[tableta]] tiene pantalla [[táctil]]'} ], extra:['cámara','batería'] },
+  dig3b: { titulo:'Funciones de los [[ordenadores]]', nodos:[
+    {txt:'[[Crear]] contenido: textos y dibujos'},
+    {txt:'[[Comunicarnos]]: mensajes y videollamadas'},
+    {txt:'[[Aprender]]: vídeos y actividades'},
+    {txt:'[[Divertirnos]]: música y juegos'},
+    {txt:'[[Trabajar]]: documentos'},
+    {txt:'Se necesitan [[aplicaciones]] o programas'} ], extra:['cocinar','dormir'] },
+  dig3c: { titulo:'[[Internet]]', nodos:[
+    {txt:'Millones de ordenadores [[conectados]]'},
+    {txt:'Usos', hijos:[{txt:'Buscar [[información]]'},{txt:'[[Comunicarnos]]'},{txt:'[[Comprar]]'},{txt:'Hacer [[gestiones]]'},{txt:'Divertirnos y [[trabajar]]'}]},
+    {txt:'¡Cuidado con las noticias [[falsas]]!'} ], extra:['virus','teclado'] },
+  dig3d: { titulo:'Riesgos del mundo [[digital]]', nodos:[
+    {txt:'[[Ciberacoso]]', hijos:[{txt:'Hablar con la [[familia]]'}]},
+    {txt:'[[Virus]]', hijos:[{txt:'Instalar un [[antivirus]]'}]},
+    {txt:'[[Adicción]]', hijos:[{txt:'Controlar el [[tiempo]] de uso'}]},
+    {txt:'Contenidos [[inadecuados]]', hijos:[{txt:'Emplear [[filtros]]'}]} ], extra:['teclado','impresora'] }
+};
+CURSO.temas.forEach(t => (t.missions || []).forEach(m => {
+  const e = ESQUEMAS[m.id]; if (!e) return;
+  m.ch.push(Object.assign({ t:'esquema', tipo:'arbol', q:'Completa el esquema de la misión.', hint:'Repasa las tarjetas de la lección: el esquema las resume.' }, e));
+}));
+
+/* ---------- ASOCIACIÓN DE CADA TEMA CON EL CURRÍCULO ----------
+   criterios: los del tema (los que no tengan retos aparecen como «no evaluables en el juego»).
+   misiones:  criterio que evalúan todos los retos de esa misión (también el jefe final).
+   retos:     excepciones para un reto concreto, con la clave «misión#número» (el número empieza en 0). */
+const EVALUACION = {
+  cuerpo3: { criterios:['4.1','5.1','5.2'], saberes:['A.1.3','A.1.7'],
+    misiones:{ vida3:['5.1'], mapa3:['5.1'], motor3:['5.1'], etapas3:['5.1'], bienestar3:['4.1'], 'reto-cuerpo3':['5.1'] },
+    retos:{ 'vida3#5':['4.1'], 'vida3#6':['4.1'], 'vida3#7':['4.1'], 'mapa3#5':['5.2'], 'motor3#7':['5.2'], 'motor3#8':['5.2'] } },
+  animales3: { criterios:['5.1','5.2'], saberes:['A.2.2','A.1.1','A.1.3'],
+    misiones:{ superviv3:['5.1'], censo3:['5.1'], blandos3:['5.1'], armadura3:['5.1'], 'reto-animales3':['5.1'] },
+    retos:{ 'superviv3#4':['5.2'] } },
+  vertebrados3: { criterios:['5.1','5.2','5.3'], saberes:['A.2.2','A.2.1','A.1.1'],
+    misiones:{ vert3a:['5.1'], vert3b:['5.1'], vert3c:['5.1'], vert3d:['5.2'], 'reto-vert3':['5.1'] },
+    retos:{ 'vert3d#5':['5.3'], 'vert3d#6':['5.3'] } },
+  ecosistemas3: { criterios:['5.1','5.2','5.3'], saberes:['A.2.4','A.2.5','A.2.1'],
+    misiones:{ eco3a:['5.1'], eco3b:['5.2'], eco3c:['5.2'], eco3d:['5.1'], 'reto-eco3':['5.2'] } },
+  materia3: { criterios:['2.1','2.3','2.4','3.1','5.1','5.2','5.3'], saberes:['A.3.1','A.3.2','A.1.2','A.1.3'],
+    misiones:{ mat3a:['5.1'], mat3b:['5.1'], mat3c:['5.1'], mat3d:['5.1'], mat3e:['5.1'], 'reto-materia3':['5.1'] },
+    retos:{ 'mat3a#7':['2.1'], 'mat3b#4':['3.1'], 'mat3b#5':['3.1'], 'mat3b#6':['3.1'], 'mat3b#7':['2.1'], 'mat3c#3':['5.2'], 'mat3c#7':['2.4'],
+      'mat3d#4':['2.4'], 'mat3d#8':['5.2'], 'mat3e#4':['5.2'], 'mat3e#5':['5.2'], 'mat3e#7':['5.3'], 'mat3e#8':['5.3'] } },
+  ordenadores3: { criterios:['1.1','2.2','3.3','4.1'], saberes:['B.1.1','B.1.2'],
+    misiones:{ dig3a:['1.1'], dig3b:['1.1'], dig3c:['1.1'], dig3d:['1.1'], 'reto-digital3':['1.1'] },
+    retos:{ 'dig3c#4':['2.2'], 'dig3c#5':['2.2'], 'dig3d#2':['4.1'] } }
+};
+CURSO.temas.forEach(t => {
+  const e = EVALUACION[t.id]; if (!e) return;
+  t.criterios = e.criterios; t.saberes = e.saberes;
+  [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+    if (e.misiones && e.misiones[m.id]) m.cr = e.misiones[m.id];
+    (m.ch || []).forEach((r, i) => { const k = m.id + '#' + i; if (e.retos && e.retos[k]) r.cr = e.retos[k]; });
+    (m.extra || []).forEach((r, i) => { const k = m.id + '#x' + i; if (e.retos && e.retos[k]) r.cr = e.retos[k]; });
+  });
+});
