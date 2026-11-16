@@ -41,12 +41,12 @@ function cargarCurso(cid) {
 
 // Textos fijos de las fichas en cada idioma
 const TEXTOS = {
-  es: { nombre: 'Nombre', fecha: 'Fecha', tema: 'Tema', mision: 'Misión', libro: 'Libro', sol: 'Solucionario', juego: 'Exploradores de la Naturaleza', licencia: 'Licencia CC BY-NC-SA 4.0',
+  es: { nombre: 'Nombre', fecha: 'Fecha', tema: 'Tema', mision: 'Misión', libro: 'Libro', sol: 'Solucionario', juego: 'Viajeros del Tiempo', licencia: 'Licencia CC BY-NC-SA 4.0',
     autor: '© 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia',
     consigna: '<b>1.</b> Lee las palabras del recuadro. <b>2.</b> Escribe cada palabra en su hueco. <b>3.</b> Tacha la palabra cuando la uses.',
     dibujo: 'Haz un dibujo sobre este esquema.', auto: '¿Cómo lo he hecho?', colorea: 'Colorea una cara.', caras: ['¡Muy bien!', 'Bien', 'Tengo que repasar'],
     paginas: p => p.replace('Págs.', 'págs.') },
-  en: { nombre: 'Name', fecha: 'Date', tema: 'Topic', mision: 'Mission', libro: 'Book', sol: 'Answer key', juego: 'Nature Explorers', licencia: 'CC BY-NC-SA 4.0 licence',
+  en: { nombre: 'Name', fecha: 'Date', tema: 'Topic', mision: 'Mission', libro: 'Book', sol: 'Answer key', juego: 'Time Travellers', licencia: 'CC BY-NC-SA 4.0 licence',
     autor: '© 2026 Diego Alberto Moya Puerta, Primary School Teacher, Region of Murcia (Spain)',
     consigna: '<b>1.</b> Read the words in the box. <b>2.</b> Write each word in its gap. <b>3.</b> Tick the word when you use it.',
     dibujo: 'Draw a picture about this concept map.', auto: 'How did I do?', colorea: 'Colour a face.', caras: ['Very well!', 'Well', 'I need to practise'],
@@ -130,10 +130,11 @@ function ficha(tema, mision, k, e, resuelta) {
   </section>`;
 }
 
-const GLO = `<svg class="glo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="66" r="44" fill="#FF8A9A" stroke="#222" stroke-width="5"/>
-  <path d="M28 34q32-42 64 0z" fill="#F7E2A8" stroke="#222" stroke-width="4"/><rect x="18" y="30" width="84" height="9" rx="4.5" fill="#EBCB7A" stroke="#222" stroke-width="4"/>
-  <circle cx="46" cy="62" r="7" fill="#fff" stroke="#222" stroke-width="3"/><circle cx="74" cy="62" r="7" fill="#fff" stroke="#222" stroke-width="3"/>
-  <circle cx="47" cy="63" r="3.5" fill="#222"/><circle cx="75" cy="63" r="3.5" fill="#222"/><path d="M48 80q12 10 24 0" fill="none" stroke="#222" stroke-width="4.5" stroke-linecap="round"/></svg>`;
+const GLO = `<svg class="glo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="11" r="7" fill="none" stroke="#222" stroke-width="4"/><rect x="52" y="17" width="16" height="10" rx="3" fill="#EBCB7A" stroke="#222" stroke-width="4"/>
+  <circle cx="60" cy="70" r="44" fill="#FFD76A" stroke="#222" stroke-width="5"/><circle cx="60" cy="70" r="34" fill="#fff" stroke="#222" stroke-width="2.5"/>
+  <path d="M60 39v6M60 95v6M29 70h6M85 70h6" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="46" cy="64" r="7" fill="#fff" stroke="#222" stroke-width="3"/><circle cx="74" cy="64" r="7" fill="#fff" stroke="#222" stroke-width="3"/>
+  <circle cx="47" cy="65" r="3.5" fill="#222"/><circle cx="75" cy="65" r="3.5" fill="#222"/><path d="M48 81q12 10 24 0" fill="none" stroke="#222" stroke-width="4.5" stroke-linecap="round"/></svg>`;
 const CARA = n => {
   const boca = ['M14 25q8 8 16 0', 'M14 27h16', 'M14 29q8 -7 16 0'][n];
   return `<svg class="cara" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="#fff" stroke="#222" stroke-width="2.5"/><circle cx="15.5" cy="17" r="2.5" fill="#222"/><circle cx="28.5" cy="17" r="2.5" fill="#222"/><path d="${boca}" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></svg>`;

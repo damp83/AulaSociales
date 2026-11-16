@@ -3,24 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Exploradores de la Naturaleza</title>
+<title>Viajeros del Tiempo</title>
 <meta name="author" content="Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia">
+<meta name="description" content="Viajeros del Tiempo: videojuego educativo de Ciencias Sociales. Adaptación de «Exploradores de la Naturaleza» (https://github.com/damp83/AulaNaturales).">
 <meta name="license" content="CC BY-NC-SA 4.0 · https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Lilita+One&display=swap">
 <style>
-/* Layout: videojuego de un solo mundo (el interior del cuerpo, de noche): mapa de niveles sobre una silueta luminosa, pantallas a tamaño completo */
+/* Layout: videojuego de un solo mundo (un viaje en el tiempo, de noche): mapa de niveles, pantallas a tamaño completo */
 :root{
   color-scheme:dark;
-  --night:#0A1A36; --night-2:#10274D; --panel:#1B3A6B; --panel-2:#24497F; --edge:#06122A;
-  --ink:#FFFFFF; --ink-soft:#BFD3F2; --ink-dim:#7F98C2;
+  --night:#120F2E; --night-2:#241C55; --panel:#33287A; --panel-2:#443797; --edge:#0A0820;
+  --ink:#FFFFFF; --ink-soft:#D3CBF7; --ink-dim:#9A8FCF;
   --gold:#FFC93C; --gold-d:#C98A00;
-  --sense:#3FB6FF; --sense-d:#1A6FB0;
-  --bone:#FFD27A; --bone-d:#C08A2A;
-  --lung:#FF6B8B; --lung-d:#B8304F;
+  --sense:#3FC8E8; --sense-d:#16809C;
+  --bone:#F2D49B; --bone-d:#B58A3C;
+  --lung:#FF7A6B; --lung-d:#B83C2F;
   --food:#FF9F43; --food-d:#C2620E;
-  --virus:#8BE04E; --virus-d:#3E8A1C;
+  --virus:#C77DFF; --virus-d:#7A2FC2;
   --ok:#43D166; --ok-d:#1F8A3B; --bad:#FF5A5A; --bad-d:#B82424;
   --opt0:#D63B50; --opt0-d:#8E1F31; --opt1:#2079C7; --opt1-d:#0F4C85; --opt2:#F2B705; --opt2-d:#A67B00; --opt3:#2E9E3E; --opt3-d:#196626;
   --f-game:'Lilita One','Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;
@@ -538,10 +539,10 @@ td.num-c{font-variant-numeric:tabular-nums}
 <script>
 (function(){
   let pedido = new URLSearchParams(location.search).get('curso') || (location.hash.match(/^#curso-([\w-]+)/) || [])[1];
-  let guardado = null; try{ guardado = localStorage.getItem('exploradores-curso'); }catch(e){}
+  let guardado = null; try{ guardado = localStorage.getItem('viajeros-curso'); }catch(e){}
   const c = CURSOS.find(x => x.id === pedido) || CURSOS.find(x => x.id === guardado) || CURSOS[0];
   window.CURSO_ACTIVO = c;
-  try{ localStorage.setItem('exploradores-curso', c.id); }catch(e){}
+  try{ localStorage.setItem('viajeros-curso', c.id); }catch(e){}
   document.write('<script src="cursos/' + c.id + '/contenidos.js"><\/script>' + (c.ingles ? '<script src="cursos/' + c.id + '/contenidos-en.js"><\/script>' : ''));
 })();
 </script>
@@ -549,6 +550,16 @@ td.num-c{font-variant-numeric:tabular-nums}
 <script>
 /* ---------- Iconos ---------- */
 const ICONS = {
+  home:'<path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  castle:'<path d="M4 21V8l-1-1V3h3v2h2V3h3v2h2V3h3v2h2V3h3v4l-1 1v13z" transform="translate(1.2 0) scale(.9 1)"/><path d="M10 21v-5a2 2 0 0 1 4 0v5"/>',
+  coin:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.400-1.500-2.500-1.500-1.500 0-2.500.8-2.500 2s1 1.700 2.500 2 2.500.8 2.500 2-1 2-2.500 2c-1.100 0-2-.5-2.500-1.500M12 6v2M12 16v2"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+  mountain:'<path d="m2 20 7-12 4 6 2-3 7 9z"/><path d="m7 11.500 2 1.500 2-1.500"/>',
+  building:'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>',
+  bus:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M3 11h18M8 5v6M16 5v6"/><circle cx="7.500" cy="18.500" r="1.500"/><circle cx="16.500" cy="18.500" r="1.500"/>',
   eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   bone:'<g transform="rotate(-45 12 12)"><circle cx="5" cy="9.6" r="2.6"/><circle cx="5" cy="14.4" r="2.6"/><circle cx="19" cy="9.6" r="2.6"/><circle cx="19" cy="14.4" r="2.6"/><path d="M7.4 10.6h9.2M7.4 13.4h9.2"/></g>',
   lungs:'<path d="M12 3v9"/><path d="M12 10c-1.5 0-2.5.8-3.2 1.6M12 10c1.5 0 2.5.8 3.2 1.6"/><path d="M8.3 6.5C5.5 6.5 3 11 3 16.5 3 18.5 4 20 6 20s3-1.6 3-3.6V8c0-1-.2-1.5-.7-1.5z"/><path d="M15.7 6.5c2.8 0 5.3 4.5 5.3 10 0 2-1 3.5-3 3.5s-3-1.6-3-3.6V8c0-1 .2-1.5.7-1.5z"/>',
@@ -595,12 +606,12 @@ const AVATARS = [
   {id:'bip',  name:'Bip',  role:'Robot',       power:'Memoria de acero: nunca olvida una respuesta.', robot:true, outfit:'#6F86A3', pants:'#4B5E78', skin:'#B8C7DA'},
   {id:'rayo', name:'Rayo', role:'Superheroína',power:'Rápida como un rayo resolviendo retos.',      skin:'#C68642', outfit:'#2079C7', pants:'#16518A', hair:'#1B1B24'},
   {id:'kai',  name:'Kai',  role:'Ninja',       power:'Silencioso y concentrado: no se le escapa nada.', skin:'#F1C27D', outfit:'#24334F', pants:'#1A2640', hair:'#24334F'},
-  {id:'ada',  name:'Ada',  role:'Doctora',     power:'Conoce el cuerpo humano como nadie.',          skin:'#FFE0C2', outfit:'#2BB5A0', pants:'#1F8C7B', hair:'#F2C94C'},
+  {id:'ada',  name:'Ada',  role:'Doctora',     power:'Cuida de todos los viajeros en cada época.',          skin:'#FFE0C2', outfit:'#2BB5A0', pants:'#1F8C7B', hair:'#F2C94C'},
   {id:'zuli', name:'Zuli', role:'Alienígena',  power:'Viene de otro planeta para aprender contigo.', skin:'#8BE04E', outfit:'#8A5CF6', pants:'#6440C9'}
 ];
 const avatarOf = id => AVATARS.find(a=>a.id===id) || AVATARS[0];
 function avatarSVG(id){
-  const a=avatarOf(id), E='#06122A', st=`stroke="${E}" stroke-width="3" stroke-linejoin="round"`;
+  const a=avatarOf(id), E='#0A0820', st=`stroke="${E}" stroke-width="3" stroke-linejoin="round"`;
   let back='', head='', hair='', face='', front='', body='';
   const eyes = (rx=4.2, ry=5.6, y=44) => `<ellipse cx="41" cy="${y}" rx="${rx}" ry="${ry}" fill="${E}"/><ellipse cx="59" cy="${y}" rx="${rx}" ry="${ry}" fill="${E}"/><circle cx="${42.3+rx/4}" cy="${y-2}" r="${rx/2.6}" fill="#fff"/><circle cx="${60.3+rx/4}" cy="${y-2}" r="${rx/2.6}" fill="#fff"/>`;
   const cheeks = `<ellipse cx="33" cy="52" rx="4.5" ry="3" fill="#FF8FA3" opacity=".65"/><ellipse cx="67" cy="52" rx="4.5" ry="3" fill="#FF8FA3" opacity=".65"/>`;
@@ -663,53 +674,58 @@ function avatarSVG(id){
   </svg>`;
 }
 
-/* Glo, el glóbulo rojo explorador */
+/* Tic, el reloj de bolsillo que viaja en el tiempo */
 function mascotSVG(state='idle'){
   return `<svg class="mascot ${state}" viewBox="0 0 120 130" aria-hidden="true">
-    <ellipse cx="60" cy="124" rx="34" ry="5" fill="rgba(0,0,0,.35)"/>
+    <ellipse cx="60" cy="125" rx="34" ry="5" fill="rgba(0,0,0,.35)"/>
     <g class="m-body">
-      <circle cx="60" cy="68" r="46" fill="#FF5A6E" stroke="#06122A" stroke-width="5"/>
-      <ellipse cx="60" cy="78" rx="26" ry="17" fill="#C9304A" opacity=".45"/>
-      <ellipse cx="38" cy="46" rx="10" ry="5" fill="#fff" opacity=".45" transform="rotate(-35 38 46)"/>
-      <path d="M26 34q34-44 68 0z" fill="#F2D488" stroke="#06122A" stroke-width="4" stroke-linejoin="round"/>
-      <rect x="16" y="30" width="88" height="9" rx="4.5" fill="#E2B85A" stroke="#06122A" stroke-width="4"/>
-      <path d="M44 30q16-8 32 0" fill="none" stroke="#C0563A" stroke-width="4"/>
-      <g data-x="idle oops"><ellipse cx="45" cy="62" rx="8" ry="10" fill="#fff" stroke="#06122A" stroke-width="3"/><ellipse cx="75" cy="62" rx="8" ry="10" fill="#fff" stroke="#06122A" stroke-width="3"/><circle cx="47" cy="64" r="4.5" fill="#06122A"/><circle cx="77" cy="64" r="4.5" fill="#06122A"/></g>
-      <g data-x="happy"><path d="M37 64q8-11 16 0M67 64q8-11 16 0" fill="none" stroke="#06122A" stroke-width="5" stroke-linecap="round"/></g>
-      <circle cx="33" cy="80" r="6" fill="#FF9FB0" opacity=".8"/><circle cx="87" cy="80" r="6" fill="#FF9FB0" opacity=".8"/>
-      <path data-x="idle" d="M49 82q11 10 22 0" fill="none" stroke="#06122A" stroke-width="4.5" stroke-linecap="round"/>
-      <g data-x="happy"><path d="M45 79q15 22 30 0z" fill="#06122A" stroke="#06122A" stroke-width="3" stroke-linejoin="round"/><path d="M52 87q8 5 16 0" fill="#FF8FA3"/></g>
-      <ellipse data-x="oops" cx="60" cy="86" rx="6" ry="7.5" fill="#06122A"/>
+      <ellipse cx="44" cy="119" rx="11" ry="6" fill="#8A5A2B" stroke="#0A0820" stroke-width="4"/><ellipse cx="76" cy="119" rx="11" ry="6" fill="#8A5A2B" stroke="#0A0820" stroke-width="4"/>
+      <circle cx="60" cy="13" r="8" fill="none" stroke="#0A0820" stroke-width="9"/><circle cx="60" cy="13" r="8" fill="none" stroke="#FFC93C" stroke-width="4"/>
+      <rect x="51" y="20" width="18" height="12" rx="4" fill="#E2A52E" stroke="#0A0820" stroke-width="4"/>
+      <circle cx="60" cy="72" r="46" fill="#FFC93C" stroke="#0A0820" stroke-width="5"/>
+      <circle cx="60" cy="72" r="36" fill="#FFF6DC" stroke="#C98A00" stroke-width="3"/>
+      <path d="M60 39v6M60 99v6M27 72h6M87 72h6" stroke="#B58A3C" stroke-width="4" stroke-linecap="round"/>
+      <path d="M38 50l3 4M82 50l-3 4M38 94l3-4M82 94l-3-4" stroke="#B58A3C" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+      <ellipse cx="33" cy="42" rx="10" ry="4.5" fill="#fff" opacity=".55" transform="rotate(-40 33 42)"/>
+      <g data-x="idle oops"><ellipse cx="46" cy="66" rx="8" ry="10" fill="#fff" stroke="#0A0820" stroke-width="3"/><ellipse cx="74" cy="66" rx="8" ry="10" fill="#fff" stroke="#0A0820" stroke-width="3"/><circle cx="48" cy="68" r="4.5" fill="#0A0820"/><circle cx="76" cy="68" r="4.5" fill="#0A0820"/></g>
+      <g data-x="happy"><path d="M38 68q8-11 16 0M66 68q8-11 16 0" fill="none" stroke="#0A0820" stroke-width="5" stroke-linecap="round"/></g>
+      <circle cx="37" cy="81" r="5.5" fill="#FF9F8F" opacity=".85"/><circle cx="83" cy="81" r="5.5" fill="#FF9F8F" opacity=".85"/>
+      <path data-x="idle" d="M50 83q10 9 20 0" fill="none" stroke="#0A0820" stroke-width="4.5" stroke-linecap="round"/>
+      <g data-x="happy"><path d="M46 80q14 20 28 0z" fill="#0A0820" stroke="#0A0820" stroke-width="3" stroke-linejoin="round"/><path d="M53 88q7 5 14 0" fill="#FF8F7A"/></g>
+      <ellipse data-x="oops" cx="60" cy="88" rx="6" ry="7.5" fill="#0A0820"/>
     </g>
   </svg>`;
 }
+/* El Borrón: la mancha de tinta que borra mapas y recuerdos (jefe final) */
 function virusSVG(){
   let spikes='';
-  for(let k=0;k<12;k++){ const a=k*Math.PI/6, x1=60+Math.cos(a)*36, y1=60+Math.sin(a)*36, x2=60+Math.cos(a)*52, y2=60+Math.sin(a)*52;
-    spikes+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#06122A" stroke-width="5"/><circle cx="${x2.toFixed(1)}" cy="${y2.toFixed(1)}" r="6" fill="#B6F27A" stroke="#06122A" stroke-width="3"/>`; }
+  for(let k=0;k<8;k++){ const a=k*Math.PI/4, r=k%2?5:7.5, x=60+Math.cos(a)*52, y=60+Math.sin(a)*52;
+    spikes+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="#C77DFF" stroke="#0A0820" stroke-width="3"/>`; }
   return `<svg class="virus" id="virus" viewBox="0 0 120 120" aria-hidden="true"><g class="v-body"><g class="spikes">${spikes}</g>
-    <circle cx="60" cy="60" r="38" fill="#8BE04E" stroke="#06122A" stroke-width="5"/>
-    <circle cx="44" cy="76" r="5" fill="#5DB02E"/><circle cx="80" cy="44" r="4" fill="#5DB02E"/><circle cx="78" cy="80" r="3" fill="#5DB02E"/>
-    <path d="M36 46l16 6M84 46l-16 6" stroke="#06122A" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="47" cy="58" r="7" fill="#fff" stroke="#06122A" stroke-width="3"/><circle cx="73" cy="58" r="7" fill="#fff" stroke="#06122A" stroke-width="3"/>
-    <circle cx="48" cy="60" r="3.5" fill="#06122A"/><circle cx="72" cy="60" r="3.5" fill="#06122A"/>
-    <path d="M44 74q16 10 32 0z" fill="#06122A"/><path d="M50 75l3 5 3-4 4 4 3-4 3 5 2-5" fill="#fff"/>
+    <path d="M60 18C78 12 93 25 96 40c14 5 13 26 2 32 7 18-12 33-26 26-10 11-29 8-32-5C22 96 11 76 22 64 9 50 22 30 38 32c4-10 14-15 22-14Z" fill="#9B4DFF" stroke="#0A0820" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M46 97q2 12-4 16-7-5-3-15z" fill="#9B4DFF" stroke="#0A0820" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="40" cy="80" r="5" fill="#6A24C9"/><circle cx="84" cy="42" r="4" fill="#6A24C9"/><circle cx="82" cy="82" r="3" fill="#6A24C9"/>
+    <ellipse cx="42" cy="36" rx="9" ry="4" fill="#fff" opacity=".35" transform="rotate(-30 42 36)"/>
+    <path d="M36 44l16 7M84 44l-16 7" stroke="#0A0820" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="47" cy="58" r="7" fill="#fff" stroke="#0A0820" stroke-width="3"/><circle cx="73" cy="58" r="7" fill="#fff" stroke="#0A0820" stroke-width="3"/>
+    <circle cx="48" cy="60" r="3.5" fill="#0A0820"/><circle cx="72" cy="60" r="3.5" fill="#0A0820"/>
+    <path d="M44 74q16 10 32 0z" fill="#0A0820"/><path d="M50 75l3 5 3-4 4 4 3-4 3 5 2-5" fill="#fff"/>
   </g></svg>`;
 }
 
 /* ---------- Datos generales del juego ---------- */
 const TEMAS = CURSO.temas;
-const LEVELS = [[0,'Explorador novato'],[80,'Aprendiz'],[180,'Explorador'],[300,'Investigador'],[450,'Científico'],[650,'Experto'],[900,'Sabio'],[1200,'Maestro explorador'],[1600,'Leyenda'],[2100,'Gran leyenda'],[2700,'Campeón del curso']];
+const LEVELS = [[0,'Viajero novato'],[80,'Aprendiz de ruta'],[180,'Rastreador de huellas'],[300,'Cartógrafo'],[450,'Navegante'],[650,'Guardián del mapa'],[900,'Cronista'],[1200,'Historiador'],[1600,'Maestro del tiempo'],[2100,'Leyenda viajera'],[2700,'Gran viajero del tiempo']];
 const PRAISE = ['¡Genial!','¡Muy bien!','¡Fantástico!','¡Correcto!','¡Lo has clavado!','¡Bravo!'];
 const RETRY = ['Casi…','¡Ups! Prueba otra vez','Piénsalo un poco más','¡Tú puedes!'];
 const GLOBAL_BADGES = [
-  {id:'perfecto', name:'Sin fallos', desc:'Termina una misión sin equivocarte ni una vez.', icon:'check'},
-  {id:'racha', name:'Racha de fuego', desc:'Acierta 5 retos seguidos a la primera.', icon:'flame', color:'--food'},
-  {id:'calma', name:'Calma total', desc:'Haz el ejercicio completo en la Zona de calma.', icon:'wind', color:'--lung'}
+  {id:'perfecto', name:'Rumbo perfecto', desc:'Termina una misión sin equivocarte ni una vez.', icon:'check'},
+  {id:'racha', name:'Máquina a toda marcha', desc:'Acierta 5 retos seguidos a la primera.', icon:'flame', color:'--food'},
+  {id:'calma', name:'Parada tranquila', desc:'Haz el ejercicio completo en la Zona de calma.', icon:'wind', color:'--lung'}
 ];
 
 /* ---------- Estado y guardado ---------- */
-const KEY = CURSO_ACTIVO.clave || ('exploradores-' + CURSO_ACTIVO.id + '-v1');
+const KEY = CURSO_ACTIVO.clave || ('viajeros-' + CURSO_ACTIVO.id + '-v1');
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const rand = a => a[Math.floor(Math.random()*a.length)];
@@ -720,7 +736,7 @@ const lastPos = {};
 /* Versión Google Classroom: si el juego se abre desde Apps Script, el progreso se guarda en la
    hoja de cálculo del docente (ver carpeta google-classroom). Si no, se guarda en este navegador. */
 const CLOUD = !!(window.google && google.script && google.script.run);
-const LKEY = CLOUD ? (CURSO_ACTIVO.id === '2-primaria' ? 'exploradores-classroom-v1' : 'exploradores-classroom-' + CURSO_ACTIVO.id) : KEY;
+const LKEY = CLOUD ? 'viajeros-classroom-' + CURSO_ACTIVO.id : KEY;
 let ME = null, CLASS = null, pushTimer = null, pushing = false, pushAgain = false;
 function load(){ try{ const v = JSON.parse(localStorage.getItem(LKEY)); if(v && v.profiles) return v; }catch(e){} return {profiles:{}, current:null, free:false, sound:true, music:false, open:{}}; }
 function save(){ try{ localStorage.setItem(LKEY, JSON.stringify(S)); }catch(e){} if(CLOUD && P()) schedulePush(); }
@@ -846,8 +862,8 @@ const UI_EN = {
   'Volver al mapa del curso':'Back to the course map', 'Mapa del curso':'Course map', 'Mapa del tema':'Topic map', 'Repetir':'Play again',
   'Continuar ▶':'Continue ▶', 'Empezar ▶':'Start ▶', 'Cambiar idioma':'Change language', 'Próximamente':'Coming soon',
   // Bienvenida
-  'Exploradores<span>de la Naturaleza</span>':'Nature<span>Explorers</span>',
-  '¡Hola! Soy <b>Glo</b>, tu guía. Recorre el mapa del curso tema a tema, supera las misiones y derrota a los jefes finales.':'Hi! I am <b>Glo</b>, your guide. Travel the course map topic by topic, complete the missions and beat the final bosses.',
+  'Viajeros<span>del Tiempo</span>':'Time<span>Travellers</span>',
+  '¡Hola! Soy <b>Tic</b>, el reloj viajero. Recorre el mapa del curso tema a tema, supera las misiones y derrota a los jefes finales.':'Hi! I am <b>Tick</b>, the travelling clock. Travel the course map topic by topic, complete the missions and beat the final bosses.',
   'Partidas guardadas':'Saved games', 'Nivel {n} · {s} estrellas':'Level {n} · {s} stars',
   'Has entrado con la cuenta <b>{e}</b>. Tu progreso se guarda en tu cuenta.':'You are signed in as <b>{e}</b>. Your progress is saved in your account.',
   'Cambia tu personaje':'Change your character', 'Nueva partida: elige personaje':'New game: choose a character', 'Elige tu personaje':'Choose your character',
@@ -862,11 +878,11 @@ const UI_EN = {
   'Memoria de acero: nunca olvida una respuesta.':'Super memory: never forgets an answer.',
   'Rápida como un rayo resolviendo retos.':'As fast as lightning at solving challenges.',
   'Silencioso y concentrado: no se le escapa nada.':'Quiet and focused: misses nothing.',
-  'Conoce el cuerpo humano como nadie.':'Knows the human body better than anyone.',
+  'Cuida de todos los viajeros en cada época.':'Looks after every traveller in every age.',
   'Viene de otro planeta para aprender contigo.':'Comes from another planet to learn with you.',
   // Niveles
-  'Explorador novato':'Beginner explorer', 'Aprendiz':'Apprentice', 'Explorador':'Explorer', 'Investigador':'Investigator', 'Experto':'Expert', 'Sabio':'Wise one',
-  'Maestro explorador':'Master explorer', 'Leyenda':'Legend', 'Gran leyenda':'Great legend', 'Campeón del curso':'Course champion',
+  'Viajero novato':'Beginner traveller', 'Aprendiz de ruta':'Route apprentice', 'Rastreador de huellas':'Footprint tracker', 'Cartógrafo':'Map maker', 'Navegante':'Navigator', 'Guardián del mapa':'Map keeper',
+  'Cronista':'Storyteller', 'Historiador':'Historian', 'Maestro del tiempo':'Time master', 'Leyenda viajera':'Travelling legend', 'Gran viajero del tiempo':'Great time traveller',
   // Barra superior
   'Cambiar de partida':'Change game', 'Nivel {n} a los {x}':'Level {n} at {x}', '¡Nivel máximo!':'Top level!', 'Experiencia':'Experience',
   'Estrellas del curso':'Course stars', 'Insignias':'Badges', 'Parar música':'Stop music', 'Poner música':'Play music',
@@ -910,15 +926,15 @@ const UI_EN = {
   '¡Casi lo consigues!':'So close!', '¡Jefe derrotado!':'Boss defeated!', '¡Misión superada!':'Mission complete!',
   'Has sumado los puntos que conseguiste. Repasa y vuelve a intentarlo: ¡seguro que lo logras!':'You keep the points you won. Review and try again: you can do it!',
   '¡Muy bien! Repite la misión para conseguir las 3 estrellas.':'Very good! Play the mission again to get 3 stars.',
-  '¡Perfecto! ¡Eres un auténtico explorador!':'Perfect! You are a real explorer!',
+  '¡Perfecto! ¡Eres un auténtico viajero del tiempo!':'Perfect! You are a real time traveller!',
   'a la primera':'first try', 'puntos XP':'XP points', 'mejor racha':'best streak', '¡SUBES AL NIVEL {n}!':'LEVEL UP: {n}!', '¡Cofre de insignias!':'Badge chest!',
   // Insignias
   'Completa la misión «{m}».':'Complete the mission “{m}”.', 'Jefe derrotado':'Boss defeated', 'Derrota al {v} del tema {n}.':'Defeat the {v} in topic {n}.',
-  'Constelación':'Constellation', 'Consigue 3 estrellas en todas las misiones del tema {n}.':'Get 3 stars in all the missions of topic {n}.',
+  'Constelación del viajero':'Traveller’s constellation', 'Consigue 3 estrellas en todas las misiones del tema {n}.':'Get 3 stars in all the missions of topic {n}.',
   '¡Nueva insignia: {n}!':'New badge: {n}!', 'Insignias especiales':'Special badges',
-  'Sin fallos':'No mistakes', 'Termina una misión sin equivocarte ni una vez.':'Finish a mission without a single mistake.',
-  'Racha de fuego':'Fire streak', 'Acierta 5 retos seguidos a la primera.':'Get 5 challenges in a row right first time.',
-  'Calma total':'Total calm', 'Haz el ejercicio completo en la Zona de calma.':'Do the whole exercise in the Calm zone.',
+  'Rumbo perfecto':'Perfect course', 'Termina una misión sin equivocarte ni una vez.':'Finish a mission without a single mistake.',
+  'Máquina a toda marcha':'Full speed machine', 'Acierta 5 retos seguidos a la primera.':'Get 5 challenges in a row right first time.',
+  'Parada tranquila':'Quiet stop', 'Haz el ejercicio completo en la Zona de calma.':'Do the whole exercise in the Calm zone.',
   // Zona de calma
   'Respirar profundamente nos ayuda a calmarnos. Cuando el círculo crece, toma aire. Cuando se hace pequeño, suéltalo despacio.':'Breathing deeply helps us calm down. When the circle grows, breathe in. When it gets small, breathe out slowly.',
   '¿Preparado?':'Ready?', 'Inspiración':'Breathe in', 'Mantén':'Hold', 'Espiración':'Breathe out', 'Haremos 3 respiraciones.':'We will take 3 breaths.',
@@ -972,7 +988,7 @@ const UI_EN = {
   'Cada curso guarda su progreso por separado.':'Each course saves its progress separately.',
   'Esta instalación de Google Classroom es solo para este curso. Para otro curso, instala su propia versión.':'This Google Classroom installation is only for this course. For another course, install its own version.',
   'Autoría y licencia':'Author and licence', '¡Hola! Así sonará mi voz.':'Hello! This is how my voice will sound.',
-  '¡Hola! Soy Glo. ¿Preparados para explorar la naturaleza?':'Hello! I am Glo. Are you ready to explore nature?',
+  '¡Hola! Soy Tic. ¿Preparados para viajar por el tiempo y por el mundo?':'Hello! I am Tick. Are you ready to travel through time and around the world?',
   'Modo libre activado':'Free mode on', 'Modo libre desactivado':'Free mode off', 'Tema abierto para la clase':'Topic opened for the class', 'Tema cerrado':'Topic closed',
   'Alumno borrado':'Student deleted', 'No se ha podido borrar: ':'Could not delete: ',
   'No se ha podido guardar. Comprueba la conexión a internet.':'Could not save. Check your internet connection.', 'No se ha podido guardar el ajuste.':'Could not save the setting.',
@@ -991,7 +1007,7 @@ function tr(s, v){
 const pagesLabel = p => (LANG === 'en' ? String(p).replace(/Págs?\./, 'pp.') : String(p)).replace('-', '‑');
 function applyLang(){
   document.documentElement.lang = LANG;
-  document.title = LANG === 'en' ? 'Nature Explorers' : 'Exploradores de la Naturaleza';
+  document.title = LANG === 'en' ? 'Time Travellers' : 'Viajeros del Tiempo';
   if(typeof IDIOMA_CONTENIDOS !== 'undefined') IDIOMA_CONTENIDOS.aplicar(CURSO, LANG);
   const fb = $('#fb-next'); if(fb) fb.textContent = tr('Continuar ▶');
   loadVoices();
@@ -1013,7 +1029,7 @@ function cursoSwitchHTML(){
 }
 function cambiarCurso(id){
   if(id === CURSO_ACTIVO.id) return;
-  try{ localStorage.setItem('exploradores-curso', id); }catch(e){}
+  try{ localStorage.setItem('viajeros-curso', id); }catch(e){}
   // Si el enlace ya indica un curso (?curso=), se cambia en el enlace; si no, con #curso- (vale también dentro de un artefacto)
   if(new URLSearchParams(location.search).has('curso')) location.search = '?curso=' + id;
   else { location.hash = 'curso-' + id; location.reload(); }
@@ -1084,7 +1100,7 @@ function allBadges(){
   TEMAS.filter(hasContent).forEach(t=>{
     t.missions.forEach(m=>out.push({id:m.id, name:m.badge||m.short, desc:tr('Completa la misión «{m}».',{m:m.title}), icon:m.icon, color:m.color, tema:t}));
     out.push({id:t.boss.id, name:t.boss.badge||tr('Jefe derrotado'), desc:tr('Derrota al {v} del tema {n}.',{v:t.boss.villain||tr('jefe'),n:t.n}), icon:'trophy', color:t.boss.color, tema:t});
-    out.push({id:'tres-'+t.id, name:t.starsBadge||tr('Constelación'), desc:tr('Consigue 3 estrellas en todas las misiones del tema {n}.',{n:t.n}), icon:'star', tema:t});
+    out.push({id:'tres-'+t.id, name:t.starsBadge||tr('Constelación del viajero'), desc:tr('Consigue 3 estrellas en todas las misiones del tema {n}.',{n:t.n}), icon:'star', tema:t});
   });
   return [...out, ...GLOBAL_BADGES.map(b=>({...b, name:tr(b.name), desc:tr(b.desc)}))];
 }
@@ -1187,17 +1203,18 @@ function floatXP(n){
 }
 function setMascot(state){ document.querySelectorAll('.app .mascot, #splash .mascot').forEach(m=>{ m.classList.remove('idle','happy','oops'); void m.getBoundingClientRect(); m.classList.add(state); }); }
 
-/* Fondo animado: células y burbujas flotando */
+/* Fondo animado: estrellas, relojes y rosas de los vientos flotando por el túnel del tiempo */
 (function background(){
   const c=$('#bg'), x=c.getContext('2d'); let W,H,items=[];
-  const mk = any => { const t=Math.random(); return {x:Math.random()*W, y:any?Math.random()*H:H+40, r:t<.4?8+Math.random()*12:2+Math.random()*4, k:t<.3?'cell':t<.55?'ring':'dot', vy:.15+Math.random()*.4, vx:(Math.random()-.5)*.25, a:Math.random()*6.3}; };
+  const mk = any => { const t=Math.random(); return {x:Math.random()*W, y:any?Math.random()*H:H+40, r:t<.4?9+Math.random()*12:2+Math.random()*4, k:t<.2?'reloj':t<.4?'rosa':'dot', vy:.15+Math.random()*.4, vx:(Math.random()-.5)*.25, a:Math.random()*6.3}; };
   function size(){ W=c.width=innerWidth; H=c.height=innerHeight; items=Array.from({length:Math.min(60,Math.round(W*H/26000)+10)},()=>mk(true)); }
   function draw(){
     x.clearRect(0,0,W,H);
     items.forEach(p=>{
-      x.globalAlpha = p.k==='dot' ? .45+.3*Math.sin(p.a*3) : .22;
-      if(p.k==='cell'){ x.fillStyle='#FF5A6E'; x.beginPath(); x.ellipse(p.x,p.y,p.r,p.r*.8,p.a,0,7); x.fill(); x.fillStyle='#8E1F31'; x.beginPath(); x.ellipse(p.x,p.y,p.r*.45,p.r*.32,p.a,0,7); x.fill(); }
-      else if(p.k==='ring'){ x.strokeStyle='#3FB6FF'; x.lineWidth=2; x.beginPath(); x.arc(p.x,p.y,p.r,0,7); x.stroke(); }
+      x.globalAlpha = p.k==='dot' ? .45+.3*Math.sin(p.a*3) : .24;
+      if(p.k==='reloj'){ x.strokeStyle='#FFC93C'; x.lineWidth=2.5; x.lineCap='round'; x.beginPath(); x.arc(p.x,p.y,p.r,0,7); x.stroke();
+        x.beginPath(); x.moveTo(p.x,p.y); x.lineTo(p.x+Math.cos(p.a*4)*p.r*.7,p.y+Math.sin(p.a*4)*p.r*.7); x.moveTo(p.x,p.y); x.lineTo(p.x+Math.cos(p.a)*p.r*.45,p.y+Math.sin(p.a)*p.r*.45); x.stroke(); }
+      else if(p.k==='rosa'){ x.fillStyle='#3FC8E8'; x.beginPath(); for(let k=0;k<8;k++){ const a=p.a+k*Math.PI/4, r=k%2?p.r*.3:p.r; x.lineTo(p.x+Math.cos(a)*r,p.y+Math.sin(a)*r); } x.closePath(); x.fill(); }
       else { x.fillStyle='#fff'; x.beginPath(); x.arc(p.x,p.y,p.r*.5,0,7); x.fill(); }
     });
     x.globalAlpha=1;
@@ -1243,8 +1260,8 @@ function renderWelcome(){
     <div class="logo">
       <div class="mascot-wrap">${mascotSVG('idle')}</div>
       <span class="label">${esc(CURSO.asignatura)}</span>
-      <h1 class="outline">${tr('Exploradores<span>de la Naturaleza</span>')}</h1>
-      <p class="tagline">${tr('¡Hola! Soy <b>Glo</b>, tu guía. Recorre el mapa del curso tema a tema, supera las misiones y derrota a los jefes finales.')}</p>
+      <h1 class="outline">${tr('Viajeros<span>del Tiempo</span>')}</h1>
+      <p class="tagline">${tr('¡Hola! Soy <b>Tic</b>, el reloj viajero. Recorre el mapa del curso tema a tema, supera las misiones y derrota a los jefes finales.')}</p>
       <div class="world-strip">${TEMAS.map(t=>`<span style="${cvars(t)}" title="${tr('Tema')} ${t.n}: ${esc(t.title)}">${ico(t.icon)}</span>`).join('')}</div>
     </div>
     <div class="panel start-panel">
@@ -1377,19 +1394,24 @@ function nodeSVG(w, i, x, y, open, st, isNext, label){
 function pinSVG(x, y, avatar){
   return `<g class="pin" transform="translate(${x+26},${y-74})"><g class="bob"><svg x="-24" y="0" width="48" height="58" viewBox="0 0 100 120">${avatarSVG(avatar).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg></g></g>`;
 }
-/* Escenarios de los mapas de tema: en contenidos.js, cada tema elige el suyo con map:'huerto', map:'lab'...
+/* Escenarios de los mapas de tema: en contenidos.js, cada tema elige el suyo con map:'pueblo', map:'historia'...
    Cada uno tiene cielo (dos colores), terreno, color del camino, dibujos grandes (junto a cada misión) y pequeños. */
 const ESCENAS = {
-  salud:   { sky:['#1D4E7A','#2C8C7A'], blob:'#3FBF8F', road:'#F4E3B5', deco:['🍎','🧼','🚲','😴','🥦','🏥'], bits:['❤️','💧','⭐'] },
-  sabana:  { sky:['#2A4D7A','#B8793A'], blob:'#D9A441', road:'#F6E2B0', deco:['🦒','🐘','🦜','🐢','🦋','🌴'], bits:['🐾','🌿','🐾'] },
-  huerto:  { sky:['#1F5A8A','#2F8F4E'], blob:'#49B35F', road:'#D9A066', deco:['🌻','🌳','🌷','🍅','🌲','☀️'], bits:['🌱','🐝','🍃'] },
-  lab:     { sky:['#241B55','#3E3A8C'], blob:'#5B55B8', road:'#C9D3E3', deco:['🧪','🔬','🧲','💡','🔦','⚗️'], bits:['✨','⚙️','✨'], dots:true },
-  digital: { sky:['#0E1B3D','#143A66'], blob:'#1E5FA8', road:'#5CF0FF', deco:['💻','📱','🖨️','🌐','🛡️','⌨️'], bits:['📶','💾','🔌'], grid:true },
-  cuerpo:  { sky:['#3A1F4D','#7A2E4E'], blob:'#B8446A', road:'#FFD27A', deco:['❤️','🧠','🦴','👶','🍎','💪'], bits:['👁️','👂','✋'] },
-  bosque:  { sky:['#173F4A','#1F6B45'], blob:'#2E9E5B', road:'#E0C08A', deco:['🦊','🐸','🐌','🦋','🌲','🐙'], bits:['🍄','🌿','🐾'] },
-  rio:     { sky:['#1B4B7A','#2A7FA8'], blob:'#3FB6C8', road:'#EADBA6', deco:['🐻','🦅','🐸','🐄','🐟','🐊'], bits:['🌊','🌾','🌊'] },
-  mundo:   { sky:['#1A3F5C','#8A6A2E'], blob:'#4FAF6A', road:'#EAD9A8', deco:['🌲','🐇','🐝','🌵','🐧','🐠'], bits:['☁️','🌿','☁️'] },
-  energia: { sky:['#2B1B4D','#8A3A2E'], blob:'#D9662E', road:'#FFE08A', deco:['🧊','🧱','🌡️','🔥','⚡','💨'], bits:['✨','💧','✨'], dots:true }
+  barrio:   { sky:['#2A2A6B','#B8613F'], blob:'#E0A458', road:'#F6E2B0', deco:['🏠','🏫','🏪','🚌','🌳','⛲'], bits:['🚦','🚲','💌'] },
+  pueblo:   { sky:['#1F5A8A','#2F8F4E'], blob:'#6FBF5F', road:'#D9A066', deco:['🏡','⛪','🚜','🐓','🌾','🌳'], bits:['🌻','🐑','🍃'] },
+  ciudad:   { sky:['#14183F','#2A4D8A'], blob:'#4A63B8', road:'#C9D3E3', deco:['🏙️','🚇','🏥','🏛️','🚦','🏢'], bits:['🚕','💡','🚌'], grid:true },
+  relieve:  { sky:['#1A3F6B','#3F8A6A'], blob:'#58A86A', road:'#EAD9A8', deco:['⛰️','🏞️','🌋','🏝️','🌊','🧭'], bits:['☁️','🌲','☁️'] },
+  clima:    { sky:['#24306B','#3F8FB8'], blob:'#5FB8D9', road:'#F4F0D8', deco:['☀️','🌧️','⛈️','🌈','❄️','🌡️'], bits:['💧','☁️','💨'] },
+  universo: { sky:['#0D0B2B','#2B1B5C'], blob:'#4B3AA8', road:'#FFE08A', deco:['🌍','🌙','☀️','🪐','🚀','⭐'], bits:['✨','☄️','✨'], dots:true },
+  historia: { sky:['#3A2548','#A0603A'], blob:'#C9945A', road:'#FFE9B8', deco:['🏺','🏰','⏳','📜','🗿','🛡️'], bits:['🕰️','🪙','🔎'] },
+  trabajos: { sky:['#2B2A5C','#8A5A3A'], blob:'#D98A4A', road:'#F6E2B0', deco:['🚜','🏭','🛒','🚚','🎣','💶'], bits:['⚙️','📦','🧰'] },
+  mapa:     { sky:['#16405C','#2A7F8A'], blob:'#E3C98A', road:'#B8613F', deco:['🗺️','🧭','📍','🌍','🚩','🔭'], bits:['⚓','🧭','⛵'] },
+  cultura:  { sky:['#3A1F5C','#B83C6B'], blob:'#E07A9B', road:'#FFE08A', deco:['🎭','🎉','🥁','🏛️','🖼️','🎆'], bits:['🎶','🎈','🎶'] },
+  huerto:   { sky:['#1F5A8A','#2F8F4E'], blob:'#49B35F', road:'#D9A066', deco:['🌻','🌳','🌷','🍅','🌲','☀️'], bits:['🌱','🐝','🍃'] },
+  bosque:   { sky:['#173F4A','#1F6B45'], blob:'#2E9E5B', road:'#E0C08A', deco:['🦊','🐸','🐌','🦋','🌲','🦉'], bits:['🍄','🌿','🐾'] },
+  rio:      { sky:['#1B4B7A','#2A7FA8'], blob:'#3FB6C8', road:'#EADBA6', deco:['🏞️','🦆','🐟','🌉','⛵','💧'], bits:['🌊','🌾','🌊'] },
+  mundo:    { sky:['#1A3F5C','#8A6A2E'], blob:'#4FAF6A', road:'#EAD9A8', deco:['🌍','🏜️','🏔️','🏝️','🌋','🧊'], bits:['☁️','🧭','☁️'] },
+  digital:  { sky:['#0E1B3D','#143A66'], blob:'#1E5FA8', road:'#5CF0FF', deco:['💻','📱','🖨️','🌐','🛡️','⌨️'], bits:['📶','💾','🔌'], grid:true }
 };
 function sceneSVG(t, pts, H){
   const e = ESCENAS[t.map]; if(!e) return '';
@@ -1401,7 +1423,7 @@ function sceneSVG(t, pts, H){
   if(e.dots){ for(let i=0;i<Math.round(H/14);i++) s+=`<circle cx="${(i*83)%300}" cy="${(i*131)%H}" r="${1+i%3}" fill="#fff" opacity=".3"/>`; }
   // terreno: una mancha suave al lado contrario de cada misión, donde va su dibujo
   pts.forEach((q,i)=>{ const x = q[0]<150 ? 262 : 38; s+=`<ellipse cx="${x}" cy="${q[1]+26}" rx="92" ry="40" fill="${e.blob}" opacity=".55"/><ellipse cx="${x}" cy="${q[1]+34}" rx="70" ry="26" fill="${e.blob}" opacity=".5"/>`; });
-  s += `<path d="${road}" fill="none" stroke="#06122A" stroke-width="30" stroke-linecap="round" opacity=".35"/><path d="${road}" fill="none" stroke="${e.road}" stroke-width="22" stroke-linecap="round" opacity=".85"/>`;
+  s += `<path d="${road}" fill="none" stroke="#0A0820" stroke-width="30" stroke-linecap="round" opacity=".35"/><path d="${road}" fill="none" stroke="${e.road}" stroke-width="22" stroke-linecap="round" opacity=".85"/>`;
   pts.forEach((q,i)=>{
     const left = q[0]>=150, x = left ? 52 : 248, fin = i===n-1;
     s+=`<text x="${x}" y="${q[1]+22}" font-size="${fin?50:42}" text-anchor="middle">${fin?'🏰':e.deco[i%e.deco.length]}</text>`;
@@ -1767,7 +1789,7 @@ function finish(success){
   const go = () => {
     const v=$('#view-result'); v.setAttribute('style', cvars(w));
     const banner = tr(!success ? '¡Casi lo consigues!' : w.boss ? '¡Jefe derrotado!' : '¡Misión superada!');
-    const say = tr(!success ? 'Has sumado los puntos que conseguiste. Repasa y vuelve a intentarlo: ¡seguro que lo logras!' : st<3 ? '¡Muy bien! Repite la misión para conseguir las 3 estrellas.' : '¡Perfecto! ¡Eres un auténtico explorador!');
+    const say = tr(!success ? 'Has sumado los puntos que conseguiste. Repasa y vuelve a intentarlo: ¡seguro que lo logras!' : st<3 ? '¡Muy bien! Repite la misión para conseguir las 3 estrellas.' : '¡Perfecto! ¡Eres un auténtico viajero del tiempo!');
     const ut = nextT ? cvars(nextT) : '';
     v.innerHTML = `<div class="result">
       <div class="ribbon ${success?'':'fail'}">${banner}</div>
@@ -1960,7 +1982,7 @@ function miniDraw(){
   const px=n=>Math.round(n/4)*4, D=MG.t.minijuego.fondo==='digital';
   cx.setTransform(MG.cv.width/W,0,0,MG.cv.height/H,0,0);
   cx.save(); if(g.shake>0 && !reduced()) cx.translate(Math.sin(g.t*80)*g.shake*5,0);
-  const sky=cx.createLinearGradient(0,0,0,H); sky.addColorStop(0,D?'#1B1140':'#10274D'); sky.addColorStop(.55,D?'#3A1F7A':'#1F5A8A'); sky.addColorStop(1,D?'#8A5CF6':'#3FB6FF');
+  const sky=cx.createLinearGradient(0,0,0,H); sky.addColorStop(0,D?'#1B1140':'#241C55'); sky.addColorStop(.55,D?'#3A1F7A':'#1F5A8A'); sky.addColorStop(1,D?'#8A5CF6':'#3FB6FF');
   cx.fillStyle=sky; cx.fillRect(0,0,W,H);
   cx.fillStyle='#FFC93C'; const sx=W*.78; for(let y=-28;y<=28;y+=4) for(let x=-28;x<=28;x+=4) if(x*x+y*y<=784) cx.fillRect(sx+x,70+y,4,4);
   cx.fillStyle='rgba(255,255,255,.85)';
@@ -1981,7 +2003,7 @@ function miniDraw(){
       [[o.up,100,GROUND-128],[o.down,GROUND-108,GROUND-6]].forEach(([txt,y0,y1],i)=>{
         let col=i===0?'#2079C7':'#D63B50'; if(o.done) col=((i===0)===o.q.top)?'#43D166':'#5A6B85';
         cx.fillStyle='rgba(6,18,42,.55)'; rr(o.x-w/2,y0,w,y1-y0,16); cx.fill(); cx.strokeStyle=col; cx.lineWidth=8; cx.stroke();
-        cx.fillStyle=col; rr(o.x-w/2-6,i===0?y1-46:y0-4,w+12,50,12); cx.fill(); cx.strokeStyle='#06122A'; cx.lineWidth=3; cx.stroke();
+        cx.fillStyle=col; rr(o.x-w/2-6,i===0?y1-46:y0-4,w+12,50,12); cx.fill(); cx.strokeStyle='#0A0820'; cx.lineWidth=3; cx.stroke();
         const big=String(txt).length<=24; cx.fillStyle='#fff'; cx.font=(big?18:14)+'px "Lilita One", sans-serif'; cx.textAlign='center'; cx.textBaseline='middle';
         const words=String(txt).split(' '), lines=[]; let l=''; for(const wd of words){ const tt=l?l+' '+wd:wd; if(cx.measureText(tt).width>w-10 && l){ lines.push(l); l=wd; } else l=tt; } lines.push(l);
         const cy=i===0?y1-21:y0+21; lines.slice(0,3).forEach((ln,k,a)=>cx.fillText(ln,o.x,cy+(k-(a.length-1)/2)*(big?19:15)));
@@ -1992,12 +2014,12 @@ function miniDraw(){
     if(o.hit) continue;
     const good=o.kind==='good', y=o.y+Math.sin(g.t*4+o.bob)*(good?5:0), ring=good?'#43D166':'#FF5A5A', R=30+(good?Math.sin(g.t*6+o.bob)*1.5:0);
     cx.fillStyle='rgba(6,18,42,.35)'; cx.beginPath(); cx.ellipse(o.x, good&&o.y<GROUND-60?y+R+14:GROUND+4, R*.8, 6, 0, 0, 7); cx.fill();
-    cx.beginPath(); cx.arc(o.x,y,R+3,0,7); cx.fillStyle='#06122A'; cx.fill();
+    cx.beginPath(); cx.arc(o.x,y,R+3,0,7); cx.fillStyle='#0A0820'; cx.fill();
     cx.beginPath(); cx.arc(o.x,y,R,0,7); cx.fillStyle=ring; cx.fill();
     cx.beginPath(); cx.arc(o.x,y,R-6,0,7); cx.fillStyle='#FFFFFF'; cx.fill();
     emoji(o.it.e,o.x,y+2,34);
     const bx=o.x+R*.72, by=y-R*.72;
-    cx.beginPath(); cx.arc(bx,by,11,0,7); cx.fillStyle='#06122A'; cx.fill(); cx.beginPath(); cx.arc(bx,by,8.5,0,7); cx.fillStyle=ring; cx.fill();
+    cx.beginPath(); cx.arc(bx,by,11,0,7); cx.fillStyle='#0A0820'; cx.fill(); cx.beginPath(); cx.arc(bx,by,8.5,0,7); cx.fillStyle=ring; cx.fill();
     cx.strokeStyle='#FFFFFF'; cx.lineWidth=3; cx.lineCap='round'; cx.beginPath();
     if(good){ cx.moveTo(bx-4,by); cx.lineTo(bx+4,by); cx.moveTo(bx,by-4); cx.lineTo(bx,by+4); } else { cx.moveTo(bx-3.5,by-3.5); cx.lineTo(bx+3.5,by+3.5); cx.moveTo(bx+3.5,by-3.5); cx.lineTo(bx-3.5,by+3.5); }
     cx.stroke();
@@ -2007,10 +2029,10 @@ function miniDraw(){
   if(MG.img && MG.img.complete && !(g.inv>0 && Math.floor(g.t*12)%2)) cx.drawImage(MG.img,-w/2,-h,w,h);
   cx.restore();
   for(const p of g.parts){ cx.globalAlpha=Math.min(1,p.life*2); cx.fillStyle=p.col; cx.fillRect(px(p.x),px(p.y),p.s,p.s); }
-  cx.globalAlpha=1; cx.font='18px "Lilita One", sans-serif'; cx.textAlign='center'; cx.lineWidth=5; cx.strokeStyle='#06122A';
+  cx.globalAlpha=1; cx.font='18px "Lilita One", sans-serif'; cx.textAlign='center'; cx.lineWidth=5; cx.strokeStyle='#0A0820';
   for(const f of g.floats){ cx.globalAlpha=Math.min(1,f.life*2); cx.strokeText(f.txt,f.x,f.y); cx.fillStyle=f.col; cx.fillText(f.txt,f.x,f.y); }
   cx.globalAlpha=1;
-  if(g.t>72){ const mx=PX+(75-g.t)*g.speed; for(let y=GROUND-150;y<GROUND;y+=12) for(let k=0;k<2;k++){ cx.fillStyle=((y/12+k)%2)?'#fff':'#06122A'; cx.fillRect(mx+k*12,y,12,12); } }
+  if(g.t>72){ const mx=PX+(75-g.t)*g.speed; for(let y=GROUND-150;y<GROUND;y+=12) for(let k=0;k<2;k++){ cx.fillStyle=((y/12+k)%2)?'#fff':'#0A0820'; cx.fillRect(mx+k*12,y,12,12); } }
   if(g.paused){ cx.fillStyle='rgba(6,18,42,.6)'; cx.fillRect(0,0,W,H); cx.fillStyle='#fff'; cx.font='40px "Lilita One", sans-serif'; cx.fillText(tr('Pausa'),W/2,H/2-10); cx.font='20px Andika, sans-serif'; cx.fillText(tr('Toca para seguir'),W/2,H/2+26); }
   cx.restore();
 }
@@ -2173,20 +2195,20 @@ function rescDraw(){
   cx.setTransform(MG.cv.width/W,0,0,MG.cv.height/H,0,0);
   const emoji=(e,x,y,s)=>{ cx.font=`${s}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(e,x,y); };
   const rr=(x,y,w,h,r)=>{ cx.beginPath(); if(cx.roundRect) cx.roundRect(x,y,w,h,r); else cx.rect(x,y,w,h); };
-  const label=(txt,x,y,size,col)=>{ cx.font=`${size}px "Lilita One", sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.lineWidth=4; cx.lineJoin='round'; cx.strokeStyle='#06122A'; cx.strokeText(txt,x,y); cx.fillStyle=col||'#fff'; cx.fillText(txt,x,y); };
+  const label=(txt,x,y,size,col)=>{ cx.font=`${size}px "Lilita One", sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.lineWidth=4; cx.lineJoin='round'; cx.strokeStyle='#0A0820'; cx.strokeText(txt,x,y); cx.fillStyle=col||'#fff'; cx.fillText(txt,x,y); };
   // hierba con cuadros pixel
   cx.fillStyle=L?'#3A4C70':'#2FA35A'; cx.fillRect(0,0,W,H);
   cx.fillStyle=L?'#445A85':'#37B366'; for(let y=0;y<H;y+=40) for(let x=(y/40%2)*40;x<W;x+=80) cx.fillRect(x,y,40,40);
   cx.fillStyle=L?'#2E3D5E':'#1F8A3B'; for(let i=0;i<60;i++){ const x=(i*97.3)%W, y=(i*61.7)%H; cx.fillRect(Math.round(x/4)*4,Math.round(y/4)*4,4,8); }
-  cx.fillStyle='#10274D'; cx.fillRect(0,0,W,g.top-6);
+  cx.fillStyle='#241C55'; cx.fillRect(0,0,W,g.top-6);
   cx.fillStyle=L?'#8A93A6':'#C98A55'; cx.fillRect(0,g.top+62,W,26); cx.fillStyle=L?'#C9D3E3':'#E8C590'; for(let x=6;x<W;x+=44) cx.fillRect(x,g.top+73,24,4);
   // refugios
   for(const h of g.huts){
     const c=RESC_COL[h.i%4], cxm=h.x+h.w/2;
-    cx.fillStyle='#06122A'; rr(h.x-3,h.y-3,h.w+6,h.h+6,14); cx.fill();
+    cx.fillStyle='#0A0820'; rr(h.x-3,h.y-3,h.w+6,h.h+6,14); cx.fill();
     cx.fillStyle=h.flash>0?'#43D166':h.flash<0?'#8A93A6':c; rr(h.x,h.y,h.w,h.h,11); cx.fill();
     cx.fillStyle='rgba(255,255,255,.22)'; rr(h.x+4,h.y+4,h.w-8,14,7); cx.fill();
-    cx.fillStyle='#06122A'; rr(cxm-13,h.y+h.h-22,26,25,[10,10,0,0]); cx.fill();
+    cx.fillStyle='#0A0820'; rr(cxm-13,h.y+h.h-22,26,25,[10,10,0,0]); cx.fill();
     let size=15; cx.font=`${size}px "Lilita One", sans-serif`; while(cx.measureText(h.name).width>h.w-10 && size>9){ size--; cx.font=`${size}px "Lilita One", sans-serif`; }
     label(h.name, cxm, h.y+22, size);
     if(h.n) label('×'+h.n, h.x+h.w-14, h.y+h.h-12, 14, '#FFC93C');
@@ -2199,13 +2221,13 @@ function rescDraw(){
     if(o.k==='tree'){ const t=o.t, s=t.s; cx.fillStyle='rgba(6,18,42,.25)'; cx.beginPath(); cx.ellipse(t.x,t.y,18*s,5*s,0,0,7); cx.fill(); cx.fillStyle='#7A4E2D'; cx.fillRect(t.x-4*s,t.y-26*s,8*s,26*s); cx.fillStyle='#1F8A3B'; cx.beginPath(); cx.arc(t.x,t.y-38*s,20*s,0,7); cx.fill(); cx.fillStyle='#43D166'; cx.beginPath(); cx.arc(t.x-6*s,t.y-44*s,9*s,0,7); cx.fill(); }
     else if(o.k==='animal'){ const a=o.a, y=a.y+Math.sin(g.t*4+a.bob)*3;
       cx.fillStyle='rgba(6,18,42,.3)'; cx.beginPath(); cx.ellipse(a.x,a.y+24,18,5,0,0,7); cx.fill();
-      cx.beginPath(); cx.arc(a.x,y,23,0,7); cx.fillStyle='#06122A'; cx.fill(); cx.beginPath(); cx.arc(a.x,y,20,0,7); cx.fillStyle='#fff'; cx.fill();
+      cx.beginPath(); cx.arc(a.x,y,23,0,7); cx.fillStyle='#0A0820'; cx.fill(); cx.beginPath(); cx.arc(a.x,y,20,0,7); cx.fillStyle='#fff'; cx.fill();
       emoji(a.a.e,a.x,y+2,26); label(a.a.n,a.x,a.y+36,12); }
     else if(o.k==='bad'){ const b=g.bad; cx.fillStyle='rgba(6,18,42,.3)'; cx.beginPath(); cx.ellipse(b.x,b.y+24,18,5,0,0,7); cx.fill(); if(MG.vimg.complete && MG.vimg.naturalWidth) cx.drawImage(MG.vimg,b.x-26,b.y-30+Math.sin(g.t*6)*3,52,56); else { cx.beginPath(); cx.arc(b.x,b.y,20,0,7); cx.fillStyle='#8BE04E'; cx.fill(); } }
     else { const bobY=Math.abs(Math.sin(g.step))*4;
       cx.fillStyle='rgba(6,18,42,.3)'; cx.beginPath(); cx.ellipse(g.x,g.y,18,5,0,0,7); cx.fill();
       if(!(g.inv>0 && Math.floor(g.t*12)%2) && MG.img.complete){ cx.save(); cx.translate(g.x,g.y-bobY); cx.scale(g.face,1); cx.drawImage(MG.img,-27,-64,54,64); cx.restore(); }
-      if(g.carry){ const y=g.y-84-bobY; cx.beginPath(); cx.arc(g.x,y,21,0,7); cx.fillStyle='#06122A'; cx.fill(); cx.beginPath(); cx.arc(g.x,y,18,0,7); cx.fillStyle='#FFF4C2'; cx.fill(); emoji(g.carry.a.e,g.x,y+2,24); } }
+      if(g.carry){ const y=g.y-84-bobY; cx.beginPath(); cx.arc(g.x,y,21,0,7); cx.fillStyle='#0A0820'; cx.fill(); cx.beginPath(); cx.arc(g.x,y,18,0,7); cx.fillStyle='#FFF4C2'; cx.fill(); emoji(g.carry.a.e,g.x,y+2,24); } }
   });
   if(g.target && !reduced()){ cx.strokeStyle='rgba(255,255,255,.7)'; cx.lineWidth=3; cx.beginPath(); cx.arc(g.target[0],g.target[1],8+Math.sin(g.t*8)*2,0,7); cx.stroke(); }
   for(const p of g.parts){ cx.globalAlpha=Math.min(1,p.life*2); cx.fillStyle=p.col; cx.fillRect(p.x,p.y,p.s,p.s); }
@@ -2403,7 +2425,7 @@ function lluDraw(){
   const {cx,W,H}=MG, g=MG.g; if(!W||!g) return;
   const lab=MG.t.minijuego.fondo==='lab';
   cx.setTransform(MG.cv.width/W,0,0,MG.cv.height/H,0,0);
-  const sky=cx.createLinearGradient(0,0,0,H); sky.addColorStop(0,lab?'#1B1140':'#10274D'); sky.addColorStop(.6,lab?'#3A2F7A':'#1F5A8A'); sky.addColorStop(1,lab?'#5B4FB0':'#3FB6FF');
+  const sky=cx.createLinearGradient(0,0,0,H); sky.addColorStop(0,lab?'#1B1140':'#241C55'); sky.addColorStop(.6,lab?'#3A2F7A':'#1F5A8A'); sky.addColorStop(1,lab?'#5B4FB0':'#3FB6FF');
   cx.fillStyle=sky; cx.fillRect(0,0,W,H);
   cx.fillStyle='rgba(255,255,255,.8)';
   if(lab){ for(let i=0;i<24;i++) cx.fillRect(Math.round(((i*71.3)%W)/4)*4, 100+Math.round(((i*47.7)%200)/4)*4, 4, 4); }
@@ -2412,9 +2434,9 @@ function lluDraw(){
   cx.fillStyle=lab?'#5A6B85':'#C98A55'; cx.fillRect(0,H-16,W,16);
   cx.fillStyle=lab?'#3B4A63':'#1F8A3B'; for(let x=4;x<W;x+=24) cx.fillRect(x,H-30,4,6);
   const emoji=(e,x,y,s)=>{ cx.font=`${s}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(e,x,y); };
-  const label=(txt,x,y,size,col)=>{ cx.font=`${size}px "Lilita One", sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.lineWidth=4; cx.lineJoin='round'; cx.strokeStyle='#06122A'; cx.strokeText(txt,x,y); cx.fillStyle=col||'#fff'; cx.fillText(txt,x,y); };
+  const label=(txt,x,y,size,col)=>{ cx.font=`${size}px "Lilita One", sans-serif`; cx.textAlign='center'; cx.textBaseline='middle'; cx.lineWidth=4; cx.lineJoin='round'; cx.strokeStyle='#0A0820'; cx.strokeText(txt,x,y); cx.fillStyle=col||'#fff'; cx.fillText(txt,x,y); };
   for(const o of g.items){
-    cx.beginPath(); cx.arc(o.x,o.y,25,0,7); cx.fillStyle='#06122A'; cx.fill(); cx.beginPath(); cx.arc(o.x,o.y,22,0,7); cx.fillStyle='#fff'; cx.fill();
+    cx.beginPath(); cx.arc(o.x,o.y,25,0,7); cx.fillStyle='#0A0820'; cx.fill(); cx.beginPath(); cx.arc(o.x,o.y,22,0,7); cx.fillStyle='#fff'; cx.fill();
     emoji(o.it.e,o.x,o.y+2,28);
     const lx=Math.max(8+cx.measureText('').width, Math.min(W-8, o.x)); cx.font='13px "Lilita One", sans-serif'; const hw=cx.measureText(o.it.n).width/2+4;
     label(o.it.n, Math.max(hw, Math.min(W-hw, lx)), o.y+37, 13);
@@ -2551,10 +2573,10 @@ function creditos(){
 }
 function licenciaHTML(){
   return LANG==='en'
-    ? `Program and content: ${AUTORIA}, Primary School Teacher, Region of Murcia (Spain). Licence: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold)">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0)</a>. Fonts Andika and Lilita One under the SIL Open Font License. References to the textbook belong to their owners.`
-    : `Programa y contenidos: ${AUTORIA}, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia. Licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener" style="color:var(--gold)">Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 (CC BY-NC-SA 4.0)</a>. Tipografías Andika y Lilita One con licencia SIL Open Font License. Las referencias al libro de texto pertenecen a sus titulares.`;
+    ? `Program and content: ${AUTORIA}, Primary School Teacher, Region of Murcia (Spain). Licence: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold)">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0)</a>. Fonts Andika and Lilita One under the SIL Open Font License. Adapted from “Exploradores de la Naturaleza” (<a href="https://github.com/damp83/AulaNaturales" target="_blank" rel="noopener" style="color:var(--gold)">AulaNaturales</a>), by the same author and under the same licence. References to the textbook belong to their owners.`
+    : `Programa y contenidos: ${AUTORIA}, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia. Licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="noopener" style="color:var(--gold)">Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 (CC BY-NC-SA 4.0)</a>. Tipografías Andika y Lilita One con licencia SIL Open Font License. Adaptación de «Exploradores de la Naturaleza» (<a href="https://github.com/damp83/AulaNaturales" target="_blank" rel="noopener" style="color:var(--gold)">AulaNaturales</a>), del mismo autor y con la misma licencia. Las referencias al libro de texto pertenecen a sus titulares.`;
 }
-const WEB_URL = 'https://damp83.github.io/AulaNaturales/';
+const WEB_URL = 'https://damp83.github.io/AulaSociales/';
 const FICHAS_URL = WEB_URL + 'fichas/' + CURSO_ACTIVO.id + '/';
 const fichaURL = n => LANG==='en' ? FICHAS_URL+'en/'+(n==='sol'?'answer-key-concept-maps.pdf':`topic-${n}-concept-maps.pdf`) : FICHAS_URL+(n==='sol'?'solucionario-esquemas.pdf':`tema-${n}-esquemas.pdf`);
 let evalTema = 0, evalSel = null;
@@ -2684,7 +2706,7 @@ function renderTeacher(){
   if(HAS_EN) v.querySelector('#lang-sel').onchange = e=>{ if(CLOUD){ S.classLang=e.target.value; cloudSettings(); } setLang(e.target.value); };
   v.querySelector('#voice-sel').onchange = e=>{ S[voiceKey()]=e.target.value||null; save(); speak(tr('¡Hola! Así sonará mi voz.')); };
   v.querySelector('#voice-rate').onchange = e=>{ S.voiceRate=+e.target.value; save(); speak(tr('¡Hola! Así sonará mi voz.')); };
-  v.querySelector('#voice-test').onclick = ()=>{ speak(tr('¡Hola! Soy Glo. ¿Preparados para explorar la naturaleza?')); };
+  v.querySelector('#voice-test').onclick = ()=>{ speak(tr('¡Hola! Soy Tic. ¿Preparados para viajar por el tiempo y por el mundo?')); };
   const mm=v.querySelector('#mini-mode'); if(mm) mm.onchange = e=>{ S.mini=e.target.checked; save(); cloudSettings(); toast(tr(S.mini?'Minijuegos activados':'Minijuegos desactivados')); };
   v.querySelector('#free-mode').onchange = e=>{ S.free=e.target.checked; save(); cloudSettings(); toast(tr(S.free?'Modo libre activado':'Modo libre desactivado')); };
   v.querySelectorAll('[data-open]').forEach(c=>c.onchange=()=>{ S.open[c.dataset.open]=c.checked; save(); cloudSettings(); toast(tr(c.checked?'Tema abierto para la clase':'Tema cerrado')); });

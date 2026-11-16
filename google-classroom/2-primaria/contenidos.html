@@ -1,0 +1,52 @@
+<script>
+/* =====================================================================
+   CONTENIDOS DEL CURSO · Viajeros del Tiempo
+   © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+   ---------------------------------------------------------------------
+   Cada tema tiene misiones (con tarjetas "learn" y retos "ch") y un jefe
+   final. Un tema sin misiones aparece en el mapa como "Próximamente".
+
+   Para añadir un tema: rellena "missions" y "boss" copiando el modelo del
+   Tema 1. Tipos de reto disponibles:
+     mc       elegir una respuesta        {t:'mc', q, opts:[...], a:índice, hint}
+     tf       verdadero o falso           {t:'tf', q, a:true|false, hint}
+     pick     seleccionar varias          {t:'pick', q, opts:[...], a:[índices], hint}
+     order    ordenar una secuencia       {t:'order', q, items:[en orden correcto], hint}
+     classify clasificar en grupos        {t:'classify', q, bins:[...], items:[[texto, grupo],...], hint}
+     match    unir parejas                {t:'match', q, pairs:[[izq, der],...], hint}
+     fill     completar huecos            {t:'fill', q, parts:['texto ',0,' texto ',1], answers:[...], bank:[distractores], hint}
+   Los "id" de misiones y jefes deben ser únicos en todo el curso.
+   ===================================================================== */
+
+/* ---------- CURRÍCULO: criterios de evaluación y saberes básicos ----------
+   Se rellenan aquí y se asocian a temas, misiones y retos (apartados CURRICULO y EVALUACION
+   de un curso ya relleno). */
+const CURRICULO = {
+  criterios: [
+    /* { id:'1.1', texto:'…' }, */
+  ],
+  saberes: [
+    /* { id:'A.1.1', bloque:'…', texto:'…' }, */
+  ]
+};
+
+/* ---------- TEMAS ----------
+   Para cada tema: define sus misiones y su jefe final (TEMA1_MISIONES y TEMA1_JEFE,
+   con el formato explicado arriba) y ponlos en missions / boss. */
+
+const CURSO = {
+  asignatura: 'Ciencias Sociales · 2.º de Primaria',
+  situaciones: [
+    /* { title:'Título propio de la situación', temas:['tema1','tema2'] }, */
+  ],
+  temas: [
+    { id:'tema1', n:1, title:'Tema 1', short:'Próximamente', color:'--lung', icon:'home', missions:[] },
+    { id:'tema2', n:2, title:'Tema 2', short:'Próximamente', color:'--ok', icon:'globe', missions:[] },
+    { id:'tema3', n:3, title:'Tema 3', short:'Próximamente', color:'--food', icon:'compass', missions:[] },
+    { id:'tema4', n:4, title:'Tema 4', short:'Próximamente', color:'--virus', icon:'clock', missions:[] },
+    { id:'tema5', n:5, title:'Tema 5', short:'Próximamente', color:'--sense', icon:'castle', missions:[] },
+    { id:'tema6', n:6, title:'Tema 6', short:'Próximamente', color:'--bone', icon:'coin', missions:[] }
+  ]
+};
+
+</script>

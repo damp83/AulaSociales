@@ -32,18 +32,17 @@ registro = (raiz / 'cursos.js').read_text(encoding='utf-8')
 if f"id: '{cid}'" in registro:
     sys.exit(f'El curso {cid} ya está en cursos.js.')
 
-# Cabecera con las instrucciones, tomada del curso de ejemplo
-modelo = (raiz / 'cursos' / '2-primaria' / 'contenidos.js').read_text(encoding='utf-8')
-cabecera = modelo[:modelo.index('/* ---------- CURRÍCULO')]
+# Cabecera con las instrucciones y los tipos de reto
+cabecera = (raiz / 'tools' / 'cabecera_contenidos.js').read_text(encoding='utf-8')
 colores = ['--lung', '--ok', '--food', '--virus', '--sense', '--bone']
-iconos = ['person', 'heartplus', 'paw', 'leaf', 'flask', 'wifi']
+iconos = ['home', 'globe', 'compass', 'clock', 'castle', 'coin']
 lista = ',\n'.join(
     f"    {{ id:'tema{i}', n:{i}, title:'Tema {i}', short:'Próximamente', color:'{colores[(i - 1) % 6]}', icon:'{iconos[(i - 1) % 6]}', missions:[] }}"
     for i in range(1, temas + 1)
 )
 contenido = cabecera + f"""/* ---------- CURRÍCULO: criterios de evaluación y saberes básicos ----------
-   Se rellenan aquí y se asocian a temas, misiones y retos (mira cursos/2-primaria/contenidos.js
-   como ejemplo, apartados CURRICULO y EVALUACION). */
+   Se rellenan aquí y se asocian a temas, misiones y retos (apartados CURRICULO y EVALUACION
+   de un curso ya relleno). */
 const CURRICULO = {{
   criterios: [
     /* {{ id:'1.1', texto:'…' }}, */
@@ -54,11 +53,11 @@ const CURRICULO = {{
 }};
 
 /* ---------- TEMAS ----------
-   Para cada tema: define sus misiones y su jefe final (como TEMA1_MISIONES y TEMA1_JEFE en
-   cursos/2-primaria/contenidos.js) y ponlos en missions / boss. */
+   Para cada tema: define sus misiones y su jefe final (TEMA1_MISIONES y TEMA1_JEFE,
+   con el formato explicado arriba) y ponlos en missions / boss. */
 
 const CURSO = {{
-  asignatura: 'Ciencias de la Naturaleza · {nombre}',
+  asignatura: 'Ciencias Sociales · {nombre}',
   situaciones: [
     /* {{ title:'Título propio de la situación', temas:['tema1','tema2'] }}, */
   ],
@@ -76,7 +75,8 @@ entrada = f"""  {{
     nombre_en: '{nombre_en}',
     ingles: false
   }}"""
-registro = re.sub(r"\n\];\s*$", ",\n" + entrada + "\n];\n", registro.rstrip() + "\n")
+coma = "" if re.search(r"\[\s*\];\s*$", registro) else ","
+registro = re.sub(r"\n\];\s*$", coma + "\n" + entrada + "\n];\n", registro.rstrip() + "\n")
 (raiz / 'cursos.js').write_text(registro, encoding='utf-8')
 print(f'Curso creado: cursos/{cid}/contenidos.js ({temas} temas vacíos) y añadido a cursos.js.')
-print(f'Enlace: https://damp83.github.io/AulaNaturales/?curso={cid}')
+print(f'Enlace: https://damp83.github.io/AulaSociales/?curso={cid}')

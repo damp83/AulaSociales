@@ -1,4 +1,4 @@
-# Plantilla para crear un nuevo juego a partir de Exploradores de la Naturaleza
+# Plantilla para crear un nuevo juego a partir de Viajeros del Tiempo
 
 Esta plantilla sirve para pedirle a Claude (Claude Code) un videojuego como este para **otra área o curso**. Se reutiliza todo el motor ya probado: evaluación, versión para Google Classroom, fichas en papel… Solo cambian **la temática visual y los contenidos**.
 
@@ -7,8 +7,8 @@ Copia el texto del recuadro, sustituye lo que va entre [corchetes] y adjunta las
 ---
 
 ```text
-Partiendo del repositorio https://github.com/damp83/AulaNaturales (videojuego
-«Exploradores de la Naturaleza»), crea un nuevo videojuego para otra área.
+Partiendo del repositorio https://github.com/damp83/AulaSociales (videojuego
+«Viajeros del Tiempo»), crea un nuevo videojuego para otra área.
 Mantén el motor, la mecánica y todas las funcionalidades; cambia SOLO la
 temática visual y los contenidos.
 
@@ -17,7 +17,7 @@ temática visual y los contenidos.
 - Curso y edad: [p. ej. 2.º de Primaria, 7-8 años]
 - Título del juego: [p. ej. «Aventureros de los Números»]
 - Ambientación: [p. ej. viaje espacial / reino medieval / fondo marino]
-- Personaje guía (sustituye a Glo): [nombre y cómo es, o «invéntalo»]
+- Personaje guía (sustituye a Tic): [nombre y cómo es, o «invéntalo»]
 - Villanos de los jefes finales: [uno por tema, o «invéntalos según la ambientación»]
 - Autoría: [Nombre y apellidos, cargo, comunidad autónoma]
 - Licencia: Creative Commons BY-NC-SA 4.0
@@ -116,4 +116,4 @@ temática visual y los contenidos.
 
 ---
 
-*Exploradores de la Naturaleza* · © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+*Viajeros del Tiempo* (adaptación de [*Exploradores de la Naturaleza*](https://github.com/damp83/AulaNaturales)) · © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)

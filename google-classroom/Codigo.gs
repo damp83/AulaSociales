@@ -1,5 +1,5 @@
 /**
- * Exploradores de la Naturaleza · versión Google Classroom
+ * Viajeros del Tiempo · versión Google Classroom
  * © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
  * ---------------------------------------------------------
  * Guarda el progreso de cada alumno en una hoja de cálculo del Drive del docente.
@@ -23,7 +23,7 @@ const MAX_DATOS = 45000;                     // una celda admite 50.000 caracter
 
 function doGet() {
   return HtmlService.createTemplateFromFile('index').evaluate()
-    .setTitle('Exploradores de la Naturaleza')
+    .setTitle('Viajeros del Tiempo')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -143,7 +143,7 @@ function libro_() {
   if (id) {
     try { return SpreadsheetApp.openById(id); } catch (e) { /* la hoja se borró: se crea otra */ }
   }
-  const libro = SpreadsheetApp.create('Exploradores de la Naturaleza · Progreso del alumnado');
+  const libro = SpreadsheetApp.create('Viajeros del Tiempo · Progreso del alumnado');
   const h = libro.getSheets()[0];
   h.setName(HOJA);
   h.getRange(1, 1, 1, CABECERA.length).setValues([CABECERA]).setFontWeight('bold');

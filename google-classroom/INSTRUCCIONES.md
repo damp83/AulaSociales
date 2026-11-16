@@ -1,4 +1,4 @@
-# Exploradores de la Naturaleza en Google Classroom
+# Viajeros del Tiempo en Google Classroom
 
 Con esta versión, cada alumno entra con **su cuenta de Google del centro** (el mismo usuario y contraseña de Classroom) y su progreso **se guarda en la nube**: puede empezar en la tableta del aula y seguir en el ordenador de casa.
 
@@ -12,11 +12,11 @@ La instalación se hace una sola vez y se tarda unos 10 minutos.
 
 1. Entra en **https://script.google.com** con tu **cuenta del centro** (la de Classroom, no una cuenta personal).
 2. Pulsa **Nuevo proyecto**.
-3. Arriba a la izquierda, cambia «Proyecto sin título» por **Exploradores de la Naturaleza**.
+3. Arriba a la izquierda, cambia «Proyecto sin título» por **Viajeros del Tiempo**.
 
 ## 2. Pegar los cuatro archivos
 
-Cada curso tiene su carpeta dentro de `google-classroom` (para 2.º de Primaria: https://github.com/damp83/AulaNaturales/tree/main/google-classroom/2-primaria). `Codigo.gs` está en `google-classroom` y es el mismo para todos los cursos.
+Cada curso tiene su carpeta dentro de `google-classroom` (para 2.º de Primaria: https://github.com/damp83/AulaSociales/tree/main/google-classroom/2-primaria). `Codigo.gs` está en `google-classroom` y es el mismo para todos los cursos.
 
 Cada curso se instala como **un proyecto de Apps Script distinto**, con su propia hoja de progreso. Si das clase en varios cursos, repite esta guía para cada uno.
 
@@ -37,15 +37,15 @@ Pulsa el icono del disquete (**Guardar proyecto**).
 
 1. Arriba, en el desplegable de funciones, elige **prepararHoja** y pulsa **Ejecutar**.
 2. Google pedirá permisos: **Revisar permisos** → elige tu cuenta → **Permitir**.
-   - Si aparece «Google no ha verificado esta aplicación», pulsa **Configuración avanzada** → **Ir a Exploradores de la Naturaleza**. Es tu propio script y solo accede a la hoja de progreso.
-3. En tu Drive aparecerá la hoja **«Exploradores de la Naturaleza · Progreso del alumnado»**.
+   - Si aparece «Google no ha verificado esta aplicación», pulsa **Configuración avanzada** → **Ir a Viajeros del Tiempo**. Es tu propio script y solo accede a la hoja de progreso.
+3. En tu Drive aparecerá la hoja **«Viajeros del Tiempo · Progreso del alumnado»**.
 
 ## 4. Publicar el juego
 
 1. Pulsa **Implementar** → **Nueva implementación**.
 2. En el engranaje de «Seleccionar tipo», elige **Aplicación web**.
 3. Rellena:
-   - **Descripción:** Exploradores de la Naturaleza
+   - **Descripción:** Viajeros del Tiempo
    - **Ejecutar como:** **Yo** (tu cuenta)
    - **Quién tiene acceso:** **Cualquier usuario de [tu centro o dominio]**
 4. Pulsa **Implementar** y copia la **URL de la aplicación web**. Termina en `/exec`.
