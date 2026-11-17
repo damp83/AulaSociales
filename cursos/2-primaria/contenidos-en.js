@@ -1,0 +1,337 @@
+/* =====================================================================
+   CONTENIDOS EN INGLÉS · Time Travellers (Viajeros del Tiempo)
+   © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+   ---------------------------------------------------------------------
+   Versión inglesa de contenidos.js, adaptada a alumnado de 7-8 años que aprende inglés.
+   Solo contiene TEXTOS: la estructura (respuestas correctas, orden, grupos, criterios) se toma
+   de contenidos.js, así que el progreso y la evaluación son los mismos en los dos idiomas.
+
+   Reglas para editar:
+   - Cada misión tiene las mismas tarjetas (learn) y los mismos retos (ch) EN EL MISMO ORDEN que en
+     contenidos.js. El esquema es el último reto de cada misión.
+   - En «opts», «items», «pairs», «bins» y «parts» hay que respetar el mismo número y orden de
+     elementos que en castellano (la respuesta correcta se identifica por su posición).
+   - En «classify», «items» es solo la lista de textos (el grupo de cada uno sale de contenidos.js).
+   - En los esquemas, [[palabra]] es un hueco: debe haber el mismo número de huecos.
+   ===================================================================== */
+
+const IDIOMA_CONTENIDOS = (() => {
+  const CAMPOS = ['q', 'opts', 'hint', 'items', 'bins', 'pairs', 'parts', 'answers', 'bank', 'titulo', 'nodos', 'extra'];
+  const copia = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
+  const ESQ_EN = { q: 'Complete the concept map for this mission.', hint: 'Look at the lesson cards: the concept map sums them up.' };
+
+  // Guarda una vez los textos originales en castellano para poder volver a ellos
+  function guardar(curso) {
+    if (curso._es) return;
+    curso._es = { asignatura: curso.asignatura, situaciones: (curso.situaciones || []).map(s => s.title) };
+    curso.temas.forEach(t => {
+      t._es = { title: t.title, short: t.short, starsBadge: t.starsBadge, minijuego: copia(t.minijuego) };
+      [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+        m._es = { title: m.title, short: m.short, badge: m.badge, villain: m.villain, learn: copia(m.learn) };
+        [...(m.ch || []), ...(m.extra || [])].forEach(r => {
+          r._es = {};
+          CAMPOS.forEach(k => { if (r[k] !== undefined) r._es[k] = copia(r[k]); });
+        });
+      });
+    });
+  }
+
+  function ponerReto(r, o, idioma) {
+    if (idioma === 'es') { Object.keys(r._es).forEach(k => { r[k] = copia(r._es[k]); }); return; }
+    if (r.t === 'esquema') o = Object.assign({}, ESQ_EN, o);
+    if (!o) return;
+    CAMPOS.forEach(k => {
+      if (o[k] === undefined) return;
+      if (k === 'items' && r.t === 'classify') r.items = r._es.items.map((it, i) => [o.items[i], it[1]]);
+      else r[k] = copia(o[k]);
+    });
+  }
+
+  function aplicar(curso, idioma) {
+    guardar(curso);
+    const en = idioma === 'en' ? CONTENIDOS_EN : null;
+    curso.asignatura = en ? en.asignatura : curso._es.asignatura;
+    (curso.situaciones || []).forEach((s, i) => { s.title = en ? en.situaciones[i] : curso._es.situaciones[i]; });
+    curso.temas.forEach(t => {
+      const ot = en && en.temas[t.id];
+      t.title = ot ? ot.title : t._es.title;
+      t.short = ot ? ot.short : t._es.short;
+      t.starsBadge = ot && ot.starsBadge ? ot.starsBadge : t._es.starsBadge;
+      if (t.minijuego) t.minijuego = ot && ot.minijuego ? Object.assign({}, t.minijuego, copia(ot.minijuego)) : copia(t._es.minijuego);
+      [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+        const om = en && en.misiones[m.id];
+        ['title', 'short', 'badge', 'villain'].forEach(k => { m[k] = om && om[k] !== undefined ? om[k] : m._es[k]; });
+        m.learn = om && om.learn ? copia(om.learn) : copia(m._es.learn);
+        (m.ch || []).forEach((r, i) => ponerReto(r, om && om.ch && om.ch[i], idioma));
+        (m.extra || []).forEach((r, i) => ponerReto(r, om && om.extra && om.extra[i], idioma));
+      });
+    });
+  }
+  return { aplicar };
+})();
+
+const CONTENIDOS_EN = {
+  asignatura: 'Social Science · Primary 2',
+  situaciones: ['Backpack on!', 'Guardians of every drop', 'My corner of the world'],
+  temas: {
+    tema1: { title: 'Landscape lookout', short: 'Landscapes, coast, inland, rivers and rocks', starsBadge: 'Lookout constellation',
+      minijuego: { titulo: 'Lookout rain', rondas: [
+        { meta: 'Catch the NATURAL FEATURES', ok: [{e:'⛰️',n:'Mountain'},{e:'🌳',n:'Tree'},{e:'🌊',n:'Sea'},{e:'🪨',n:'Rock'},{e:'🌾',n:'Grass'}],
+          no: [{e:'🏠',n:'House'},{e:'🌉',n:'Bridge'},{e:'🚂',n:'Train'},{e:'🛣️',n:'Road'}] },
+        { meta: 'Catch what you find on the COAST', ok: [{e:'🏖️',n:'Beach'},{e:'⚓',n:'Port'},{e:'🏝️',n:'Island'},{e:'⛵',n:'Bay'}],
+          no: [{e:'🏔️',n:'Summit'},{e:'🚜',n:'Farm'},{e:'🌲',n:'Valley'},{e:'🚇',n:'Tunnel'}] },
+        { meta: 'Catch the HARD ROCKS', ok: [{e:'🪨',n:'Granite'},{e:'🗿',n:'Marble'},{e:'🌋',n:'Basalt'}],
+          no: [{e:'🧱',n:'Clay'},{e:'🏜️',n:'Sandstone'},{e:'🏚️',n:'Slate'}] } ] } },
+    tema2: { title: 'Trip to the stars', short: 'Stars and planets, the Earth, its movements and the Moon', starsBadge: 'Travelling constellation',
+      minijuego: { titulo: 'Space race',
+        intro: 'Run across the Moon, collect the space objects and jump over the dangers. At the question gates, jump to go through the top gate or stay on the ground for the bottom one.',
+        fin: 'Remember: the Earth spins round once a day and goes round the Sun once a year.',
+        buenos: [{e:'☀️',n:'Sun'},{e:'🌍',n:'Earth'},{e:'🌙',n:'Moon'},{e:'🪐',n:'Saturn'},{e:'⭐',n:'Star'},{e:'🔴',n:'Mars'}],
+        malos: [{e:'☄️',n:'Meteorite'},{e:'🗑️',n:'Space rubbish'},{e:'🛸',n:'UFO'}],
+        preguntas: [
+        {q: 'Which one gives us light and heat?', ok: 'The Sun', no: 'The Moon'},
+        {q: 'What is the Moon?', ok: 'A satellite', no: 'A star'},
+        {q: 'How many planets are in the solar system?', ok: 'Eight', no: 'Three'},
+        {q: 'Which planet is closest to the Sun?', ok: 'Mercury', no: 'Neptune'},
+        {q: 'How long does the Earth take to spin round once?', ok: 'One day', no: 'One year'},
+        {q: 'Where does the Sun rise?', ok: 'In the east', no: 'In the west'},
+        {q: 'What does a full moon look like?', ok: 'Round', no: 'You cannot see it'},
+        {q: 'Which continent do we live in?', ok: 'Europe', no: 'Asia'} ] } },
+    tema3: { title: 'Drops and winds', short: 'Coming soon' },
+    tema4: { title: 'Busy hands', short: 'Coming soon' },
+    tema5: { title: 'My town, my city', short: 'Coming soon' },
+    tema6: { title: 'Detectives of the past', short: 'Coming soon' }
+  },
+  misiones: {
+    /* ---------- TOPIC 1 · Landscape lookout ---------- */
+    paisaje1: { title: 'The traveller’s eye', short: 'Natural and built features', badge: 'Traveller’s eye',
+      learn: [
+        { h: 'What is a landscape?', p: 'A <mark>landscape</mark> is everything we see when we look at a place: mountains, trees, houses, paths…' },
+        { h: 'Natural features', p: '<mark>Natural features</mark> are not made by people. They are part of nature.',
+          extra: '<div class="tags"><span class="tag">mountain</span><span class="tag">lake</span><span class="tag">river</span><span class="tag">grass</span><span class="tag">tree</span></div>' },
+        { h: 'Built features', p: '<mark>Built features</mark> are made by people.',
+          extra: '<div class="tags"><span class="tag">house</span><span class="tag">road</span><span class="tag">railway</span><span class="tag">bridge</span><span class="tag">field of crops</span></div>' },
+        { h: 'Natural and humanised landscapes', p: 'A <mark>natural landscape</mark> has few built features. A <mark>humanised landscape</mark> is a landscape that people have changed to live in it.' },
+        { h: 'Landscapes change', p: 'All landscapes change over <mark>time</mark>. A beach with a few houses can become a city.' }
+      ],
+      ch: [
+        { q: 'Which one is a natural feature?', opts: ['⛰️ The mountain', '🛣️ The road', '🏠 The house'], hint: 'Nobody made natural features.' },
+        { q: 'Is it a natural or a built feature?', bins: ['Natural', 'Built'], items: ['🌳 Tree', '🏠 House', '💧 Lake', '🛤️ Railway', '⛰️ Mountain', '🌉 Bridge', '🌾 Grass'], hint: 'Built: people made it. Natural: it is part of nature.' },
+        { q: 'Fields of crops are natural features.', hint: 'People prepare and look after fields. They are built features.' },
+        { q: 'Tap the features made by people.', opts: ['Road', 'River', 'House', 'Grass', 'Railway', 'Lake'], hint: 'Nobody made the river, the grass or the lake.' },
+        { q: 'Match each word with its meaning.', pairs: [['Natural feature', 'It is part of nature'], ['Built feature', 'People make it'], ['Natural landscape', 'It has few built features'], ['Humanised landscape', 'People have changed it']], hint: 'Look at the lesson cards again.' },
+        { q: 'Fill in the gaps.', parts: ['A natural landscape has ', 0, ' built features. A humanised landscape has ', 1, ' built features.'], answers: ['few', 'many'], bank: ['blue'], hint: 'People build a lot in humanised landscapes.' },
+        { q: 'Put in order how this coast landscape changed.', items: ['There was a beach with very few houses', 'People built streets and some buildings', 'Now there are lots of tall buildings next to the beach'], hint: 'Start with what was there a long time ago.' },
+        { q: 'A village with houses, streets and fields of crops. What landscape is it?', opts: ['Humanised', 'Natural'], hint: 'It has lots of features built by people.' },
+        { q: 'Landscapes are always the same: they never change.', hint: 'All landscapes change over time.' },
+        { titulo: '[[Landscapes]]', nodos: [
+          { txt: '[[Natural]] features', hijos: [{ txt: 'Mountains, lakes, [[trees]]' }] },
+          { txt: '[[Built]] features', hijos: [{ txt: 'Houses, roads, [[bridges]]' }] },
+          { txt: 'Natural landscape: [[few]] built features' },
+          { txt: '[[Humanised]] landscape: people have changed it' } ], extra: ['fast', 'round'] }
+      ] },
+    paisaje2: { title: 'Off to the sea', short: 'Coast landscapes', badge: 'Sea wolf',
+      learn: [
+        { h: 'The coast', p: 'The <mark>coast</mark> is the land next to the sea. There we find <mark>coast landscapes</mark>.' },
+        { h: 'Beaches and cliffs', p: 'On the coast there are <mark>beaches</mark> and <mark>cliffs</mark>.',
+          extra: '<div class="senses"><b>Beach</b><span>flat land with sand or stones, next to the sea</span><b>Cliff</b><span>a high wall of rock above the sea</span></div>' },
+        { h: 'More coast shapes', p: 'The coast has lots of shapes:',
+          extra: '<div class="senses"><b>Bay</b><span>the sea goes into the land</span><b>Cape</b><span>the land goes into the sea</span><b>Island</b><span>land with water all around</span><b>Peninsula</b><span>land with water on all sides but one</span><b>Archipelago</b><span>a group of islands close together</span></div>' },
+        { h: 'What we build on the coast', p: 'On the coast people build <mark>ports</mark> for boats and <mark>lighthouses</mark> that shine at night.' }
+      ],
+      ch: [
+        { q: 'What is the coast?', opts: ['The land next to the sea', 'The highest part of a mountain', 'Flat land far from the sea'], hint: 'On the coast we are next to the sea.' },
+        { q: 'Is it the beach or the cliff?', bins: ['Beach', 'Cliff'], items: ['It is flat', 'It is a wall of rock', 'It has sand or stones', 'It is high above the sea', 'You can lie on the sand'], hint: 'The beach is flat. The cliff is a wall of rock.' },
+        { q: 'Match each coast shape with its meaning.', pairs: [['Bay', 'The sea goes into the land'], ['Cape', 'The land goes into the sea'], ['Island', 'It has water all around'], ['Peninsula', 'It has water on all sides but one']], hint: 'In a bay the sea goes in. In a cape the land goes out.' },
+        { q: 'An archipelago is a group of islands close together.', hint: 'Lots of islands together make an archipelago.' },
+        { q: 'Tap the built features on the coast.', opts: ['⚓ Port', '🏖️ Beach', 'Lighthouse', 'Cliff', '🏝️ Island'], hint: 'The beach, the cliff and the island are natural.' },
+        { q: 'Fill in the gaps.', parts: ['An ', 0, ' is land with water all around. A group of islands makes an ', 1, '.'], answers: ['island', 'archipelago'], bank: ['bay', 'cape'], hint: 'Look at the word “islands”.' },
+        { q: 'A boat comes home at night. Put its trip in order.', items: ['It sees the lighthouse light from the sea', 'It goes into the bay', 'It arrives at the port and stops'], hint: 'First it sees the light from far away. At the end it arrives at the port.' },
+        { q: 'You walk on the sand and get your feet wet in the sea. Where are you?', opts: ['On a beach', 'On a cliff', 'In a valley'], hint: 'A beach has sand and is next to the sea.' },
+        { q: 'A cliff is flat land with sand.', hint: 'A cliff is a wall of rock. Flat land with sand is a beach.' },
+        { titulo: '[[Coast]] landscapes', nodos: [
+          { txt: '[[Beach]]: flat land with sand' },
+          { txt: '[[Cliff]]: a wall of rock' },
+          { txt: 'Other shapes', hijos: [{ txt: '[[Bay]]: the sea goes into the land' }, { txt: '[[Cape]]: the land goes into the sea' }, { txt: '[[Island]]: water all around' }] } ], extra: ['valley', 'summit'] }
+      ] },
+    paisaje3: { title: 'Peaks and plains', short: 'Inland landscapes', badge: 'Mountain goat',
+      learn: [
+        { h: 'Inland', p: 'Far from the sea is <mark>inland</mark>. There we find <mark>mountain</mark> landscapes and <mark>plain</mark> landscapes.' },
+        { h: 'Mountains', p: 'A <mark>mountain</mark> is a very high piece of land. Lots of mountains together make a <mark>mountain range</mark>. Between mountains there are <mark>valleys</mark>: low land where rivers flow.' },
+        { h: 'The parts of a mountain', p: 'A mountain has three parts:',
+          extra: '<div class="senses"><b>Summit</b><span>the highest part</span><b>Slope</b><span>between the summit and the foot</span><b>Foot</b><span>the lowest part</span></div>' },
+        { h: 'Living in the mountains', p: 'In the mountains there are <mark>small villages</mark>, narrow roads with bends and <mark>tunnels</mark>.' },
+        { h: 'Plains', p: 'A <mark>plain</mark> is flat land. There are cities, big towns, fields of crops, farms and motorways.',
+          extra: '<div class="senses"><b>Hill</b><span>a small high piece of land</span><b>Plateau</b><span>flat, high land</span></div>' }
+      ],
+      ch: [
+        { q: 'Put the parts of a mountain in order, from bottom to top.', items: ['Foot', 'Slope', 'Summit'], hint: 'Start with the lowest part.' },
+        { q: 'Match each word with its meaning.', pairs: [['Mountain range', 'Lots of mountains together'], ['Valley', 'Low land between mountains'], ['Hill', 'A small high piece of land'], ['Plateau', 'Flat, high land']], hint: 'A hill is small. A plateau is flat and high.' },
+        { q: 'Do you find it more in the mountains or on the plain?', bins: ['Mountains', 'Plain'], items: ['Narrow roads with bends', 'Big cities', 'Tunnels', 'Big fields of crops', 'Small villages', 'Motorways'], hint: 'The plain is flat, so big cities and motorways fit there.' },
+        { q: 'What is the highest part of a mountain called?', opts: ['The summit', 'The foot', 'The slope'], hint: 'The lowest part is the foot.' },
+        { q: 'A plain is flat land.', hint: 'Plain means flat.' },
+        { q: 'Tap the inland landscapes.', opts: ['Mountain', 'Beach', 'Plain', 'Cliff', 'Valley', 'Bay'], hint: 'The beach, the cliff and the bay are on the coast.' },
+        { q: 'Fill in the gaps.', parts: ['Between the ', 0, ' and the ', 1, ' of a mountain there is the ', 2, '.'], answers: ['summit', 'foot', 'slope'], bank: ['coast', 'bay'], hint: 'The summit is the highest part and the foot is the lowest.' },
+        { q: 'A village is right at the bottom, in the valley, next to the river. Which part of the mountain is it in?', opts: ['At the foot', 'On the slope', 'At the summit'], hint: 'The lowest part of the mountain is the foot.' },
+        { q: 'A mountain range is a very small mountain.', hint: 'A mountain range is lots of mountains together. A small high piece of land is a hill.' },
+        { titulo: '[[Inland]] landscapes', nodos: [
+          { txt: '[[Mountain]]', hijos: [{ txt: 'Parts: summit, [[slope]] and foot' }, { txt: 'Lots of mountains make a [[range]]' }] },
+          { txt: '[[Plain]]', hijos: [{ txt: 'The land is [[flat]]' }, { txt: 'There are hills and [[plateaus]]' }] } ], extra: ['beaches', 'cape'] }
+      ] },
+    paisaje4: { title: 'The journey of a drop', short: 'The river and its course', badge: 'Travelling drop',
+      learn: [
+        { h: 'What is a river?', p: 'A <mark>river</mark> is water that flows all the time through different landscapes. It starts in the <mark>mountains</mark> and ends in the <mark>sea</mark> or in another river.' },
+        { h: 'The course of a river', p: 'The way a river goes is called its <mark>course</mark>. The place where it starts is the <mark>source</mark>. The place where it ends is the <mark>mouth</mark>.' },
+        { h: 'Upper course', p: 'In the <mark>mountains</mark>, the river is <mark>narrow</mark>, carries <mark>little</mark> water and flows down the slope very <mark>fast</mark>.' },
+        { h: 'Middle course', p: 'On the <mark>plain</mark>, the river is <mark>wider</mark> and the water flows more <mark>slowly</mark>. Sometimes other rivers give it their water and it gets bigger.' },
+        { h: 'Lower course', p: 'Many rivers reach the <mark>coast</mark>. There their water flows into the <mark>sea</mark>.' }
+      ],
+      ch: [
+        { q: 'Put the river’s journey in order.', items: ['It starts in the mountains', 'It flows fast down the slope', 'It flows slowly across the plain', 'It flows into the sea'], hint: 'Start at the source and finish at the mouth.' },
+        { q: 'Upper course or middle course?', bins: ['Upper course', 'Middle course'], items: ['It is narrow', 'It is wide', 'It carries little water', 'It carries lots of water', 'The water flows very fast', 'The water flows slowly'], hint: 'In the mountains the river is narrow and fast. On the plain it is wide and slow.' },
+        { q: 'What is the place where a river starts called?', opts: ['Source', 'Mouth', 'Middle course'], hint: 'Rivers start in the mountains.' },
+        { q: 'Match each part of the course with its landscape.', pairs: [['Upper course', 'Mountains'], ['Middle course', 'Plain'], ['Lower course', 'Coast']], hint: 'The river comes down the mountain, crosses the plain and reaches the coast.' },
+        { q: 'Fill in the gaps.', parts: ['The river starts in the ', 0, ', crosses the ', 1, ' and flows into the ', 2, '.'], answers: ['mountains', 'plain', 'sea'], bank: ['beach', 'bay'], hint: 'Follow the river from top to bottom.' },
+        { q: 'All rivers flow into the sea.', hint: 'Some rivers take their water to another river.' },
+        { q: 'Tap what is true in the upper course.', opts: ['It is in the mountains', 'It is narrow', 'It flows very slowly', 'It carries lots of water', 'It flows very fast'], hint: 'In the upper course the river carries little water and flows fast.' },
+        { q: 'A wide, calm river flows past a town, on flat land. Which part of the course is it?', opts: ['Middle course', 'Upper course'], hint: 'Flat land is the plain: the middle course is there.' },
+        { q: 'The way a river goes is called its course.', hint: 'That is why we say upper, middle and lower course.' },
+        { titulo: 'The course of the [[river]]', nodos: [
+          { txt: '[[Source]] in the mountains' }, { txt: 'Upper course: narrow and [[fast]]' }, { txt: 'Middle course: [[wide]] and slow' },
+          { txt: 'Lower course: it reaches the [[coast]]' }, { txt: '[[Mouth]] in the sea' } ], extra: ['summit', 'island'] }
+      ] },
+    paisaje5: { title: 'The stone treasure', short: 'Rocks and their uses', badge: 'Rock hunter',
+      learn: [
+        { h: 'Rocks', p: '<mark>Rocks</mark> are natural features of the landscape. There are rocks in mountains, on cliffs, on the forest floor and at the bottom of the sea.' },
+        { h: 'Hard rocks', p: '<mark>Hard rocks</mark> are strong: they do not break easily.',
+          extra: '<div class="tags"><span class="tag">granite</span><span class="tag">marble</span><span class="tag">basalt</span></div>' },
+        { h: 'Soft rocks', p: '<mark>Soft rocks</mark> are fragile: they break very easily.',
+          extra: '<div class="tags"><span class="tag">sandstone</span><span class="tag">slate</span><span class="tag">clay</span></div>' },
+        { h: 'Rocks and minerals', p: 'Rocks are made of <mark>minerals</mark>. With a magnifying glass we can see the minerals in granite.' },
+        { h: 'We use rocks', p: 'We make lots of things with rocks and minerals:',
+          extra: '<div class="senses"><b>Clay</b><span>bricks</span><b>Granite</b><span>building blocks</span><b>Slate</b><span>roof tiles</span><b>Calcite</b><span>chalk</span></div>' }
+      ],
+      ch: [
+        { q: 'Is it a hard rock or a soft rock?', bins: ['Hard', 'Soft'], items: ['Granite', 'Sandstone', 'Marble', 'Slate', 'Basalt', 'Clay'], hint: 'Hard: granite, marble and basalt. Soft: sandstone, slate and clay.' },
+        { q: 'Match each rock or mineral with what we make.', pairs: [['Clay', 'Bricks'], ['Slate', 'Roof tiles'], ['Granite', 'Blocks'], ['Calcite', 'Chalk']], hint: 'Look at the last lesson card again.' },
+        { q: 'Rocks are made of minerals.', hint: 'With a magnifying glass you can see the minerals in granite.' },
+        { q: 'Tap the hard rocks.', opts: ['Granite', 'Sandstone', 'Marble', 'Iron', 'Basalt'], hint: 'Sandstone is soft. Iron is not a rock.' },
+        { q: 'Where can we find rocks?', opts: ['In mountains and at the bottom of the sea', 'Only in cities', 'Only in rivers'], hint: 'There are rocks in lots of places in the landscape.' },
+        { q: 'Fill in the gaps.', parts: ['', 0, ' rocks are strong. ', 1, ' rocks break very easily.'], answers: ['Hard', 'Soft'], bank: ['Built', 'Fast'], hint: 'Strong means it does not break easily.' },
+        { q: 'Put in order how we make a brick wall.', items: ['We take clay from the ground', 'We make the bricks', 'We build the wall with the bricks'], hint: 'First we need the rock.' },
+        { q: 'A roof has thin, dark tiles. Which rock are they made of?', opts: ['Slate', 'Granite', 'Marble'], hint: 'We make roof tiles with slate.' },
+        { q: 'Soft rocks never break.', hint: 'Soft rocks are fragile: they break very easily.' },
+        { titulo: '[[Rocks]]', nodos: [
+          { txt: '[[Hard]] rocks: strong', hijos: [{ txt: 'Granite, marble, [[basalt]]' }] },
+          { txt: '[[Soft]] rocks: fragile', hijos: [{ txt: 'Sandstone, slate, [[clay]]' }] },
+          { txt: 'They are made of [[minerals]]' } ], extra: ['wood', 'plastic'] }
+      ] },
+    'reto-paisajes': { title: 'Fog at the lookout', short: 'Review of the whole topic', badge: 'Lookout guardian', villain: 'Fog Blot',
+      extra: [
+        { q: 'Is it a coast or an inland landscape?', bins: ['Coast', 'Inland'], items: ['Beach', 'Mountain', 'Cliff', 'Valley', 'Bay', 'Plateau', 'Cape', 'Hill'], hint: 'The coast is next to the sea. Inland is far from the sea.' },
+        { q: 'It is water that flows all the time, starts in the mountains and reaches the sea. What is it?', opts: ['A river', 'A lake', 'A bay'], hint: 'It has an upper, middle and lower course.' }
+      ] },
+    /* ---------- TOPIC 2 · Trip to the stars ---------- */
+    universo1: { title: 'Space neighbours', short: 'Stars, planets and the solar system', badge: 'Star catcher',
+      learn: [
+        { h: 'The universe', p: 'The <mark>universe</mark> is huge. It is made of lots of <mark>space objects</mark>: stars, planets and satellites.' },
+        { h: 'Stars', p: '<mark>Stars</mark> give <mark>light and heat</mark>. The <mark>Sun</mark> is the closest star to the Earth.' },
+        { h: 'Planets and satellites', p: 'Planets and satellites do not have their own light.',
+          extra: '<div class="senses"><b>Planet</b><span>it goes round a star, like the Earth</span><b>Satellite</b><span>it goes round a planet, like the Moon</span></div>' },
+        { h: 'The solar system', p: 'The Sun, the <mark>eight planets</mark> that go round it and other smaller objects make the <mark>solar system</mark>. These are the planets, from the closest to the Sun to the furthest:',
+          extra: '<ol class="steps"><li>Mercury</li><li>Venus</li><li>Earth</li><li>Mars</li><li>Jupiter</li><li>Saturn</li><li>Uranus</li><li>Neptune</li></ol>' },
+        { h: 'Who studies the universe?', p: 'People who study the universe are called <mark>astronomers</mark>.' }
+      ],
+      ch: [
+        { q: 'Match each space object with its type.', pairs: [['☀️ Sun', 'Star'], ['🌍 Earth', 'Planet'], ['🌙 Moon', 'Satellite']], hint: 'The Sun gives light. The Earth goes round the Sun. The Moon goes round the Earth.' },
+        { q: 'Is it a star, a planet or a satellite?', bins: ['Star', 'Planet', 'Satellite'], items: ['It gives light and heat', 'It goes round a star', 'It goes round a planet', 'The Sun', 'Mars', 'The Moon', 'Jupiter'], hint: 'Stars give light. Planets go round a star. Satellites go round a planet.' },
+        { q: 'The Moon has its own light.', hint: 'Satellites, like the Moon, do not have their own light.' },
+        { q: 'The Sun goes round the Earth.', hint: 'It is the other way round: the Earth goes round the Sun.' },
+        { q: 'Put the four planets closest to the Sun in order, from the closest to the furthest.', items: ['Mercury', 'Venus', 'Earth', 'Mars'], hint: 'Mercury is the closest. Our planet is the third one.' },
+        { q: 'Complete the furthest planets.', parts: ['After Mars come Jupiter, ', 0, ', Uranus and ', 1, '.'], answers: ['Saturn', 'Neptune'], bank: ['Venus', 'Moon'], hint: 'Neptune is the furthest planet from the Sun.' },
+        { q: 'What do the Sun and everything that goes round it make?', opts: ['The solar system', 'A continent', 'The atmosphere'], hint: 'It is named after the Sun.' },
+        { q: 'Tap the planets.', opts: ['Mars', 'Sun', 'Saturn', 'Moon', 'Venus', 'Neptune'], hint: 'The Sun is a star and the Moon is a satellite.' },
+        { q: 'What do we call people who study the universe?', opts: ['Astronomers', 'Astronauts', 'Architects'], hint: 'Astronauts travel into space. Astronomers study it.' },
+        { titulo: 'The [[universe]]', nodos: [
+          { txt: '[[Stars]]: they give light and heat', hijos: [{ txt: 'The [[Sun]]' }] },
+          { txt: '[[Planets]]: they go round a star', hijos: [{ txt: 'The [[Earth]]' }] },
+          { txt: '[[Satellites]]: they go round a planet', hijos: [{ txt: 'The [[Moon]]' }] } ], extra: ['Europe', 'ocean'] }
+      ] },
+    universo2: { title: 'Our blue planet', short: 'Continents, oceans and maps', badge: 'Blue planet',
+      learn: [
+        { h: 'A planet with life', p: 'The <mark>Earth</mark> is the only planet in the solar system where we know there is <mark>life</mark>.' },
+        { h: 'Land and water', p: 'The Earth has a small part of <mark>land</mark> and a very big part of <mark>water</mark>. The land is divided into six <mark>continents</mark>. We live in <mark>Europe</mark>.',
+          extra: '<div class="tags"><span class="tag">America</span><span class="tag">Europe</span><span class="tag">Africa</span><span class="tag">Asia</span><span class="tag">Oceania</span><span class="tag">Antarctica</span></div>' },
+        { h: 'Oceans and atmosphere', p: 'Nearly all the water is in the <mark>oceans</mark>: huge areas of salt water. There are five. Around the Earth there is a layer of air: the <mark>atmosphere</mark>.',
+          extra: '<div class="tags"><span class="tag">Pacific</span><span class="tag">Atlantic</span><span class="tag">Indian</span><span class="tag">Arctic</span><span class="tag">Southern</span></div>' },
+        { h: 'Globe and world map', p: 'To see what the Earth is like we use a <mark>globe</mark>, which is round like the Earth, and <mark>maps</mark>. A <mark>world map</mark> shows all the continents and oceans. On it we see that Asia is east of Europe and Antarctica is in the south.' },
+        { h: 'The compass points', p: 'A <mark>compass rose</mark> shows the four <mark>compass points</mark>:',
+          extra: '<div class="senses"><b>N</b><span>North</span><b>E</b><span>East</span><b>S</b><span>South</span><b>W</b><span>West</span></div>' }
+      ],
+      ch: [
+        { q: 'Match each word with its meaning.', pairs: [['Atmosphere', 'Layer of air around the Earth'], ['Continents', 'Parts of the land'], ['Oceans', 'Huge areas of salt water']], hint: 'Look at the cards “Land and water” and “Oceans and atmosphere”.' },
+        { q: 'Fill in the gaps.', parts: ['The Earth has a little ', 0, ' and a lot of ', 1, '.'], answers: ['land', 'water'], bank: ['light', 'sand'], hint: 'That is why the Earth looks blue from space.' },
+        { q: 'Is it a continent or an ocean?', bins: ['Continent', 'Ocean'], items: ['Europe', 'Pacific', 'Africa', 'Atlantic', 'Asia', 'Indian', 'Oceania', 'Antarctica'], hint: 'The oceans are the Pacific, Atlantic, Indian, Arctic and Southern.' },
+        { q: 'There are six continents and six oceans on the Earth.', hint: 'There are six continents, but only five oceans.' },
+        { q: 'Which continent do we live in?', opts: ['Europe', 'Asia', 'America'], hint: 'Spain is in Europe.' },
+        { q: 'What is the map with all the continents and oceans called?', opts: ['World map', 'Globe', 'Compass rose'], hint: 'A globe is round, it is not a flat map.' },
+        { q: 'Tap the true sentences.', opts: ['Asia is east of Europe', 'The Indian and the Pacific are continents', 'Antarctica is in the south', 'The Atlantic is a continent'], hint: 'The Indian, the Pacific and the Atlantic are oceans.' },
+        { q: 'Put the compass points in order, clockwise, starting with north.', items: ['North', 'East', 'South', 'West'], hint: 'North is at the top and east is on the right.' },
+        { q: 'A compass rose shows the compass points.', hint: 'It shows north, south, east and west.' },
+        { titulo: 'Planet [[Earth]]', nodos: [
+          { txt: '[[Continents]]: the land', hijos: [{ txt: 'There are [[six]]. We live in Europe' }] },
+          { txt: '[[Oceans]]: salt water' },
+          { txt: '[[Atmosphere]]: a layer of air' },
+          { txt: 'We see it on a [[globe]] and on maps' } ], extra: ['light', 'satellites'] }
+      ] },
+    universo3: { title: 'The Earth never stops', short: 'Day and night, the year and the seasons', badge: 'Cosmic spinning top',
+      learn: [
+        { h: 'The Earth spins round', p: 'The Earth <mark>spins round</mark>, like a spinning top. It takes <mark>one day</mark> to spin round once.' },
+        { h: 'Day and night', p: 'The part of the Earth that gets light from the Sun has <mark>day</mark>. The other part is dark: there it is <mark>night</mark>.' },
+        { h: 'The Sun during the day', p: 'In the <mark>morning</mark> the Sun rises in the <mark>east</mark>. At <mark>midday</mark> it is high. In the <mark>afternoon</mark> it sets in the <mark>west</mark>. Then <mark>night</mark> comes.' },
+        { h: 'The Earth travels round the Sun', p: 'The Earth also <mark>goes round the Sun</mark>. It takes <mark>one year</mark> to go round once. A year has <mark>365 days</mark>.' },
+        { h: 'The seasons', p: 'As the Earth travels, sunlight reaches us in different ways. That is why we have four <mark>seasons</mark>:',
+          extra: '<div class="senses"><b>Spring</b><span>every day there are more minutes of light</span><b>Summer</b><span>days are longer than nights</span><b>Autumn</b><span>every day there are fewer minutes of light</span><b>Winter</b><span>days are shorter than nights</span></div>' }
+      ],
+      ch: [
+        { q: 'Match each movement with how long it takes.', pairs: [['The Earth spins round', 'One day'], ['The Earth goes round the Sun', 'One year']], hint: 'Going round the Sun takes much longer.' },
+        { q: 'Put the parts of the day in order, starting with the morning.', items: ['Morning', 'Midday', 'Afternoon', 'Night'], hint: 'Follow the Sun across the sky.' },
+        { q: 'Where does the Sun rise?', opts: ['In the east', 'In the west', 'In the north'], hint: 'The Sun rises in the east and sets in the west.' },
+        { q: 'The Sun sets in the west.', hint: 'In the afternoon the Sun goes down in the west.' },
+        { q: 'Is it day or night?', bins: ['Day', 'Night'], items: ['This part of the Earth gets sunlight', 'This part of the Earth is dark', 'We see the Sun in the sky', 'We see lots of stars'], hint: 'Where the sunlight reaches, it is day.' },
+        { q: 'Match each season with its days.', pairs: [['Spring', 'More light every day'], ['Summer', 'Days longer than nights'], ['Autumn', 'Less light every day'], ['Winter', 'Days shorter than nights']], hint: 'In summer there is lots of light and in winter, little.' },
+        { q: 'Fill in the gap.', parts: ['A year has ', 0, ' days.'], answers: ['365'], bank: ['28', '7', '100'], hint: 'It is the time the Earth takes to go round the Sun.' },
+        { q: 'The Earth takes one day to go round the Sun.', hint: 'It takes one year. In one day it spins round once.' },
+        { q: 'Tap the seasons of the year.', opts: ['Spring', 'Morning', 'Summer', 'Autumn', 'Midday', 'Winter'], hint: 'Morning and midday are parts of the day.' },
+        { titulo: 'How the [[Earth]] moves', nodos: [
+          { txt: 'It spins round', hijos: [{ txt: 'It takes one [[day]]' }, { txt: 'We have day and [[night]]' }] },
+          { txt: 'It goes round the [[Sun]]', hijos: [{ txt: 'It takes one [[year]]: 365 days' }, { txt: 'There are four [[seasons]]' }] } ], extra: ['month', 'continents'] }
+      ] },
+    universo4: { title: 'Guardians of the night', short: 'Stars and the phases of the Moon', badge: 'Owl eyes',
+      learn: [
+        { h: 'The night sky', p: 'At night we see things that sunlight does not let us see in the day, like the <mark>Moon</mark> and the <mark>stars</mark>.' },
+        { h: 'Stars', p: 'Stars are <mark>very big</mark> and shine with their <mark>own light</mark>. They are <mark>very far</mark> from the Earth. That is why they look so small.' },
+        { h: 'The Moon', p: 'The Moon <mark>does not have its own light</mark>: it reflects the light of the Sun. It spins round and goes round the Earth. It takes about <mark>28 days</mark> to go round the Earth.' },
+        { h: 'The phases of the Moon', p: 'That is why we do not always see it lit up the same. These are the <mark>phases of the Moon</mark>:',
+          extra: '<div class="senses"><b>New moon</b><span>you cannot see it</span><b>First quarter</b><span>it looks like a D</span><b>Full moon</b><span>it looks round</span><b>Last quarter</b><span>it looks like a C</span></div>' }
+      ],
+      ch: [
+        { q: 'Tap the true sentences about stars.', opts: ['They have their own light', 'They are very close to the Earth', 'They are very big', 'They are satellites'], hint: 'Stars are big and very far away.' },
+        { q: 'Match each phase with how it looks.', pairs: [['Full moon', 'It looks round'], ['Last quarter', 'It looks like a C'], ['New moon', 'You cannot see it'], ['First quarter', 'It looks like a D']], hint: 'First quarter, like a D. Last quarter, like a C.' },
+        { q: 'How long does the Moon take to go round the Earth?', opts: ['About 28 days', 'One day', 'One year'], hint: 'It is almost a month.' },
+        { q: 'The Moon shines because it reflects the light of the Sun.', hint: 'The Moon does not have its own light.' },
+        { q: 'Stars look very small because…', opts: ['they are very far away', 'they are very small', 'they have no light'], hint: 'In fact they are huge.' },
+        { q: 'Put the phases of the Moon in order, starting with the new moon.', items: ['New moon', 'First quarter', 'Full moon', 'Last quarter'], hint: 'First it grows until it looks round, then it gets smaller.' },
+        { q: 'Does it have its own light?', bins: ['Own light', 'No own light'], items: ['The Sun', 'The Moon', 'A star', 'The Earth', 'Mars'], hint: 'Only stars, like the Sun, have their own light.' },
+        { q: 'Fill in the gaps.', parts: ['If the Moon looks like a D, it is the ', 0, '. If it looks like a C, it is the ', 1, '.'], answers: ['first quarter', 'last quarter'], bank: ['full moon', 'new moon'], hint: 'First quarter, like a D. Last quarter, like a C.' },
+        { q: 'In the day we cannot see the stars because the sunlight does not let us.', hint: 'The stars are still there, but the Sun is much brighter.' },
+        { tipo: 'flujo', titulo: 'The phases of the [[Moon]]', nodos: [
+          { txt: '[[New]] moon: you cannot see it' }, { txt: 'First [[quarter]]: like a D' }, { txt: '[[Full]] moon: it looks round' }, { txt: '[[Last]] quarter: like a C' } ], extra: ['star', 'day'] }
+      ] },
+    'reto-universo': { title: 'The great star blackout', short: 'Review of the whole topic', badge: 'Sky guardian', villain: 'Starblot',
+      extra: [
+        { q: 'Match each question with its answer.', pairs: [['What goes round the Earth?', 'The Moon'], ['What does the Earth go round?', 'The Sun'], ['What layer of air is around the Earth?', 'The atmosphere']], hint: 'The Moon is the Earth’s satellite and the Earth goes round the Sun.' },
+        { q: 'Which one gives light and heat to the Earth?', opts: ['The Sun', 'The Moon', 'Mars'], hint: 'It is the closest star.' }
+      ] }
+  }
+};

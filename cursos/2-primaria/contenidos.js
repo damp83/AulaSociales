@@ -1,0 +1,436 @@
+/* =====================================================================
+   CONTENIDOS DEL CURSO · Viajeros del Tiempo
+   © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+   ---------------------------------------------------------------------
+   Cada tema tiene misiones (con tarjetas "learn" y retos "ch") y un jefe
+   final. Un tema sin misiones aparece en el mapa como "Próximamente".
+
+   Para añadir un tema: rellena "missions" y "boss" copiando el modelo del
+   Tema 1. Tipos de reto disponibles:
+     mc       elegir una respuesta        {t:'mc', q, opts:[...], a:índice, hint}
+     tf       verdadero o falso           {t:'tf', q, a:true|false, hint}
+     pick     seleccionar varias          {t:'pick', q, opts:[...], a:[índices], hint}
+     order    ordenar una secuencia       {t:'order', q, items:[en orden correcto], hint}
+     classify clasificar en grupos        {t:'classify', q, bins:[...], items:[[texto, grupo],...], hint}
+     match    unir parejas                {t:'match', q, pairs:[[izq, der],...], hint}
+     fill     completar huecos            {t:'fill', q, parts:['texto ',0,' texto ',1], answers:[...], bank:[distractores], hint}
+   Los "id" de misiones y jefes deben ser únicos en todo el curso.
+   ===================================================================== */
+
+/* ---------- CURRÍCULO: criterios de evaluación y saberes básicos ----------
+   Se rellenan aquí y se asocian:
+     · a cada tema:   criterios:['4.1','6.1'], saberes:['C.2.1']    (en EVALUACION, al final)
+     · a cada misión: cr:['4.1']   → todos sus retos cuentan para ese criterio
+     · a un reto:     cr:['4.3']   → sustituye al de la misión solo para ese reto
+   Un criterio del tema sin ningún reto asociado aparece como «no evaluable en el juego».
+   Mientras no haya criterios asociados, el panel del docente evalúa por misión. */
+const CURRICULO = {
+  /* Ciencias Sociales · Primer ciclo. Numeración: competencia específica.criterio */
+  criterios: [
+    { id:'1.1', texto:'Utilizar dispositivos y recursos digitales de forma segura y de acuerdo con las necesidades del contexto educativo.' },
+    { id:'2.1', texto:'Buscar información sencilla de diferentes fuentes seguras y fiables de forma guiada, utilizándola en investigaciones relacionadas con el medio natural, social y cultural.' },
+    { id:'3.1', texto:'Identificar las emociones propias y las de los demás, entendiendo las relaciones familiares y escolares a las que pertenecen y reconociendo las acciones que favorezcan el bienestar emocional y social.' },
+    { id:'4.1', texto:'Reconocer las características, la organización y las propiedades de los elementos del medio natural, social y cultural a través de la indagación, utilizando las herramientas y procesos adecuados de forma pautada.' },
+    { id:'4.2', texto:'Reconocer conexiones sencillas y directas entre diferentes elementos del medio natural, social y cultural por medio de la observación, la manipulación y la experimentación.' },
+    { id:'4.3', texto:'Mostrar actitudes de respeto ante el patrimonio natural y cultural, reconociéndolo como un bien común.' },
+    { id:'5.1', texto:'Mostrar estilos de vida sostenible y valorar la importancia del respeto, los cuidados, la corresponsabilidad y la protección de los elementos y seres del planeta, identificando la relación de la vida de las personas con sus acciones sobre los elementos y recursos del medio como el suelo y el agua.' },
+    { id:'6.1', texto:'Ordenar temporalmente hechos del entorno social y cultural cercano, empleando nociones básicas de medida y sucesión.' },
+    { id:'6.2', texto:'Conocer personas y grupos sociales relevantes de la historia, así como formas de vida del pasado, incorporando la perspectiva de género.' },
+    { id:'7.1', texto:'Recoger información acerca de manifestaciones culturales del propio entorno, mostrando respeto, valorando su diversidad y riqueza, y apreciándolas como fuente de aprendizaje.' },
+    { id:'7.2', texto:'Mostrar actitudes que fomentan la igualdad de género y las conductas no sexistas reconociendo modelos positivos en el entorno cercano.' },
+    { id:'8.1', texto:'Establecer acuerdos de forma dialógica y democrática como parte de grupos próximos a su entorno, identificando las responsabilidades individuales y empleando un lenguaje inclusivo y no violento.' },
+    { id:'8.2', texto:'Identificar instituciones cercanas, señalando y valorando las funciones que realizan en pro de una buena convivencia.' },
+    { id:'8.3', texto:'Conocer e interiorizar normas básicas para la convivencia en el uso de los espacios públicos, especialmente como peatones o como usuarios de los medios de locomoción, tomando conciencia de la importancia de la movilidad segura, saludable y sostenible tanto para las personas como para el planeta.' }
+  ],
+  /* Numeración: bloque (A Cultura científica, B Tecnología y digitalización, C Sociedades y territorios).apartado.saber */
+  saberes: [
+    { id:'A.1.1', bloque:'Iniciación en la actividad científica', texto:'Estilos de vida sostenible e importancia del cuidado del planeta a través del conocimiento científico presente en la vida cotidiana.' },
+    { id:'A.2.1', bloque:'La vida en nuestro planeta', texto:'Hábitos saludables relacionados con el bienestar emocional y social: estrategias de identificación de las propias emociones y respeto a las de los demás. Sensibilidad y aceptación de la diversidad presente en el aula y en la sociedad. Educación afectivo-sexual.' },
+    { id:'B.1.1', bloque:'Digitalización del entorno personal de aprendizaje', texto:'Recursos digitales para comunicarse con personas conocidas en entornos conocidos y seguros.' },
+    { id:'C.1.1', bloque:'Retos del mundo actual', texto:'La Tierra en el universo. Elementos, movimientos y dinámicas relacionados con la Tierra y el universo y sus consecuencias en la vida diaria y en el entorno. Secuencias temporales y cambios estacionales.' },
+    { id:'C.1.2', bloque:'Retos del mundo actual', texto:'La vida en la Tierra. Fenómenos atmosféricos y su repercusión en los ciclos biológicos y en la vida diaria. Observación y registro de datos atmosféricos.' },
+    { id:'C.1.3', bloque:'Retos del mundo actual', texto:'Retos sobre situaciones cotidianas. Funciones básicas del pensamiento espacial y temporal para la interacción con el medio y la resolución de situaciones de la vida cotidiana. Itinerarios y trayectos, desplazamientos y viajes.' },
+    { id:'C.2.1', bloque:'Sociedades en el tiempo', texto:'La percepción del tiempo (pasado, presente y futuro). Medida del tiempo en la vida cotidiana (hora, día, semana, mes y año). El ciclo vital y las relaciones intergeneracionales.' },
+    { id:'C.2.2', bloque:'Sociedades en el tiempo', texto:'Uso de objetos y artefactos de la vida cotidiana como fuentes para reflexionar sobre el cambio y la continuidad, las causas y consecuencias.' },
+    { id:'C.2.3', bloque:'Sociedades en el tiempo', texto:'Recursos y medios analógicos y digitales. Las fuentes orales y la memoria colectiva. La historia local y la biografía familiar; mujeres y hombres como sujetos de la historia.' },
+    { id:'C.2.4', bloque:'Sociedades en el tiempo', texto:'Las expresiones y producciones artísticas a través del tiempo. El patrimonio material e inmaterial local.' },
+    { id:'C.3.1', bloque:'Alfabetización cívica', texto:'La vida en colectividad. La familia (relaciones de parentesco). Diversidad familiar. Compromisos, corresponsabilidad, participación y normas en el entorno familiar, vecinal y escolar. Prevención, gestión y resolución dialogada de conflictos.' },
+    { id:'C.3.2', bloque:'Alfabetización cívica', texto:'La vida en sociedad. Espacios, recursos y servicios del entorno. Formas y modos de interacción social en espacios públicos desde una perspectiva de género. La localidad y el municipio (el Ayuntamiento y los servicios públicos).' },
+    { id:'C.3.3', bloque:'Alfabetización cívica', texto:'Identidad y diversidad cultural: existencia de realidades diferentes y aproximación a las distintas etnoculturas presentes en el entorno. La convivencia con los demás y el rechazo a las actitudes discriminatorias. Cultura de paz y no violencia.' },
+    { id:'C.3.4', bloque:'Alfabetización cívica', texto:'Ocupación y trabajo. Identificación de las principales actividades profesionales y laborales de mujeres y hombres en el entorno.' },
+    { id:'C.3.5', bloque:'Alfabetización cívica', texto:'Igualdad de género y conducta no sexista.' },
+    { id:'C.3.6', bloque:'Alfabetización cívica', texto:'Seguridad vial. La ciudad como espacio de convivencia. Normas básicas en los desplazamientos como peatones o como usuarios de los medios de locomoción.' },
+    { id:'C.4.1', bloque:'Conciencia ecosocial', texto:'Conocimiento de nuestro entorno. Paisajes naturales y paisajes humanizados, y sus elementos. La acción humana sobre el medio y sus consecuencias.' },
+    { id:'C.4.2', bloque:'Conciencia ecosocial', texto:'Responsabilidad ecosocial. Acciones para la conservación, mejora y uso sostenible de los bienes comunes. El maltrato animal y su prevención.' },
+    { id:'C.4.3', bloque:'Conciencia ecosocial', texto:'Estilos de vida sostenible. El uso responsable del agua, la movilidad segura, saludable y sostenible, y la prevención y la gestión de los residuos.' }
+  ]
+};
+
+/* ---------- TEMA 1 · Mirador de paisajes (libro, págs. 8-25) ---------- */
+const TEMA1_MISIONES = [
+  {
+    id:'paisaje1', badge:'Ojo de viajero', title:'El ojo del viajero', short:'Elementos naturales y construidos', pages:'Págs. 10-11',
+    color:'--ok', icon:'eye',
+    learn:[
+      {h:'¿Qué es un paisaje?', p:'Un <mark>paisaje</mark> es todo lo que vemos cuando miramos un lugar: montañas, árboles, casas, caminos…'},
+      {h:'Elementos naturales', p:'Los <mark>elementos naturales</mark> no los ha hecho nadie. Están en la naturaleza.',
+        extra:'<div class="tags"><span class="tag">montaña</span><span class="tag">lago</span><span class="tag">río</span><span class="tag">hierba</span><span class="tag">árbol</span></div>'},
+      {h:'Elementos construidos', p:'Los <mark>elementos construidos</mark> los hacen las personas.',
+        extra:'<div class="tags"><span class="tag">casa</span><span class="tag">carretera</span><span class="tag">vía del tren</span><span class="tag">puente</span><span class="tag">campo de cultivo</span></div>'},
+      {h:'Paisajes naturales y humanizados', p:'Un <mark>paisaje natural</mark> tiene pocos elementos construidos. Un <mark>paisaje humanizado</mark> es un paisaje que las personas han cambiado para vivir en él.'},
+      {h:'Los paisajes cambian', p:'Con el paso del <mark>tiempo</mark>, todos los paisajes cambian. Donde antes había una playa con pocas casas, ahora puede haber una ciudad.'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Cuál de estos es un elemento natural?', opts:['⛰️ La montaña','🛣️ La carretera','🏠 La casa'], a:0, hint:'Los elementos naturales no los ha hecho nadie.'},
+      {t:'classify', q:'¿Es un elemento natural o construido?', bins:['Natural','Construido'],
+        items:[['🌳 Árbol',0],['🏠 Casa',1],['💧 Lago',0],['🛤️ Vía del tren',1],['⛰️ Montaña',0],['🌉 Puente',1],['🌾 Hierba',0]],
+        hint:'Construido: lo han hecho las personas. Natural: está en la naturaleza.'},
+      {t:'tf', q:'Los campos de cultivo son elementos naturales.', a:false, hint:'Los campos los preparan y los cuidan las personas. Son elementos construidos.'},
+      {t:'pick', q:'Toca los elementos construidos por las personas.', opts:['Carretera','Río','Casa','Hierba','Vía del tren','Lago'], a:[0,2,4], hint:'El río, la hierba y el lago no los ha hecho nadie.'},
+      {t:'match', q:'Une cada palabra con su explicación.', pairs:[['Elemento natural','Está en la naturaleza'],['Elemento construido','Lo hacen las personas'],['Paisaje natural','Tiene pocos elementos construidos'],['Paisaje humanizado','Las personas lo han cambiado']], hint:'Repasa las tarjetas de la lección.'},
+      {t:'fill', q:'Completa.', parts:['Un paisaje natural tiene ',0,' elementos construidos. Un paisaje humanizado tiene ',1,' elementos construidos.'], answers:['pocos','muchos'], bank:['azules'], hint:'Las personas construyen mucho en los paisajes humanizados.'},
+      {t:'order', q:'Ordena cómo ha cambiado este paisaje de costa.', items:['Había una playa con muy pocas casas','Se construyeron calles y algunos edificios','Ahora hay muchos edificios altos junto a la playa'], hint:'Empieza por lo que había hace mucho tiempo.'},
+      {t:'mc', q:'Un pueblo con casas, calles y campos de cultivo. ¿Qué paisaje es?', opts:['Humanizado','Natural'], a:0, hint:'Tiene muchos elementos construidos por las personas.'},
+      {t:'tf', q:'Los paisajes siempre son iguales: nunca cambian.', a:false, hint:'Todos los paisajes cambian con el paso del tiempo.'}
+    ]
+  },
+  {
+    id:'paisaje2', badge:'Lobo de mar', title:'Rumbo al mar', short:'Paisajes de costa', pages:'Págs. 12-13',
+    color:'--sense', icon:'wave',
+    learn:[
+      {h:'La costa', p:'La <mark>costa</mark> es la tierra que está al lado del mar. Allí están los <mark>paisajes de costa</mark>.'},
+      {h:'Playas y acantilados', p:'En la costa hay <mark>playas</mark> y <mark>acantilados</mark>.',
+        extra:'<div class="senses"><b>Playa</b><span>terreno llano de arena o de piedras, junto al mar</span><b>Acantilado</b><span>pared alta de roca sobre el mar</span></div>'},
+      {h:'Más formas de la costa', p:'La costa tiene muchas formas:',
+        extra:'<div class="senses"><b>Bahía</b><span>el mar entra en la tierra</span><b>Cabo</b><span>la tierra entra en el mar</span><b>Isla</b><span>tierra con agua por todas partes</span><b>Península</b><span>tierra con agua por todas partes menos por una</span><b>Archipiélago</b><span>grupo de islas cercanas</span></div>'},
+      {h:'Lo que construimos en la costa', p:'En la costa las personas construyen <mark>puertos</mark> para los barcos y <mark>faros</mark> que dan luz por la noche.'}
+    ],
+    ch:[
+      {t:'mc', q:'¿Qué es la costa?', opts:['La tierra que está junto al mar','La parte más alta de una montaña','Un terreno plano lejos del mar'], a:0, hint:'En la costa estamos al lado del mar.'},
+      {t:'classify', q:'¿Es de la playa o del acantilado?', bins:['Playa','Acantilado'],
+        items:[['Es llana',0],['Es una pared de roca',1],['Tiene arena o piedras',0],['Es alta y está sobre el mar',1],['Puedes tumbarte en la arena',0]],
+        hint:'La playa es llana. El acantilado es una pared de roca.'},
+      {t:'match', q:'Une cada forma de la costa con su explicación.', pairs:[['Bahía','El mar entra en la tierra'],['Cabo','La tierra entra en el mar'],['Isla','Tiene agua por todas partes'],['Península','Tiene agua por todas partes menos por una']], hint:'En la bahía entra el mar. En el cabo entra la tierra.'},
+      {t:'tf', q:'Un archipiélago es un grupo de islas cercanas.', a:true, hint:'Muchas islas juntas forman un archipiélago.'},
+      {t:'pick', q:'Toca los elementos construidos que hay en la costa.', opts:['⚓ Puerto','🏖️ Playa','Faro','Acantilado','🏝️ Isla'], a:[0,2], hint:'La playa, el acantilado y la isla son naturales.'},
+      {t:'fill', q:'Completa.', parts:['Una ',0,' es tierra con agua por todas partes. Un grupo de islas forma un ',1,'.'], answers:['isla','archipiélago'], bank:['bahía','cabo'], hint:'Fíjate en la palabra «islas».'},
+      {t:'order', q:'Un barco vuelve a casa de noche. Ordena su viaje.', items:['Ve la luz del faro desde el mar','Entra en la bahía','Llega al puerto y se para'], hint:'Primero ve la luz desde lejos. Al final llega al puerto.'},
+      {t:'mc', q:'Andas por la arena y te mojas los pies en el mar. ¿Dónde estás?', opts:['En una playa','En un acantilado','En un valle'], a:0, hint:'La playa tiene arena y está a la orilla del mar.'},
+      {t:'tf', q:'Un acantilado es un terreno llano de arena.', a:false, hint:'El acantilado es una pared de roca. El terreno llano de arena es la playa.'}
+    ]
+  },
+  {
+    id:'paisaje3', badge:'Pies de cabra', title:'Cumbres y llanuras', short:'Paisajes de interior', pages:'Págs. 14-15',
+    color:'--food', icon:'mountain',
+    learn:[
+      {h:'El interior', p:'Lejos del mar está el <mark>interior</mark>. Allí hay paisajes de <mark>montaña</mark> y paisajes de <mark>llanura</mark>.'},
+      {h:'Las montañas', p:'Una <mark>montaña</mark> es una elevación muy grande del terreno. Muchas montañas juntas forman una <mark>sierra</mark>. Entre las montañas hay <mark>valles</mark>: terrenos bajos por donde pasan los ríos.'},
+      {h:'Las partes de una montaña', p:'Una montaña tiene tres partes:',
+        extra:'<div class="senses"><b>Cima</b><span>la parte más alta</span><b>Ladera</b><span>entre la cima y el pie</span><b>Pie</b><span>la parte más baja</span></div>'},
+      {h:'Vivir en la montaña', p:'En la montaña hay <mark>pueblos pequeños</mark>, carreteras estrechas con curvas y <mark>túneles</mark>.'},
+      {h:'Las llanuras', p:'Una <mark>llanura</mark> es un terreno plano. Hay ciudades, pueblos grandes, campos de cultivo, granjas y autovías.',
+        extra:'<div class="senses"><b>Colina</b><span>una elevación pequeña del terreno</span><b>Meseta</b><span>un terreno plano y alto</span></div>'}
+    ],
+    ch:[
+      {t:'order', q:'Ordena las partes de una montaña, de abajo arriba.', items:['Pie','Ladera','Cima'], hint:'Empieza por la parte más baja.'},
+      {t:'match', q:'Une cada palabra con su explicación.', pairs:[['Sierra','Muchas montañas juntas'],['Valle','Terreno bajo entre montañas'],['Colina','Elevación pequeña'],['Meseta','Terreno plano y alto']], hint:'La colina es pequeña. La meseta es plana y alta.'},
+      {t:'classify', q:'¿Lo encuentras más en la montaña o en la llanura?', bins:['Montaña','Llanura'],
+        items:[['Carreteras estrechas con curvas',0],['Ciudades grandes',1],['Túneles',0],['Grandes campos de cultivo',1],['Pueblos pequeños',0],['Autovías',1]],
+        hint:'En la llanura el terreno es plano y caben ciudades grandes y autovías.'},
+      {t:'mc', q:'¿Cómo se llama la parte más alta de una montaña?', opts:['La cima','El pie','La ladera'], a:0, hint:'La parte más baja es el pie.'},
+      {t:'tf', q:'Una llanura es un terreno plano.', a:true, hint:'Llanura viene de llano, que quiere decir plano.'},
+      {t:'pick', q:'Toca los paisajes de interior.', opts:['Montaña','Playa','Llanura','Acantilado','Valle','Bahía'], a:[0,2,4], hint:'La playa, el acantilado y la bahía están en la costa.'},
+      {t:'fill', q:'Completa.', parts:['Entre la ',0,' y el ',1,' de una montaña está la ',2,'.'], answers:['cima','pie','ladera'], bank:['costa','bahía'], hint:'La cima es la parte más alta y el pie la más baja.'},
+      {t:'mc', q:'Un pueblo está abajo del todo, en el valle, junto al río. ¿En qué parte de la montaña está?', opts:['En el pie','En la ladera','En la cima'], a:0, hint:'La parte más baja de la montaña es el pie.'},
+      {t:'tf', q:'Una sierra es una montaña muy pequeña.', a:false, hint:'Una sierra son muchas montañas juntas. Una elevación pequeña es una colina.'}
+    ]
+  },
+  {
+    id:'paisaje4', badge:'Gota viajera', title:'El viaje de una gota', short:'El río y su curso', pages:'Págs. 16-17',
+    color:'--lung', icon:'drop',
+    learn:[
+      {h:'¿Qué es un río?', p:'Un <mark>río</mark> es agua que corre sin parar por distintos paisajes. Nace en las <mark>montañas</mark> y termina en el <mark>mar</mark> o en otro río.'},
+      {h:'El curso del río', p:'El camino que hace un río se llama <mark>curso</mark>. El lugar donde empieza es el <mark>nacimiento</mark>. El lugar donde termina es la <mark>desembocadura</mark>.'},
+      {h:'Curso alto', p:'En las <mark>montañas</mark>, el río es <mark>estrecho</mark>, lleva <mark>poca</mark> agua y baja muy <mark>rápido</mark> por la ladera.'},
+      {h:'Curso medio', p:'En la <mark>llanura</mark>, el río es más <mark>ancho</mark> y el agua va más <mark>despacio</mark>. A veces otros ríos le dan su agua y se hace más grande.'},
+      {h:'Curso bajo', p:'Muchos ríos llegan a la <mark>costa</mark>. Allí desembocan: su agua llega al <mark>mar</mark>.'}
+    ],
+    ch:[
+      {t:'order', q:'Ordena el viaje del río.', items:['Nace en las montañas','Baja rápido por la ladera','Pasa despacio por la llanura','Desemboca en el mar'], hint:'Empieza en el nacimiento y termina en la desembocadura.'},
+      {t:'classify', q:'¿Curso alto o curso medio?', bins:['Curso alto','Curso medio'],
+        items:[['Es estrecho',0],['Es ancho',1],['Lleva poca agua',0],['Lleva mucha agua',1],['El agua baja muy rápido',0],['El agua va despacio',1]],
+        hint:'En la montaña el río es estrecho y rápido. En la llanura es ancho y lento.'},
+      {t:'mc', q:'¿Cómo se llama el lugar donde empieza un río?', opts:['Nacimiento','Desembocadura','Curso medio'], a:0, hint:'Los ríos nacen en las montañas.'},
+      {t:'match', q:'Une cada parte del curso con su paisaje.', pairs:[['Curso alto','Montaña'],['Curso medio','Llanura'],['Curso bajo','Costa']], hint:'El río baja de la montaña, pasa por la llanura y llega a la costa.'},
+      {t:'fill', q:'Completa.', parts:['El río nace en la ',0,', pasa por la ',1,' y desemboca en el ',2,'.'], answers:['montaña','llanura','mar'], bank:['playa','bahía'], hint:'Sigue el viaje del río de arriba abajo.'},
+      {t:'tf', q:'Todos los ríos desembocan en el mar.', a:false, hint:'Algunos ríos llevan su agua a otro río.'},
+      {t:'pick', q:'Toca lo que es verdad en el curso alto.', opts:['Está en las montañas','Es estrecho','Va muy despacio','Lleva mucha agua','Baja muy rápido'], a:[0,1,4], hint:'En el curso alto el río lleva poca agua y va rápido.'},
+      {t:'mc', q:'Un río ancho y tranquilo pasa junto a un pueblo, en un terreno plano. ¿Qué parte del curso es?', opts:['Curso medio','Curso alto'], a:0, hint:'El terreno plano es la llanura: allí está el curso medio.'},
+      {t:'tf', q:'El camino que hace un río se llama curso.', a:true, hint:'Por eso hablamos de curso alto, medio y bajo.'}
+    ]
+  },
+  {
+    id:'paisaje5', badge:'Buscarrocas', title:'El tesoro de piedra', short:'Las rocas y sus usos', pages:'Págs. 18-19',
+    color:'--bone', icon:'rock',
+    learn:[
+      {h:'Las rocas', p:'Las <mark>rocas</mark> son elementos naturales del paisaje. Hay rocas en las montañas, en los acantilados, en el suelo del bosque y en el fondo del mar.'},
+      {h:'Rocas duras', p:'Las <mark>rocas duras</mark> son resistentes: no se rompen con facilidad.',
+        extra:'<div class="tags"><span class="tag">granito</span><span class="tag">mármol</span><span class="tag">basalto</span></div>'},
+      {h:'Rocas blandas', p:'Las <mark>rocas blandas</mark> son frágiles: se rompen muy fácilmente.',
+        extra:'<div class="tags"><span class="tag">arenisca</span><span class="tag">pizarra</span><span class="tag">arcilla</span></div>'},
+      {h:'Rocas y minerales', p:'Las rocas están formadas por <mark>minerales</mark>. Con una lupa podemos ver los minerales del granito.'},
+      {h:'Usamos las rocas', p:'Con las rocas y los minerales fabricamos muchas cosas:',
+        extra:'<div class="senses"><b>Arcilla</b><span>ladrillos</span><b>Granito</b><span>bloques para construir</span><b>Pizarra</b><span>tejas para los tejados</span><b>Calcita</b><span>tizas</span></div>'}
+    ],
+    ch:[
+      {t:'classify', q:'¿Es una roca dura o blanda?', bins:['Dura','Blanda'],
+        items:[['Granito',0],['Arenisca',1],['Mármol',0],['Pizarra',1],['Basalto',0],['Arcilla',1]],
+        hint:'Duras: granito, mármol y basalto. Blandas: arenisca, pizarra y arcilla.'},
+      {t:'match', q:'Une cada roca o mineral con lo que fabricamos.', pairs:[['Arcilla','Ladrillos'],['Pizarra','Tejas'],['Granito','Bloques'],['Calcita','Tizas']], hint:'Repasa la última tarjeta de la lección.'},
+      {t:'tf', q:'Las rocas están formadas por minerales.', a:true, hint:'Con una lupa se ven los minerales del granito.'},
+      {t:'pick', q:'Toca las rocas duras.', opts:['Granito','Arenisca','Mármol','Hierro','Basalto'], a:[0,2,4], hint:'La arenisca es blanda. El hierro no es una roca.'},
+      {t:'mc', q:'¿Dónde podemos encontrar rocas?', opts:['En las montañas y en el fondo del mar','Solo en las ciudades','Solo en los ríos'], a:0, hint:'Hay rocas en muchos lugares del paisaje.'},
+      {t:'fill', q:'Completa.', parts:['Las rocas ',0,' son resistentes. Las rocas ',1,' se rompen muy fácilmente.'], answers:['duras','blandas'], bank:['construidas','rápidas'], hint:'Resistente quiere decir que no se rompe con facilidad.'},
+      {t:'order', q:'Ordena cómo se hace una pared de ladrillos.', items:['Sacamos arcilla de la tierra','Fabricamos los ladrillos','Construimos la pared con los ladrillos'], hint:'Primero necesitamos la roca.'},
+      {t:'mc', q:'Un tejado tiene tejas oscuras y finas. ¿De qué roca son?', opts:['De pizarra','De granito','De mármol'], a:0, hint:'Con la pizarra hacemos tejas.'},
+      {t:'tf', q:'Las rocas blandas no se rompen nunca.', a:false, hint:'Las rocas blandas son frágiles: se rompen muy fácilmente.'}
+    ]
+  }
+];
+const TEMA1_JEFE = {
+  id:'reto-paisajes', boss:true, villain:'Borrón de la Niebla', badge:'Guardián del mirador', title:'La niebla del mirador', short:'Repaso de todo el tema', pages:'Págs. 10-19',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'classify', q:'¿Es un paisaje de costa o de interior?', bins:['Costa','Interior'],
+      items:[['Playa',0],['Montaña',1],['Acantilado',0],['Valle',1],['Bahía',0],['Meseta',1],['Cabo',0],['Colina',1]],
+      hint:'La costa está junto al mar. El interior está lejos del mar.'},
+    {t:'mc', q:'Es agua que corre sin parar, nace en las montañas y llega al mar. ¿Qué es?', opts:['Un río','Un lago','Una bahía'], a:0, hint:'Tiene curso alto, medio y bajo.'}
+  ]
+};
+
+/* ---------- TEMA 2 · Viaje a las estrellas (libro, págs. 26-41) ---------- */
+const TEMA2_MISIONES = [
+  {
+    id:'universo1', badge:'Cazaestrellas', title:'Vecinos del espacio', short:'Los astros y el sistema solar', pages:'Págs. 28-29',
+    color:'--gold', icon:'star',
+    learn:[
+      {h:'El universo', p:'El <mark>universo</mark> es enorme. Está formado por muchos <mark>astros</mark>: estrellas, planetas y satélites.'},
+      {h:'Las estrellas', p:'Las <mark>estrellas</mark> dan <mark>luz y calor</mark>. El <mark>Sol</mark> es la estrella que está más cerca de la Tierra.'},
+      {h:'Planetas y satélites', p:'Los planetas y los satélites no tienen luz propia.',
+        extra:'<div class="senses"><b>Planeta</b><span>gira alrededor de una estrella, como la Tierra</span><b>Satélite</b><span>gira alrededor de un planeta, como la Luna</span></div>'},
+      {h:'El sistema solar', p:'El Sol, los <mark>ocho planetas</mark> que giran a su alrededor y otros astros más pequeños forman el <mark>sistema solar</mark>. Estos son los planetas, del más cercano al Sol al más lejano:',
+        extra:'<ol class="steps"><li>Mercurio</li><li>Venus</li><li>Tierra</li><li>Marte</li><li>Júpiter</li><li>Saturno</li><li>Urano</li><li>Neptuno</li></ol>'},
+      {h:'¿Quién estudia el universo?', p:'Las personas que estudian el universo se llaman <mark>astrónomos</mark> y <mark>astrónomas</mark>.'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada astro con su tipo.', pairs:[['☀️ Sol','Estrella'],['🌍 Tierra','Planeta'],['🌙 Luna','Satélite']], hint:'El Sol da luz. La Tierra gira alrededor del Sol. La Luna gira alrededor de la Tierra.'},
+      {t:'classify', q:'¿Es una estrella, un planeta o un satélite?', bins:['Estrella','Planeta','Satélite'],
+        items:[['Da luz y calor',0],['Gira alrededor de una estrella',1],['Gira alrededor de un planeta',2],['El Sol',0],['Marte',1],['La Luna',2],['Júpiter',1]],
+        hint:'Las estrellas dan luz. Los planetas giran alrededor de una estrella. Los satélites giran alrededor de un planeta.'},
+      {t:'tf', q:'La Luna tiene luz propia.', a:false, hint:'Los satélites, como la Luna, no tienen luz propia.'},
+      {t:'tf', q:'El Sol gira alrededor de la Tierra.', a:false, hint:'Es al revés: la Tierra gira alrededor del Sol.'},
+      {t:'order', q:'Ordena los cuatro planetas más cercanos al Sol, del más cercano al más lejano.', items:['Mercurio','Venus','Tierra','Marte'], hint:'El más cercano es Mercurio. Nuestro planeta es el tercero.'},
+      {t:'fill', q:'Completa los planetas más lejanos.', parts:['Después de Marte vienen Júpiter, ',0,', Urano y ',1,'.'], answers:['Saturno','Neptuno'], bank:['Venus','Luna'], hint:'Neptuno es el planeta más lejano del Sol.'},
+      {t:'mc', q:'¿Qué forman el Sol y todos los astros que giran a su alrededor?', opts:['El sistema solar','Un continente','La atmósfera'], a:0, hint:'Se llama así por el Sol.'},
+      {t:'pick', q:'Toca los planetas.', opts:['Marte','Sol','Saturno','Luna','Venus','Neptuno'], a:[0,2,4,5], hint:'El Sol es una estrella y la Luna es un satélite.'},
+      {t:'mc', q:'¿Cómo se llaman las personas que estudian el universo?', opts:['Astrónomos y astrónomas','Astronautas','Arquitectos y arquitectas'], a:0, hint:'Los astronautas viajan al espacio. Quienes lo estudian son los astrónomos y astrónomas.'}
+    ]
+  },
+  {
+    id:'universo2', badge:'Planeta azul', title:'Nuestro planeta azul', short:'Continentes, océanos y mapas', pages:'Págs. 30-31',
+    color:'--sense', icon:'globe',
+    learn:[
+      {h:'Un planeta con vida', p:'La <mark>Tierra</mark> es el único planeta del sistema solar donde sabemos que hay <mark>vida</mark>.'},
+      {h:'Tierra y agua', p:'La Tierra tiene una parte pequeña de <mark>tierra</mark> y una parte muy grande de <mark>agua</mark>. La tierra firme se divide en seis <mark>continentes</mark>. Nosotros vivimos en <mark>Europa</mark>.',
+        extra:'<div class="tags"><span class="tag">América</span><span class="tag">Europa</span><span class="tag">África</span><span class="tag">Asia</span><span class="tag">Oceanía</span><span class="tag">Antártida</span></div>'},
+      {h:'Océanos y atmósfera', p:'Casi toda el agua está en los <mark>océanos</mark>: grandes masas de agua salada. Hay cinco. Alrededor de la Tierra hay una capa de aire: la <mark>atmósfera</mark>.',
+        extra:'<div class="tags"><span class="tag">Pacífico</span><span class="tag">Atlántico</span><span class="tag">Índico</span><span class="tag">Glacial Ártico</span><span class="tag">Glacial Antártico</span></div>'},
+      {h:'Globo terráqueo y planisferio', p:'Para ver cómo es la Tierra usamos el <mark>globo terráqueo</mark>, que es redondo como ella, y los <mark>mapas</mark>. El <mark>planisferio</mark> o mapamundi es un mapa con todos los continentes y océanos. En él vemos que Asia está al este de Europa y que la Antártida está en el sur.'},
+      {h:'Los puntos cardinales', p:'La <mark>rosa de los vientos</mark> nos indica los cuatro <mark>puntos cardinales</mark>:',
+        extra:'<div class="senses"><b>N</b><span>Norte</span><b>E</b><span>Este</span><b>S</b><span>Sur</span><b>O</b><span>Oeste</span></div>'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada palabra con su explicación.', pairs:[['Atmósfera','Capa de aire que rodea la Tierra'],['Continentes','Partes de la tierra firme'],['Océanos','Grandes masas de agua salada']], hint:'Repasa las tarjetas «Tierra y agua» y «Océanos y atmósfera».'},
+      {t:'fill', q:'Completa.', parts:['La Tierra tiene poca ',0,' y mucha ',1,'.'], answers:['tierra','agua'], bank:['luz','arena'], hint:'Por eso desde el espacio la Tierra se ve azul.'},
+      {t:'classify', q:'¿Es un continente o un océano?', bins:['Continente','Océano'],
+        items:[['Europa',0],['Pacífico',1],['África',0],['Atlántico',1],['Asia',0],['Índico',1],['Oceanía',0],['Antártida',0]],
+        hint:'Los océanos son Pacífico, Atlántico, Índico, Glacial Ártico y Glacial Antártico.'},
+      {t:'tf', q:'En la Tierra hay seis continentes y seis océanos.', a:false, hint:'Hay seis continentes, pero solo cinco océanos.'},
+      {t:'mc', q:'¿En qué continente vivimos?', opts:['Europa','Asia','América'], a:0, hint:'España está en Europa.'},
+      {t:'mc', q:'¿Cómo se llama el mapa que tiene todos los continentes y océanos?', opts:['Planisferio','Globo terráqueo','Rosa de los vientos'], a:0, hint:'El globo terráqueo es redondo, no es un mapa plano.'},
+      {t:'pick', q:'Toca las frases verdaderas.', opts:['Asia está al este de Europa','El Índico y el Pacífico son continentes','La Antártida está en el sur','El Atlántico es un continente'], a:[0,2], hint:'El Índico, el Pacífico y el Atlántico son océanos.'},
+      {t:'order', q:'Ordena los puntos cardinales como las agujas del reloj, empezando por el norte.', items:['Norte','Este','Sur','Oeste'], hint:'Arriba está el norte y a la derecha el este.'},
+      {t:'tf', q:'La rosa de los vientos indica los puntos cardinales.', a:true, hint:'Señala el norte, el sur, el este y el oeste.'}
+    ]
+  },
+  {
+    id:'universo3', badge:'Peonza cósmica', title:'La Tierra no para', short:'Día y noche, año y estaciones', pages:'Págs. 32-33',
+    color:'--food', icon:'sun',
+    learn:[
+      {h:'La Tierra gira sobre sí misma', p:'La Tierra <mark>gira sobre sí misma</mark>, como una peonza. Tarda <mark>un día</mark> en dar una vuelta completa.'},
+      {h:'El día y la noche', p:'La parte de la Tierra que recibe la luz del Sol tiene <mark>día</mark>. La otra parte está a oscuras: allí es de <mark>noche</mark>.'},
+      {h:'El Sol a lo largo del día', p:'Por la <mark>mañana</mark> el Sol sale por el <mark>este</mark>. A <mark>mediodía</mark> está alto. Por la <mark>tarde</mark> se pone por el <mark>oeste</mark>. Después llega la <mark>noche</mark>.'},
+      {h:'La Tierra viaja alrededor del Sol', p:'La Tierra también <mark>da vueltas alrededor del Sol</mark>. Tarda <mark>un año</mark> en dar una vuelta completa. Un año tiene <mark>365 días</mark>.'},
+      {h:'Las estaciones', p:'Mientras la Tierra viaja, la luz del Sol nos llega de forma distinta. Así tenemos las cuatro <mark>estaciones</mark>:',
+        extra:'<div class="senses"><b>Primavera</b><span>cada día hay más minutos de luz</span><b>Verano</b><span>los días son más largos que las noches</span><b>Otoño</b><span>cada día hay menos minutos de luz</span><b>Invierno</b><span>los días son más cortos que las noches</span></div>'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada movimiento con lo que tarda.', pairs:[['La Tierra gira sobre sí misma','Un día'],['La Tierra da una vuelta al Sol','Un año']], hint:'La vuelta alrededor del Sol es mucho más larga.'},
+      {t:'order', q:'Ordena las partes del día, empezando por la mañana.', items:['Mañana','Mediodía','Tarde','Noche'], hint:'Sigue el camino del Sol por el cielo.'},
+      {t:'mc', q:'¿Por qué punto cardinal sale el Sol?', opts:['Por el este','Por el oeste','Por el norte'], a:0, hint:'El Sol sale por el este y se pone por el oeste.'},
+      {t:'tf', q:'El Sol se pone por el oeste.', a:true, hint:'Por la tarde el Sol se esconde por el oeste.'},
+      {t:'classify', q:'¿Es de día o de noche?', bins:['Día','Noche'],
+        items:[['Esta parte de la Tierra recibe la luz del Sol',0],['Esta parte de la Tierra está a oscuras',1],['Vemos el Sol en el cielo',0],['Vemos muchas estrellas',1]],
+        hint:'Donde llega la luz del Sol es de día.'},
+      {t:'match', q:'Une cada estación con cómo son sus días.', pairs:[['Primavera','Cada día hay más luz'],['Verano','Días más largos que las noches'],['Otoño','Cada día hay menos luz'],['Invierno','Días más cortos que las noches']], hint:'En verano hay mucha luz y en invierno, poca.'},
+      {t:'fill', q:'Completa.', parts:['Un año tiene ',0,' días.'], answers:['365'], bank:['28','7','100'], hint:'Es el tiempo que tarda la Tierra en dar una vuelta al Sol.'},
+      {t:'tf', q:'La Tierra tarda un día en dar una vuelta alrededor del Sol.', a:false, hint:'Tarda un año. En un día gira sobre sí misma.'},
+      {t:'pick', q:'Toca las estaciones del año.', opts:['Primavera','Mañana','Verano','Otoño','Mediodía','Invierno'], a:[0,2,3,5], hint:'La mañana y el mediodía son partes del día.'}
+    ]
+  },
+  {
+    id:'universo4', badge:'Ojo de lechuza', title:'Guardianes de la noche', short:'Las estrellas y las fases de la Luna', pages:'Págs. 34-35',
+    color:'--virus', icon:'moon',
+    learn:[
+      {h:'El cielo de noche', p:'De noche vemos astros que la luz del Sol no nos deja ver de día, como la <mark>Luna</mark> y las <mark>estrellas</mark>.'},
+      {h:'Las estrellas', p:'Las estrellas son astros <mark>muy grandes</mark> que brillan con <mark>luz propia</mark>. Están <mark>muy lejos</mark> de la Tierra. Por eso las vemos tan pequeñas.'},
+      {h:'La Luna', p:'La Luna <mark>no tiene luz propia</mark>: refleja la luz del Sol. Gira sobre sí misma y alrededor de la Tierra. Tarda unos <mark>28 días</mark> en dar una vuelta a la Tierra.'},
+      {h:'Las fases de la Luna', p:'Por eso no siempre la vemos iluminada igual. Son las <mark>fases de la Luna</mark>:',
+        extra:'<div class="senses"><b>Luna nueva</b><span>no se ve</span><b>Cuarto creciente</b><span>tiene forma de D</span><b>Luna llena</b><span>se ve redonda</span><b>Cuarto menguante</b><span>tiene forma de C</span></div>'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca las frases verdaderas sobre las estrellas.', opts:['Tienen luz propia','Están muy cerca de la Tierra','Son muy grandes','Son satélites'], a:[0,2], hint:'Las estrellas son grandes y están muy lejos.'},
+      {t:'match', q:'Une cada fase con cómo se ve.', pairs:[['Luna llena','Se ve redonda'],['Cuarto menguante','Tiene forma de C'],['Luna nueva','No se ve'],['Cuarto creciente','Tiene forma de D']], hint:'Creciente, como la D. Menguante, como la C.'},
+      {t:'mc', q:'¿Cuánto tarda la Luna en dar una vuelta a la Tierra?', opts:['Unos 28 días','Un día','Un año'], a:0, hint:'Es casi un mes.'},
+      {t:'tf', q:'La Luna brilla porque refleja la luz del Sol.', a:true, hint:'La Luna no tiene luz propia.'},
+      {t:'mc', q:'Las estrellas parecen muy pequeñas porque…', opts:['están muy lejos','son muy pequeñas','no tienen luz'], a:0, hint:'En realidad son enormes.'},
+      {t:'order', q:'Ordena las fases de la Luna, empezando por la luna nueva.', items:['Luna nueva','Cuarto creciente','Luna llena','Cuarto menguante'], hint:'Primero crece hasta verse redonda y después mengua.'},
+      {t:'classify', q:'¿Tiene luz propia o no?', bins:['Tiene luz propia','No tiene luz propia'],
+        items:[['El Sol',0],['La Luna',1],['Una estrella',0],['La Tierra',1],['Marte',1]],
+        hint:'Solo las estrellas, como el Sol, tienen luz propia.'},
+      {t:'fill', q:'Completa.', parts:['Si la Luna tiene forma de D, está en ',0,'. Si tiene forma de C, está en ',1,'.'], answers:['cuarto creciente','cuarto menguante'], bank:['luna llena','luna nueva'], hint:'Creciente, como la D. Menguante, como la C.'},
+      {t:'tf', q:'De día no vemos las estrellas porque la luz del Sol no nos deja.', a:true, hint:'Las estrellas siguen ahí, pero el Sol brilla mucho más.'}
+    ]
+  }
+];
+const TEMA2_JEFE = {
+  id:'reto-universo', boss:true, villain:'Borrón Apagaestrellas', badge:'Guardián del cielo', title:'El apagón de estrellas', short:'Repaso de todo el tema', pages:'Págs. 28-35',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'match', q:'Une cada pregunta con su respuesta.', pairs:[['¿Qué gira alrededor de la Tierra?','La Luna'],['¿Alrededor de qué gira la Tierra?','El Sol'],['¿Qué capa de aire rodea la Tierra?','La atmósfera']], hint:'La Luna es el satélite de la Tierra y la Tierra gira alrededor del Sol.'},
+    {t:'mc', q:'¿Qué astro da luz y calor a la Tierra?', opts:['El Sol','La Luna','Marte'], a:0, hint:'Es la estrella más cercana.'}
+  ]
+};
+
+/* ---------- CURSO: situaciones y temas (títulos propios del juego) ---------- */
+const CURSO = {
+  asignatura: 'Ciencias Sociales · 2.º de Primaria',
+  /* Situaciones de aprendizaje (con títulos propios): agrupan los temas en el mapa */
+  situaciones: [
+    { title:'Mochila al hombro', temas:['tema1','tema2'] },
+    { title:'Guardianes de cada gota', temas:['tema3','tema4'] },
+    { title:'Mi rincón del mundo', temas:['tema5','tema6'] }
+  ],
+  temas: [
+    { id:'tema1', n:1, title:'Mirador de paisajes', short:'Paisajes, costa, interior, ríos y rocas', pages:'Págs. 8-25',
+      color:'--ok', icon:'mountain', map:'relieve', starsBadge:'Constelación del mirador',
+      missions: TEMA1_MISIONES, boss: TEMA1_JEFE,
+      /* Minijuego de premio: atrapar solo lo que pide cada ronda (ok = se atrapa, no = se deja caer) */
+      minijuego: { tipo:'lluvia', titulo:'Lluvia en el mirador', necesarios:4, rondas:[
+        { meta:'Atrapa los ELEMENTOS NATURALES', ok:[{e:'⛰️',n:'Montaña'},{e:'🌳',n:'Árbol'},{e:'🌊',n:'Mar'},{e:'🪨',n:'Roca'},{e:'🌾',n:'Hierba'}],
+          no:[{e:'🏠',n:'Casa'},{e:'🌉',n:'Puente'},{e:'🚂',n:'Tren'},{e:'🛣️',n:'Carretera'}] },
+        { meta:'Atrapa lo que hay en la COSTA', ok:[{e:'🏖️',n:'Playa'},{e:'⚓',n:'Puerto'},{e:'🏝️',n:'Isla'},{e:'⛵',n:'Bahía'}],
+          no:[{e:'🏔️',n:'Cima'},{e:'🚜',n:'Granja'},{e:'🌲',n:'Valle'},{e:'🚇',n:'Túnel'}] },
+        { meta:'Atrapa las ROCAS DURAS', ok:[{e:'🪨',n:'Granito'},{e:'🗿',n:'Mármol'},{e:'🌋',n:'Basalto'}],
+          no:[{e:'🧱',n:'Arcilla'},{e:'🏜️',n:'Arenisca'},{e:'🏚️',n:'Pizarra'}] } ] } },
+    { id:'tema2', n:2, title:'Viaje a las estrellas', short:'Astros, la Tierra, sus movimientos y la Luna', pages:'Págs. 26-41',
+      color:'--sense', icon:'sun', map:'universo', starsBadge:'Constelación viajera',
+      missions: TEMA2_MISIONES, boss: TEMA2_JEFE,
+      /* Minijuego de premio: carrera (buenos = se recogen, malos = se saltan; de cada partida salen 3 preguntas) */
+      minijuego: { tipo:'carrera', titulo:'Carrera espacial', fondo:'espacio',
+        intro:'Corre por la Luna, recoge los astros y salta los peligros. En las puertas de pregunta, salta para cruzar la de arriba o sigue por el suelo para la de abajo.',
+        fin:'Recuerda: la Tierra gira sobre sí misma en un día y alrededor del Sol en un año.',
+        buenos:[{e:'☀️',n:'Sol'},{e:'🌍',n:'Tierra'},{e:'🌙',n:'Luna'},{e:'🪐',n:'Saturno'},{e:'⭐',n:'Estrella'},{e:'🔴',n:'Marte'}],
+        malos:[{e:'☄️',n:'Meteorito'},{e:'🗑️',n:'Basura espacial'},{e:'🛸',n:'Ovni'}],
+        preguntas:[
+        {q:'¿Qué astro da luz y calor?', ok:'El Sol', no:'La Luna'},
+        {q:'¿Qué es la Luna?', ok:'Un satélite', no:'Una estrella'},
+        {q:'¿Cuántos planetas tiene el sistema solar?', ok:'Ocho', no:'Tres'},
+        {q:'¿Qué planeta está más cerca del Sol?', ok:'Mercurio', no:'Neptuno'},
+        {q:'¿Cuánto tarda la Tierra en girar sobre sí misma?', ok:'Un día', no:'Un año'},
+        {q:'¿Por dónde sale el Sol?', ok:'Por el este', no:'Por el oeste'},
+        {q:'¿Cómo se ve la luna llena?', ok:'Redonda', no:'No se ve'},
+        {q:'¿En qué continente vivimos?', ok:'Europa', no:'Asia'} ] } },
+    { id:'tema3', n:3, title:'Gotas y vientos', short:'Próximamente', pages:'Págs. 46-63', color:'--lung', icon:'drop', map:'clima', missions:[] },
+    { id:'tema4', n:4, title:'Manos que trabajan', short:'Próximamente', pages:'Págs. 64-79', color:'--food', icon:'gear', map:'trabajos', missions:[] },
+    { id:'tema5', n:5, title:'Mi pueblo, mi ciudad', short:'Próximamente', pages:'Págs. 84-99', color:'--virus', icon:'building', map:'ciudad', missions:[] },
+    { id:'tema6', n:6, title:'Detectives del pasado', short:'Próximamente', pages:'Págs. 100-115', color:'--bone', icon:'clock', map:'historia', missions:[] }
+  ]
+};
+
+/* ---------- ESQUEMAS: último reto de cada misión ----------
+   [[palabra]] es un hueco; «extra» son palabras de despiste. tipo:'flujo' para secuencias. */
+const ESQUEMAS = {
+  /* Tema 1 */
+  paisaje1: { titulo:'Los [[paisajes]]', nodos:[
+    {txt:'Elementos [[naturales]]', hijos:[{txt:'Montañas, lagos, [[árboles]]'}]},
+    {txt:'Elementos [[construidos]]', hijos:[{txt:'Casas, carreteras, [[puentes]]'}]},
+    {txt:'Paisaje natural: [[pocos]] elementos construidos'},
+    {txt:'Paisaje [[humanizado]]: lo han cambiado las personas'} ], extra:['rápidos','redondos'] },
+  paisaje2: { titulo:'Paisajes de [[costa]]', nodos:[
+    {txt:'[[Playa]]: terreno llano de arena'},
+    {txt:'[[Acantilado]]: pared de roca'},
+    {txt:'Otras formas', hijos:[{txt:'[[Bahía]]: el mar entra en la tierra'},{txt:'[[Cabo]]: la tierra entra en el mar'},{txt:'[[Isla]]: agua por todas partes'}]} ], extra:['valle','cima'] },
+  paisaje3: { titulo:'Paisajes de [[interior]]', nodos:[
+    {txt:'De [[montaña]]', hijos:[{txt:'Partes: cima, [[ladera]] y pie'},{txt:'Muchas montañas forman una [[sierra]]'}]},
+    {txt:'De [[llanura]]', hijos:[{txt:'El terreno es [[plano]]'},{txt:'Hay colinas y [[mesetas]]'}]} ], extra:['playas','cabo'] },
+  paisaje4: { tipo:'flujo', titulo:'El curso del [[río]]', nodos:[
+    {txt:'[[Nacimiento]] en las montañas'}, {txt:'Curso alto: estrecho y [[rápido]]'}, {txt:'Curso medio: [[ancho]] y lento'},
+    {txt:'Curso bajo: llega a la [[costa]]'}, {txt:'[[Desembocadura]] en el mar'} ], extra:['cima','isla'] },
+  paisaje5: { titulo:'Las [[rocas]]', nodos:[
+    {txt:'Rocas [[duras]]: resistentes', hijos:[{txt:'Granito, mármol, [[basalto]]'}]},
+    {txt:'Rocas [[blandas]]: frágiles', hijos:[{txt:'Arenisca, pizarra, [[arcilla]]'}]},
+    {txt:'Están formadas por [[minerales]]'} ], extra:['madera','plástico'] },
+  /* Tema 2 */
+  universo1: { titulo:'El [[universo]]', nodos:[
+    {txt:'[[Estrellas]]: dan luz y calor', hijos:[{txt:'El [[Sol]]'}]},
+    {txt:'[[Planetas]]: giran alrededor de una estrella', hijos:[{txt:'La [[Tierra]]'}]},
+    {txt:'[[Satélites]]: giran alrededor de un planeta', hijos:[{txt:'La [[Luna]]'}]} ], extra:['Europa','océano'] },
+  universo2: { titulo:'El planeta [[Tierra]]', nodos:[
+    {txt:'[[Continentes]]: tierra firme', hijos:[{txt:'Hay [[seis]]. Vivimos en Europa'}]},
+    {txt:'[[Océanos]]: agua salada'},
+    {txt:'[[Atmósfera]]: capa de aire'},
+    {txt:'La vemos en el [[globo]] terráqueo y en los mapas'} ], extra:['luz','satélites'] },
+  universo3: { titulo:'Los movimientos de la [[Tierra]]', nodos:[
+    {txt:'Gira sobre sí misma', hijos:[{txt:'Tarda un [[día]]'},{txt:'Hay día y [[noche]]'}]},
+    {txt:'Gira alrededor del [[Sol]]', hijos:[{txt:'Tarda un [[año]]: 365 días'},{txt:'Hay cuatro [[estaciones]]'}]} ], extra:['mes','continentes'] },
+  universo4: { tipo:'flujo', titulo:'Las fases de la [[Luna]]', nodos:[
+    {txt:'Luna [[nueva]]: no se ve'}, {txt:'Cuarto [[creciente]]: forma de D'}, {txt:'Luna [[llena]]: se ve redonda'}, {txt:'Cuarto [[menguante]]: forma de C'} ], extra:['estrella','día'] }
+};
+CURSO.temas.forEach(t => (t.missions || []).forEach(m => {
+  const e = ESQUEMAS[m.id]; if (!e) return;
+  m.ch.push(Object.assign({ t:'esquema', tipo:'arbol', q:'Completa el esquema de la misión.', hint:'Repasa las tarjetas de la lección: el esquema las resume.' }, e));
+}));
+
+/* ---------- ASOCIACIÓN DE CADA TEMA CON EL CURRÍCULO ----------
+   criterios: los del tema (los que no tengan retos aparecen como «no evaluables en el juego»).
+   misiones:  criterio que evalúan todos los retos de esa misión (también el jefe final).
+   retos:     excepciones para un reto concreto, con la clave «misión#número» (el número empieza en 0;
+              en los jefes, los retos propios del jefe son «jefe#x0», «jefe#x1»...). */
+const EVALUACION = {
+  tema1: { criterios:['4.1','4.2','5.1','3.1'], saberes:['C.4.1'],
+    misiones:{ paisaje1:['4.1'], paisaje2:['4.1'], paisaje3:['4.1'], paisaje4:['4.1'], paisaje5:['4.1'], 'reto-paisajes':['4.1'] },
+    retos:{ 'paisaje1#6':['5.1'], 'paisaje3#2':['4.2'], 'paisaje3#7':['4.2'], 'paisaje4#3':['4.2'], 'paisaje4#7':['4.2'], 'paisaje5#1':['4.2'], 'paisaje5#6':['4.2'], 'paisaje5#7':['4.2'] } },
+  tema2: { criterios:['4.1','4.2','6.1','2.1'], saberes:['C.1.1','C.1.3','C.2.1'],
+    misiones:{ universo1:['4.1'], universo2:['4.1'], universo3:['4.2'], universo4:['4.1'], 'reto-universo':['4.1'] },
+    retos:{ 'universo3#0':['6.1'], 'universo3#1':['6.1'], 'universo3#6':['6.1'], 'universo3#7':['6.1'], 'universo4#2':['6.1'], 'universo4#5':['6.1'], 'universo4#4':['4.2'], 'universo4#8':['4.2'] } }
+};
+CURSO.temas.forEach(t => {
+  const e = EVALUACION[t.id]; if (!e) return;
+  t.criterios = e.criterios; t.saberes = e.saberes;
+  [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+    if (e.misiones && e.misiones[m.id]) m.cr = e.misiones[m.id];
+    (m.ch || []).forEach((r, i) => { const k = m.id + '#' + i; if (e.retos && e.retos[k]) r.cr = e.retos[k]; });
+    (m.extra || []).forEach((r, i) => { const k = m.id + '#x' + i; if (e.retos && e.retos[k]) r.cr = e.retos[k]; });
+  });
+});
