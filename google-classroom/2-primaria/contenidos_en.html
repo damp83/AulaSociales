@@ -1,0 +1,224 @@
+<script>
+/* =====================================================================
+   CONTENIDOS EN INGLÉS · Time Travellers (Viajeros del Tiempo)
+   © 2026 Diego Alberto Moya Puerta, Maestro de Educación Primaria, Comunidad Autónoma de la Región de Murcia · Licencia CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es)
+   ---------------------------------------------------------------------
+   Versión inglesa de contenidos.js, adaptada a alumnado de 7-8 años que aprende inglés.
+   Solo contiene TEXTOS: la estructura (respuestas correctas, orden, grupos, criterios) se toma
+   de contenidos.js, así que el progreso y la evaluación son los mismos en los dos idiomas.
+
+   Reglas para editar:
+   - Cada misión tiene las mismas tarjetas (learn) y los mismos retos (ch) EN EL MISMO ORDEN que en
+     contenidos.js. El esquema es el último reto de cada misión.
+   - En «opts», «items», «pairs», «bins» y «parts» hay que respetar el mismo número y orden de
+     elementos que en castellano (la respuesta correcta se identifica por su posición).
+   - En «classify», «items» es solo la lista de textos (el grupo de cada uno sale de contenidos.js).
+   - En los esquemas, [[palabra]] es un hueco: debe haber el mismo número de huecos.
+   ===================================================================== */
+
+const IDIOMA_CONTENIDOS = (() => {
+  const CAMPOS = ['q', 'opts', 'hint', 'items', 'bins', 'pairs', 'parts', 'answers', 'bank', 'titulo', 'nodos', 'extra'];
+  const copia = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
+  const ESQ_EN = { q: 'Complete the concept map for this mission.', hint: 'Look at the lesson cards: the concept map sums them up.' };
+
+  // Guarda una vez los textos originales en castellano para poder volver a ellos
+  function guardar(curso) {
+    if (curso._es) return;
+    curso._es = { asignatura: curso.asignatura, situaciones: (curso.situaciones || []).map(s => s.title) };
+    curso.temas.forEach(t => {
+      t._es = { title: t.title, short: t.short, starsBadge: t.starsBadge, minijuego: copia(t.minijuego) };
+      [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+        m._es = { title: m.title, short: m.short, badge: m.badge, villain: m.villain, learn: copia(m.learn) };
+        [...(m.ch || []), ...(m.extra || [])].forEach(r => {
+          r._es = {};
+          CAMPOS.forEach(k => { if (r[k] !== undefined) r._es[k] = copia(r[k]); });
+        });
+      });
+    });
+  }
+
+  function ponerReto(r, o, idioma) {
+    if (idioma === 'es') { Object.keys(r._es).forEach(k => { r[k] = copia(r._es[k]); }); return; }
+    if (r.t === 'esquema') o = Object.assign({}, ESQ_EN, o);
+    if (!o) return;
+    CAMPOS.forEach(k => {
+      if (o[k] === undefined) return;
+      if (k === 'items' && r.t === 'classify') r.items = r._es.items.map((it, i) => [o.items[i], it[1]]);
+      else r[k] = copia(o[k]);
+    });
+  }
+
+  function aplicar(curso, idioma) {
+    guardar(curso);
+    const en = idioma === 'en' ? CONTENIDOS_EN : null;
+    curso.asignatura = en ? en.asignatura : curso._es.asignatura;
+    (curso.situaciones || []).forEach((s, i) => { s.title = en ? en.situaciones[i] : curso._es.situaciones[i]; });
+    curso.temas.forEach(t => {
+      const ot = en && en.temas[t.id];
+      t.title = ot ? ot.title : t._es.title;
+      t.short = ot ? ot.short : t._es.short;
+      t.starsBadge = ot && ot.starsBadge ? ot.starsBadge : t._es.starsBadge;
+      if (t.minijuego) t.minijuego = ot && ot.minijuego ? Object.assign({}, t.minijuego, copia(ot.minijuego)) : copia(t._es.minijuego);
+      [...(t.missions || []), ...(t.boss ? [t.boss] : [])].forEach(m => {
+        const om = en && en.misiones[m.id];
+        ['title', 'short', 'badge', 'villain'].forEach(k => { m[k] = om && om[k] !== undefined ? om[k] : m._es[k]; });
+        m.learn = om && om.learn ? copia(om.learn) : copia(m._es.learn);
+        (m.ch || []).forEach((r, i) => ponerReto(r, om && om.ch && om.ch[i], idioma));
+        (m.extra || []).forEach((r, i) => ponerReto(r, om && om.extra && om.extra[i], idioma));
+      });
+    });
+  }
+  return { aplicar };
+})();
+
+const CONTENIDOS_EN = {
+  asignatura: 'Social Science · Primary 2',
+  situaciones: ['Backpack on!', 'Guardians of every drop', 'My corner of the world'],
+  temas: {
+    tema1: { title: 'Landscape lookout', short: 'Landscapes, coast, inland, rivers and rocks', starsBadge: 'Lookout constellation',
+      minijuego: { titulo: 'Lookout rain', rondas: [
+        { meta: 'Catch the NATURAL FEATURES', ok: [{e:'⛰️',n:'Mountain'},{e:'🌳',n:'Tree'},{e:'🌊',n:'Sea'},{e:'🪨',n:'Rock'},{e:'🌾',n:'Grass'}],
+          no: [{e:'🏠',n:'House'},{e:'🌉',n:'Bridge'},{e:'🚂',n:'Train'},{e:'🛣️',n:'Road'}] },
+        { meta: 'Catch what you find on the COAST', ok: [{e:'🏖️',n:'Beach'},{e:'⚓',n:'Port'},{e:'🏝️',n:'Island'},{e:'⛵',n:'Bay'}],
+          no: [{e:'🏔️',n:'Summit'},{e:'🚜',n:'Farm'},{e:'🌲',n:'Valley'},{e:'🚇',n:'Tunnel'}] },
+        { meta: 'Catch the HARD ROCKS', ok: [{e:'🪨',n:'Granite'},{e:'🗿',n:'Marble'},{e:'🌋',n:'Basalt'}],
+          no: [{e:'🧱',n:'Clay'},{e:'🏜️',n:'Sandstone'},{e:'🏚️',n:'Slate'}] } ] } },
+    tema2: { title: 'Trip to the stars', short: 'Coming soon' },
+    tema3: { title: 'Drops and winds', short: 'Coming soon' },
+    tema4: { title: 'Busy hands', short: 'Coming soon' },
+    tema5: { title: 'My town, my city', short: 'Coming soon' },
+    tema6: { title: 'Detectives of the past', short: 'Coming soon' }
+  },
+  misiones: {
+    /* ---------- TOPIC 1 · Landscape lookout ---------- */
+    paisaje1: { title: 'The traveller’s eye', short: 'Natural and built features', badge: 'Traveller’s eye',
+      learn: [
+        { h: 'What is a landscape?', p: 'A <mark>landscape</mark> is everything we see when we look at a place: mountains, trees, houses, paths…' },
+        { h: 'Natural features', p: '<mark>Natural features</mark> are not made by people. They are part of nature.',
+          extra: '<div class="tags"><span class="tag">mountain</span><span class="tag">lake</span><span class="tag">river</span><span class="tag">grass</span><span class="tag">tree</span></div>' },
+        { h: 'Built features', p: '<mark>Built features</mark> are made by people.',
+          extra: '<div class="tags"><span class="tag">house</span><span class="tag">road</span><span class="tag">railway</span><span class="tag">bridge</span><span class="tag">field of crops</span></div>' },
+        { h: 'Natural and humanised landscapes', p: 'A <mark>natural landscape</mark> has few built features. A <mark>humanised landscape</mark> is a landscape that people have changed to live in it.' },
+        { h: 'Landscapes change', p: 'All landscapes change over <mark>time</mark>. A beach with a few houses can become a city.' }
+      ],
+      ch: [
+        { q: 'Which one is a natural feature?', opts: ['⛰️ The mountain', '🛣️ The road', '🏠 The house'], hint: 'Nobody made natural features.' },
+        { q: 'Is it a natural or a built feature?', bins: ['Natural', 'Built'], items: ['🌳 Tree', '🏠 House', '💧 Lake', '🛤️ Railway', '⛰️ Mountain', '🌉 Bridge', '🌾 Grass'], hint: 'Built: people made it. Natural: it is part of nature.' },
+        { q: 'Fields of crops are natural features.', hint: 'People prepare and look after fields. They are built features.' },
+        { q: 'Tap the features made by people.', opts: ['Road', 'River', 'House', 'Grass', 'Railway', 'Lake'], hint: 'Nobody made the river, the grass or the lake.' },
+        { q: 'Match each word with its meaning.', pairs: [['Natural feature', 'It is part of nature'], ['Built feature', 'People make it'], ['Natural landscape', 'It has few built features'], ['Humanised landscape', 'People have changed it']], hint: 'Look at the lesson cards again.' },
+        { q: 'Fill in the gaps.', parts: ['A natural landscape has ', 0, ' built features. A humanised landscape has ', 1, ' built features.'], answers: ['few', 'many'], bank: ['blue'], hint: 'People build a lot in humanised landscapes.' },
+        { q: 'Put in order how this coast landscape changed.', items: ['There was a beach with very few houses', 'People built streets and some buildings', 'Now there are lots of tall buildings next to the beach'], hint: 'Start with what was there a long time ago.' },
+        { q: 'A village with houses, streets and fields of crops. What landscape is it?', opts: ['Humanised', 'Natural'], hint: 'It has lots of features built by people.' },
+        { q: 'Landscapes are always the same: they never change.', hint: 'All landscapes change over time.' },
+        { titulo: '[[Landscapes]]', nodos: [
+          { txt: '[[Natural]] features', hijos: [{ txt: 'Mountains, lakes, [[trees]]' }] },
+          { txt: '[[Built]] features', hijos: [{ txt: 'Houses, roads, [[bridges]]' }] },
+          { txt: 'Natural landscape: [[few]] built features' },
+          { txt: '[[Humanised]] landscape: people have changed it' } ], extra: ['fast', 'round'] }
+      ] },
+    paisaje2: { title: 'Off to the sea', short: 'Coast landscapes', badge: 'Sea wolf',
+      learn: [
+        { h: 'The coast', p: 'The <mark>coast</mark> is the land next to the sea. There we find <mark>coast landscapes</mark>.' },
+        { h: 'Beaches and cliffs', p: 'On the coast there are <mark>beaches</mark> and <mark>cliffs</mark>.',
+          extra: '<div class="senses"><b>Beach</b><span>flat land with sand or stones, next to the sea</span><b>Cliff</b><span>a high wall of rock above the sea</span></div>' },
+        { h: 'More coast shapes', p: 'The coast has lots of shapes:',
+          extra: '<div class="senses"><b>Bay</b><span>the sea goes into the land</span><b>Cape</b><span>the land goes into the sea</span><b>Island</b><span>land with water all around</span><b>Peninsula</b><span>land with water on all sides but one</span><b>Archipelago</b><span>a group of islands close together</span></div>' },
+        { h: 'What we build on the coast', p: 'On the coast people build <mark>ports</mark> for boats and <mark>lighthouses</mark> that shine at night.' }
+      ],
+      ch: [
+        { q: 'What is the coast?', opts: ['The land next to the sea', 'The highest part of a mountain', 'Flat land far from the sea'], hint: 'On the coast we are next to the sea.' },
+        { q: 'Is it the beach or the cliff?', bins: ['Beach', 'Cliff'], items: ['It is flat', 'It is a wall of rock', 'It has sand or stones', 'It is high above the sea', 'You can lie on the sand'], hint: 'The beach is flat. The cliff is a wall of rock.' },
+        { q: 'Match each coast shape with its meaning.', pairs: [['Bay', 'The sea goes into the land'], ['Cape', 'The land goes into the sea'], ['Island', 'It has water all around'], ['Peninsula', 'It has water on all sides but one']], hint: 'In a bay the sea goes in. In a cape the land goes out.' },
+        { q: 'An archipelago is a group of islands close together.', hint: 'Lots of islands together make an archipelago.' },
+        { q: 'Tap the built features on the coast.', opts: ['⚓ Port', '🏖️ Beach', 'Lighthouse', 'Cliff', '🏝️ Island'], hint: 'The beach, the cliff and the island are natural.' },
+        { q: 'Fill in the gaps.', parts: ['An ', 0, ' is land with water all around. A group of islands makes an ', 1, '.'], answers: ['island', 'archipelago'], bank: ['bay', 'cape'], hint: 'Look at the word “islands”.' },
+        { q: 'A boat comes home at night. Put its trip in order.', items: ['It sees the lighthouse light from the sea', 'It goes into the bay', 'It arrives at the port and stops'], hint: 'First it sees the light from far away. At the end it arrives at the port.' },
+        { q: 'You walk on the sand and get your feet wet in the sea. Where are you?', opts: ['On a beach', 'On a cliff', 'In a valley'], hint: 'A beach has sand and is next to the sea.' },
+        { q: 'A cliff is flat land with sand.', hint: 'A cliff is a wall of rock. Flat land with sand is a beach.' },
+        { titulo: '[[Coast]] landscapes', nodos: [
+          { txt: '[[Beach]]: flat land with sand' },
+          { txt: '[[Cliff]]: a wall of rock' },
+          { txt: 'Other shapes', hijos: [{ txt: '[[Bay]]: the sea goes into the land' }, { txt: '[[Cape]]: the land goes into the sea' }, { txt: '[[Island]]: water all around' }] } ], extra: ['valley', 'summit'] }
+      ] },
+    paisaje3: { title: 'Peaks and plains', short: 'Inland landscapes', badge: 'Mountain goat',
+      learn: [
+        { h: 'Inland', p: 'Far from the sea is <mark>inland</mark>. There we find <mark>mountain</mark> landscapes and <mark>plain</mark> landscapes.' },
+        { h: 'Mountains', p: 'A <mark>mountain</mark> is a very high piece of land. Lots of mountains together make a <mark>mountain range</mark>. Between mountains there are <mark>valleys</mark>: low land where rivers flow.' },
+        { h: 'The parts of a mountain', p: 'A mountain has three parts:',
+          extra: '<div class="senses"><b>Summit</b><span>the highest part</span><b>Slope</b><span>between the summit and the foot</span><b>Foot</b><span>the lowest part</span></div>' },
+        { h: 'Living in the mountains', p: 'In the mountains there are <mark>small villages</mark>, narrow roads with bends and <mark>tunnels</mark>.' },
+        { h: 'Plains', p: 'A <mark>plain</mark> is flat land. There are cities, big towns, fields of crops, farms and motorways.',
+          extra: '<div class="senses"><b>Hill</b><span>a small high piece of land</span><b>Plateau</b><span>flat, high land</span></div>' }
+      ],
+      ch: [
+        { q: 'Put the parts of a mountain in order, from bottom to top.', items: ['Foot', 'Slope', 'Summit'], hint: 'Start with the lowest part.' },
+        { q: 'Match each word with its meaning.', pairs: [['Mountain range', 'Lots of mountains together'], ['Valley', 'Low land between mountains'], ['Hill', 'A small high piece of land'], ['Plateau', 'Flat, high land']], hint: 'A hill is small. A plateau is flat and high.' },
+        { q: 'Do you find it more in the mountains or on the plain?', bins: ['Mountains', 'Plain'], items: ['Narrow roads with bends', 'Big cities', 'Tunnels', 'Big fields of crops', 'Small villages', 'Motorways'], hint: 'The plain is flat, so big cities and motorways fit there.' },
+        { q: 'What is the highest part of a mountain called?', opts: ['The summit', 'The foot', 'The slope'], hint: 'The lowest part is the foot.' },
+        { q: 'A plain is flat land.', hint: 'Plain means flat.' },
+        { q: 'Tap the inland landscapes.', opts: ['Mountain', 'Beach', 'Plain', 'Cliff', 'Valley', 'Bay'], hint: 'The beach, the cliff and the bay are on the coast.' },
+        { q: 'Fill in the gaps.', parts: ['Between the ', 0, ' and the ', 1, ' of a mountain there is the ', 2, '.'], answers: ['summit', 'foot', 'slope'], bank: ['coast', 'bay'], hint: 'The summit is the highest part and the foot is the lowest.' },
+        { q: 'A village is right at the bottom, in the valley, next to the river. Which part of the mountain is it in?', opts: ['At the foot', 'On the slope', 'At the summit'], hint: 'The lowest part of the mountain is the foot.' },
+        { q: 'A mountain range is a very small mountain.', hint: 'A mountain range is lots of mountains together. A small high piece of land is a hill.' },
+        { titulo: '[[Inland]] landscapes', nodos: [
+          { txt: '[[Mountain]]', hijos: [{ txt: 'Parts: summit, [[slope]] and foot' }, { txt: 'Lots of mountains make a [[range]]' }] },
+          { txt: '[[Plain]]', hijos: [{ txt: 'The land is [[flat]]' }, { txt: 'There are hills and [[plateaus]]' }] } ], extra: ['beaches', 'cape'] }
+      ] },
+    paisaje4: { title: 'The journey of a drop', short: 'The river and its course', badge: 'Travelling drop',
+      learn: [
+        { h: 'What is a river?', p: 'A <mark>river</mark> is water that flows all the time through different landscapes. It starts in the <mark>mountains</mark> and ends in the <mark>sea</mark> or in another river.' },
+        { h: 'The course of a river', p: 'The way a river goes is called its <mark>course</mark>. The place where it starts is the <mark>source</mark>. The place where it ends is the <mark>mouth</mark>.' },
+        { h: 'Upper course', p: 'In the <mark>mountains</mark>, the river is <mark>narrow</mark>, carries <mark>little</mark> water and flows down the slope very <mark>fast</mark>.' },
+        { h: 'Middle course', p: 'On the <mark>plain</mark>, the river is <mark>wider</mark> and the water flows more <mark>slowly</mark>. Sometimes other rivers give it their water and it gets bigger.' },
+        { h: 'Lower course', p: 'Many rivers reach the <mark>coast</mark>. There their water flows into the <mark>sea</mark>.' }
+      ],
+      ch: [
+        { q: 'Put the river’s journey in order.', items: ['It starts in the mountains', 'It flows fast down the slope', 'It flows slowly across the plain', 'It flows into the sea'], hint: 'Start at the source and finish at the mouth.' },
+        { q: 'Upper course or middle course?', bins: ['Upper course', 'Middle course'], items: ['It is narrow', 'It is wide', 'It carries little water', 'It carries lots of water', 'The water flows very fast', 'The water flows slowly'], hint: 'In the mountains the river is narrow and fast. On the plain it is wide and slow.' },
+        { q: 'What is the place where a river starts called?', opts: ['Source', 'Mouth', 'Middle course'], hint: 'Rivers start in the mountains.' },
+        { q: 'Match each part of the course with its landscape.', pairs: [['Upper course', 'Mountains'], ['Middle course', 'Plain'], ['Lower course', 'Coast']], hint: 'The river comes down the mountain, crosses the plain and reaches the coast.' },
+        { q: 'Fill in the gaps.', parts: ['The river starts in the ', 0, ', crosses the ', 1, ' and flows into the ', 2, '.'], answers: ['mountains', 'plain', 'sea'], bank: ['beach', 'bay'], hint: 'Follow the river from top to bottom.' },
+        { q: 'All rivers flow into the sea.', hint: 'Some rivers take their water to another river.' },
+        { q: 'Tap what is true in the upper course.', opts: ['It is in the mountains', 'It is narrow', 'It flows very slowly', 'It carries lots of water', 'It flows very fast'], hint: 'In the upper course the river carries little water and flows fast.' },
+        { q: 'A wide, calm river flows past a town, on flat land. Which part of the course is it?', opts: ['Middle course', 'Upper course'], hint: 'Flat land is the plain: the middle course is there.' },
+        { q: 'The way a river goes is called its course.', hint: 'That is why we say upper, middle and lower course.' },
+        { titulo: 'The course of the [[river]]', nodos: [
+          { txt: '[[Source]] in the mountains' }, { txt: 'Upper course: narrow and [[fast]]' }, { txt: 'Middle course: [[wide]] and slow' },
+          { txt: 'Lower course: it reaches the [[coast]]' }, { txt: '[[Mouth]] in the sea' } ], extra: ['summit', 'island'] }
+      ] },
+    paisaje5: { title: 'The stone treasure', short: 'Rocks and their uses', badge: 'Rock hunter',
+      learn: [
+        { h: 'Rocks', p: '<mark>Rocks</mark> are natural features of the landscape. There are rocks in mountains, on cliffs, on the forest floor and at the bottom of the sea.' },
+        { h: 'Hard rocks', p: '<mark>Hard rocks</mark> are strong: they do not break easily.',
+          extra: '<div class="tags"><span class="tag">granite</span><span class="tag">marble</span><span class="tag">basalt</span></div>' },
+        { h: 'Soft rocks', p: '<mark>Soft rocks</mark> are fragile: they break very easily.',
+          extra: '<div class="tags"><span class="tag">sandstone</span><span class="tag">slate</span><span class="tag">clay</span></div>' },
+        { h: 'Rocks and minerals', p: 'Rocks are made of <mark>minerals</mark>. With a magnifying glass we can see the minerals in granite.' },
+        { h: 'We use rocks', p: 'We make lots of things with rocks and minerals:',
+          extra: '<div class="senses"><b>Clay</b><span>bricks</span><b>Granite</b><span>building blocks</span><b>Slate</b><span>roof tiles</span><b>Calcite</b><span>chalk</span></div>' }
+      ],
+      ch: [
+        { q: 'Is it a hard rock or a soft rock?', bins: ['Hard', 'Soft'], items: ['Granite', 'Sandstone', 'Marble', 'Slate', 'Basalt', 'Clay'], hint: 'Hard: granite, marble and basalt. Soft: sandstone, slate and clay.' },
+        { q: 'Match each rock or mineral with what we make.', pairs: [['Clay', 'Bricks'], ['Slate', 'Roof tiles'], ['Granite', 'Blocks'], ['Calcite', 'Chalk']], hint: 'Look at the last lesson card again.' },
+        { q: 'Rocks are made of minerals.', hint: 'With a magnifying glass you can see the minerals in granite.' },
+        { q: 'Tap the hard rocks.', opts: ['Granite', 'Sandstone', 'Marble', 'Iron', 'Basalt'], hint: 'Sandstone is soft. Iron is not a rock.' },
+        { q: 'Where can we find rocks?', opts: ['In mountains and at the bottom of the sea', 'Only in cities', 'Only in rivers'], hint: 'There are rocks in lots of places in the landscape.' },
+        { q: 'Fill in the gaps.', parts: ['', 0, ' rocks are strong. ', 1, ' rocks break very easily.'], answers: ['Hard', 'Soft'], bank: ['Built', 'Fast'], hint: 'Strong means it does not break easily.' },
+        { q: 'Put in order how we make a brick wall.', items: ['We take clay from the ground', 'We make the bricks', 'We build the wall with the bricks'], hint: 'First we need the rock.' },
+        { q: 'A roof has thin, dark tiles. Which rock are they made of?', opts: ['Slate', 'Granite', 'Marble'], hint: 'We make roof tiles with slate.' },
+        { q: 'Soft rocks never break.', hint: 'Soft rocks are fragile: they break very easily.' },
+        { titulo: '[[Rocks]]', nodos: [
+          { txt: '[[Hard]] rocks: strong', hijos: [{ txt: 'Granite, marble, [[basalt]]' }] },
+          { txt: '[[Soft]] rocks: fragile', hijos: [{ txt: 'Sandstone, slate, [[clay]]' }] },
+          { txt: 'They are made of [[minerals]]' } ], extra: ['wood', 'plastic'] }
+      ] },
+    'reto-paisajes': { title: 'Fog at the lookout', short: 'Review of the whole topic', badge: 'Lookout guardian', villain: 'Fog Blot',
+      extra: [
+        { q: 'Is it a coast or an inland landscape?', bins: ['Coast', 'Inland'], items: ['Beach', 'Mountain', 'Cliff', 'Valley', 'Bay', 'Plateau', 'Cape', 'Hill'], hint: 'The coast is next to the sea. Inland is far from the sea.' },
+        { q: 'It is water that flows all the time, starts in the mountains and reaches the sea. What is it?', opts: ['A river', 'A lake', 'A bay'], hint: 'It has an upper, middle and lower course.' }
+      ] }
+  }
+};
+
+</script>

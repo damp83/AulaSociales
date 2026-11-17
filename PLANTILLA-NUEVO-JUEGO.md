@@ -108,6 +108,8 @@ temática visual y los contenidos.
 | `cursos/<curso>/contenidos-en.js` | Los mismos contenidos en inglés (solo textos; opcional) |
 | `tools/nuevo_curso.py` | Crea la carpeta y el registro de un curso nuevo |
 | `tools/validar_ingles.js` | Comprueba que la versión inglesa encaja con la castellana |
+| `tools/probar_juego.js` | Juega automáticamente todos los temas y minijuegos en ordenador y móvil |
+| `tools/cabecera_contenidos.js`, `tools/motor_ingles.js` | Plantillas que usan los cursos nuevos (instrucciones y motor del inglés) |
 | `index.html` | El juego: diseño, personajes, mecánicas y panel del docente |
 | `google-classroom/` | Versión que guarda el progreso en la nube (una carpeta por curso), con su guía de instalación |
 | `tools/build_classroom.py` | Genera la versión de Google Classroom de cada curso |

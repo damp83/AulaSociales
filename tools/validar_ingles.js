@@ -86,7 +86,8 @@ const antes = JSON.stringify(CURSO.temas.map(t => [(t.missions || []).map(m => m
 ctx.I.aplicar(CURSO, 'en'); const enQ = CURSO.temas[0].missions[0].ch[0].q; ctx.I.aplicar(CURSO, 'es');
 const despues = JSON.stringify(CURSO.temas.map(t => [(t.missions || []).map(m => m.ch.map(r => r.q)), t.minijuego || null]));
 if (antes !== despues) errores.push('Al volver al castellano no se recuperan los textos originales');
-if (!/How many/.test(enQ)) errores.push('La traducción no se aplica');
+const t0 = CURSO.temas.find(t => (t.missions || []).length), m0 = t0 && EN.misiones[t0.missions[0].id];
+if (t0 && (!m0 || !m0.ch || enQ !== m0.ch[0].q)) errores.push('La traducción no se aplica');
 avisos.forEach(a => console.log('  aviso · ' + a));
 errores.forEach(e => console.log('  ERROR · ' + e));
 const n = Object.keys(EN.misiones).length;

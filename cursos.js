@@ -14,7 +14,7 @@ const CURSOS = [
     id: '2-primaria',
     nombre: '2.º de Primaria',           // como aparece en el selector de curso
     nombre_en: 'Primary 2',
-    ingles: false                         // pasa a true cuando exista contenidos-en.js
+    ingles: true                          // tiene contenidos-en.js
   },
   {
     id: '3-primaria',
