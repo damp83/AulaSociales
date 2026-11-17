@@ -66,6 +66,14 @@ async function jugarMinijuego(page, tipo) {
       }
       g.target = mejor;
     }, 30); });
+  } else if (tipo === 'carrera') {
+    await page.evaluate(() => { window.__bot = setInterval(() => {
+      if (!MG || MG.state !== 'play') return clearInterval(window.__bot);
+      const g = MG.g, PX = MG.PX; if (!g.onGround) return;
+      const puerta = g.items.find(o => o.kind === 'gate' && !o.done && o.x - PX > -80 && o.x - PX < 220);
+      if (puerta) { if (puerta.q.top && puerta.x - PX < 110) miniJump(); return; }
+      if (g.items.some(o => o.kind === 'bad' && !o.hit && o.x - PX > 30 && o.x - PX < 85)) miniJump();
+    }, 15); });
   } else if (tipo === 'memoria') {
     await page.evaluate(() => { window.__bot = setInterval(() => {
       const libres = [...document.querySelectorAll('#view-mini .mem-card:not(.done):not(.open)')]; if (!libres.length) return;
@@ -73,8 +81,8 @@ async function jugarMinijuego(page, tipo) {
       const a = libres[0], par = libres.find(b => b !== a && b.dataset.p === a.dataset.p); a.click(); if (par) setTimeout(() => par.click(), 60);
     }, 400); });
   }
-  // Carrera y rescate: se comprueba que arrancan y funcionan sin errores durante un rato
-  const limite = tipo === 'lluvia' || tipo === 'memoria' ? 150000 : 8000;
+  // Rescate: se comprueba que arranca y funciona sin errores durante un rato
+  const limite = tipo === 'rescate' ? 8000 : 150000;
   await page.waitForFunction(() => MG && MG.state === 'end', null, { timeout: limite }).catch(() => {});
   return page.evaluate(() => { clearInterval(window.__bot); if (!MG) return null; const g = MG.g || {}, mj = MG.t.minijuego;
     const estado = MG.state !== 'end' ? 'funciona sin errores' : (mj.rondas ? g.ronda >= mj.rondas.length : g.hearts > 0) ? 'ganado' : 'perdido';

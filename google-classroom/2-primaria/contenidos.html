@@ -209,6 +209,120 @@ const TEMA1_JEFE = {
   ]
 };
 
+/* ---------- TEMA 2 · Viaje a las estrellas (libro, págs. 26-41) ---------- */
+const TEMA2_MISIONES = [
+  {
+    id:'universo1', badge:'Cazaestrellas', title:'Vecinos del espacio', short:'Los astros y el sistema solar', pages:'Págs. 28-29',
+    color:'--gold', icon:'star',
+    learn:[
+      {h:'El universo', p:'El <mark>universo</mark> es enorme. Está formado por muchos <mark>astros</mark>: estrellas, planetas y satélites.'},
+      {h:'Las estrellas', p:'Las <mark>estrellas</mark> dan <mark>luz y calor</mark>. El <mark>Sol</mark> es la estrella que está más cerca de la Tierra.'},
+      {h:'Planetas y satélites', p:'Los planetas y los satélites no tienen luz propia.',
+        extra:'<div class="senses"><b>Planeta</b><span>gira alrededor de una estrella, como la Tierra</span><b>Satélite</b><span>gira alrededor de un planeta, como la Luna</span></div>'},
+      {h:'El sistema solar', p:'El Sol, los <mark>ocho planetas</mark> que giran a su alrededor y otros astros más pequeños forman el <mark>sistema solar</mark>. Estos son los planetas, del más cercano al Sol al más lejano:',
+        extra:'<ol class="steps"><li>Mercurio</li><li>Venus</li><li>Tierra</li><li>Marte</li><li>Júpiter</li><li>Saturno</li><li>Urano</li><li>Neptuno</li></ol>'},
+      {h:'¿Quién estudia el universo?', p:'Las personas que estudian el universo se llaman <mark>astrónomos</mark> y <mark>astrónomas</mark>.'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada astro con su tipo.', pairs:[['☀️ Sol','Estrella'],['🌍 Tierra','Planeta'],['🌙 Luna','Satélite']], hint:'El Sol da luz. La Tierra gira alrededor del Sol. La Luna gira alrededor de la Tierra.'},
+      {t:'classify', q:'¿Es una estrella, un planeta o un satélite?', bins:['Estrella','Planeta','Satélite'],
+        items:[['Da luz y calor',0],['Gira alrededor de una estrella',1],['Gira alrededor de un planeta',2],['El Sol',0],['Marte',1],['La Luna',2],['Júpiter',1]],
+        hint:'Las estrellas dan luz. Los planetas giran alrededor de una estrella. Los satélites giran alrededor de un planeta.'},
+      {t:'tf', q:'La Luna tiene luz propia.', a:false, hint:'Los satélites, como la Luna, no tienen luz propia.'},
+      {t:'tf', q:'El Sol gira alrededor de la Tierra.', a:false, hint:'Es al revés: la Tierra gira alrededor del Sol.'},
+      {t:'order', q:'Ordena los cuatro planetas más cercanos al Sol, del más cercano al más lejano.', items:['Mercurio','Venus','Tierra','Marte'], hint:'El más cercano es Mercurio. Nuestro planeta es el tercero.'},
+      {t:'fill', q:'Completa los planetas más lejanos.', parts:['Después de Marte vienen Júpiter, ',0,', Urano y ',1,'.'], answers:['Saturno','Neptuno'], bank:['Venus','Luna'], hint:'Neptuno es el planeta más lejano del Sol.'},
+      {t:'mc', q:'¿Qué forman el Sol y todos los astros que giran a su alrededor?', opts:['El sistema solar','Un continente','La atmósfera'], a:0, hint:'Se llama así por el Sol.'},
+      {t:'pick', q:'Toca los planetas.', opts:['Marte','Sol','Saturno','Luna','Venus','Neptuno'], a:[0,2,4,5], hint:'El Sol es una estrella y la Luna es un satélite.'},
+      {t:'mc', q:'¿Cómo se llaman las personas que estudian el universo?', opts:['Astrónomos y astrónomas','Astronautas','Arquitectos y arquitectas'], a:0, hint:'Los astronautas viajan al espacio. Quienes lo estudian son los astrónomos y astrónomas.'}
+    ]
+  },
+  {
+    id:'universo2', badge:'Planeta azul', title:'Nuestro planeta azul', short:'Continentes, océanos y mapas', pages:'Págs. 30-31',
+    color:'--sense', icon:'globe',
+    learn:[
+      {h:'Un planeta con vida', p:'La <mark>Tierra</mark> es el único planeta del sistema solar donde sabemos que hay <mark>vida</mark>.'},
+      {h:'Tierra y agua', p:'La Tierra tiene una parte pequeña de <mark>tierra</mark> y una parte muy grande de <mark>agua</mark>. La tierra firme se divide en seis <mark>continentes</mark>. Nosotros vivimos en <mark>Europa</mark>.',
+        extra:'<div class="tags"><span class="tag">América</span><span class="tag">Europa</span><span class="tag">África</span><span class="tag">Asia</span><span class="tag">Oceanía</span><span class="tag">Antártida</span></div>'},
+      {h:'Océanos y atmósfera', p:'Casi toda el agua está en los <mark>océanos</mark>: grandes masas de agua salada. Hay cinco. Alrededor de la Tierra hay una capa de aire: la <mark>atmósfera</mark>.',
+        extra:'<div class="tags"><span class="tag">Pacífico</span><span class="tag">Atlántico</span><span class="tag">Índico</span><span class="tag">Glacial Ártico</span><span class="tag">Glacial Antártico</span></div>'},
+      {h:'Globo terráqueo y planisferio', p:'Para ver cómo es la Tierra usamos el <mark>globo terráqueo</mark>, que es redondo como ella, y los <mark>mapas</mark>. El <mark>planisferio</mark> o mapamundi es un mapa con todos los continentes y océanos. En él vemos que Asia está al este de Europa y que la Antártida está en el sur.'},
+      {h:'Los puntos cardinales', p:'La <mark>rosa de los vientos</mark> nos indica los cuatro <mark>puntos cardinales</mark>:',
+        extra:'<div class="senses"><b>N</b><span>Norte</span><b>E</b><span>Este</span><b>S</b><span>Sur</span><b>O</b><span>Oeste</span></div>'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada palabra con su explicación.', pairs:[['Atmósfera','Capa de aire que rodea la Tierra'],['Continentes','Partes de la tierra firme'],['Océanos','Grandes masas de agua salada']], hint:'Repasa las tarjetas «Tierra y agua» y «Océanos y atmósfera».'},
+      {t:'fill', q:'Completa.', parts:['La Tierra tiene poca ',0,' y mucha ',1,'.'], answers:['tierra','agua'], bank:['luz','arena'], hint:'Por eso desde el espacio la Tierra se ve azul.'},
+      {t:'classify', q:'¿Es un continente o un océano?', bins:['Continente','Océano'],
+        items:[['Europa',0],['Pacífico',1],['África',0],['Atlántico',1],['Asia',0],['Índico',1],['Oceanía',0],['Antártida',0]],
+        hint:'Los océanos son Pacífico, Atlántico, Índico, Glacial Ártico y Glacial Antártico.'},
+      {t:'tf', q:'En la Tierra hay seis continentes y seis océanos.', a:false, hint:'Hay seis continentes, pero solo cinco océanos.'},
+      {t:'mc', q:'¿En qué continente vivimos?', opts:['Europa','Asia','América'], a:0, hint:'España está en Europa.'},
+      {t:'mc', q:'¿Cómo se llama el mapa que tiene todos los continentes y océanos?', opts:['Planisferio','Globo terráqueo','Rosa de los vientos'], a:0, hint:'El globo terráqueo es redondo, no es un mapa plano.'},
+      {t:'pick', q:'Toca las frases verdaderas.', opts:['Asia está al este de Europa','El Índico y el Pacífico son continentes','La Antártida está en el sur','El Atlántico es un continente'], a:[0,2], hint:'El Índico, el Pacífico y el Atlántico son océanos.'},
+      {t:'order', q:'Ordena los puntos cardinales como las agujas del reloj, empezando por el norte.', items:['Norte','Este','Sur','Oeste'], hint:'Arriba está el norte y a la derecha el este.'},
+      {t:'tf', q:'La rosa de los vientos indica los puntos cardinales.', a:true, hint:'Señala el norte, el sur, el este y el oeste.'}
+    ]
+  },
+  {
+    id:'universo3', badge:'Peonza cósmica', title:'La Tierra no para', short:'Día y noche, año y estaciones', pages:'Págs. 32-33',
+    color:'--food', icon:'sun',
+    learn:[
+      {h:'La Tierra gira sobre sí misma', p:'La Tierra <mark>gira sobre sí misma</mark>, como una peonza. Tarda <mark>un día</mark> en dar una vuelta completa.'},
+      {h:'El día y la noche', p:'La parte de la Tierra que recibe la luz del Sol tiene <mark>día</mark>. La otra parte está a oscuras: allí es de <mark>noche</mark>.'},
+      {h:'El Sol a lo largo del día', p:'Por la <mark>mañana</mark> el Sol sale por el <mark>este</mark>. A <mark>mediodía</mark> está alto. Por la <mark>tarde</mark> se pone por el <mark>oeste</mark>. Después llega la <mark>noche</mark>.'},
+      {h:'La Tierra viaja alrededor del Sol', p:'La Tierra también <mark>da vueltas alrededor del Sol</mark>. Tarda <mark>un año</mark> en dar una vuelta completa. Un año tiene <mark>365 días</mark>.'},
+      {h:'Las estaciones', p:'Mientras la Tierra viaja, la luz del Sol nos llega de forma distinta. Así tenemos las cuatro <mark>estaciones</mark>:',
+        extra:'<div class="senses"><b>Primavera</b><span>cada día hay más minutos de luz</span><b>Verano</b><span>los días son más largos que las noches</span><b>Otoño</b><span>cada día hay menos minutos de luz</span><b>Invierno</b><span>los días son más cortos que las noches</span></div>'}
+    ],
+    ch:[
+      {t:'match', q:'Une cada movimiento con lo que tarda.', pairs:[['La Tierra gira sobre sí misma','Un día'],['La Tierra da una vuelta al Sol','Un año']], hint:'La vuelta alrededor del Sol es mucho más larga.'},
+      {t:'order', q:'Ordena las partes del día, empezando por la mañana.', items:['Mañana','Mediodía','Tarde','Noche'], hint:'Sigue el camino del Sol por el cielo.'},
+      {t:'mc', q:'¿Por qué punto cardinal sale el Sol?', opts:['Por el este','Por el oeste','Por el norte'], a:0, hint:'El Sol sale por el este y se pone por el oeste.'},
+      {t:'tf', q:'El Sol se pone por el oeste.', a:true, hint:'Por la tarde el Sol se esconde por el oeste.'},
+      {t:'classify', q:'¿Es de día o de noche?', bins:['Día','Noche'],
+        items:[['Esta parte de la Tierra recibe la luz del Sol',0],['Esta parte de la Tierra está a oscuras',1],['Vemos el Sol en el cielo',0],['Vemos muchas estrellas',1]],
+        hint:'Donde llega la luz del Sol es de día.'},
+      {t:'match', q:'Une cada estación con cómo son sus días.', pairs:[['Primavera','Cada día hay más luz'],['Verano','Días más largos que las noches'],['Otoño','Cada día hay menos luz'],['Invierno','Días más cortos que las noches']], hint:'En verano hay mucha luz y en invierno, poca.'},
+      {t:'fill', q:'Completa.', parts:['Un año tiene ',0,' días.'], answers:['365'], bank:['28','7','100'], hint:'Es el tiempo que tarda la Tierra en dar una vuelta al Sol.'},
+      {t:'tf', q:'La Tierra tarda un día en dar una vuelta alrededor del Sol.', a:false, hint:'Tarda un año. En un día gira sobre sí misma.'},
+      {t:'pick', q:'Toca las estaciones del año.', opts:['Primavera','Mañana','Verano','Otoño','Mediodía','Invierno'], a:[0,2,3,5], hint:'La mañana y el mediodía son partes del día.'}
+    ]
+  },
+  {
+    id:'universo4', badge:'Ojo de lechuza', title:'Guardianes de la noche', short:'Las estrellas y las fases de la Luna', pages:'Págs. 34-35',
+    color:'--virus', icon:'moon',
+    learn:[
+      {h:'El cielo de noche', p:'De noche vemos astros que la luz del Sol no nos deja ver de día, como la <mark>Luna</mark> y las <mark>estrellas</mark>.'},
+      {h:'Las estrellas', p:'Las estrellas son astros <mark>muy grandes</mark> que brillan con <mark>luz propia</mark>. Están <mark>muy lejos</mark> de la Tierra. Por eso las vemos tan pequeñas.'},
+      {h:'La Luna', p:'La Luna <mark>no tiene luz propia</mark>: refleja la luz del Sol. Gira sobre sí misma y alrededor de la Tierra. Tarda unos <mark>28 días</mark> en dar una vuelta a la Tierra.'},
+      {h:'Las fases de la Luna', p:'Por eso no siempre la vemos iluminada igual. Son las <mark>fases de la Luna</mark>:',
+        extra:'<div class="senses"><b>Luna nueva</b><span>no se ve</span><b>Cuarto creciente</b><span>tiene forma de D</span><b>Luna llena</b><span>se ve redonda</span><b>Cuarto menguante</b><span>tiene forma de C</span></div>'}
+    ],
+    ch:[
+      {t:'pick', q:'Toca las frases verdaderas sobre las estrellas.', opts:['Tienen luz propia','Están muy cerca de la Tierra','Son muy grandes','Son satélites'], a:[0,2], hint:'Las estrellas son grandes y están muy lejos.'},
+      {t:'match', q:'Une cada fase con cómo se ve.', pairs:[['Luna llena','Se ve redonda'],['Cuarto menguante','Tiene forma de C'],['Luna nueva','No se ve'],['Cuarto creciente','Tiene forma de D']], hint:'Creciente, como la D. Menguante, como la C.'},
+      {t:'mc', q:'¿Cuánto tarda la Luna en dar una vuelta a la Tierra?', opts:['Unos 28 días','Un día','Un año'], a:0, hint:'Es casi un mes.'},
+      {t:'tf', q:'La Luna brilla porque refleja la luz del Sol.', a:true, hint:'La Luna no tiene luz propia.'},
+      {t:'mc', q:'Las estrellas parecen muy pequeñas porque…', opts:['están muy lejos','son muy pequeñas','no tienen luz'], a:0, hint:'En realidad son enormes.'},
+      {t:'order', q:'Ordena las fases de la Luna, empezando por la luna nueva.', items:['Luna nueva','Cuarto creciente','Luna llena','Cuarto menguante'], hint:'Primero crece hasta verse redonda y después mengua.'},
+      {t:'classify', q:'¿Tiene luz propia o no?', bins:['Tiene luz propia','No tiene luz propia'],
+        items:[['El Sol',0],['La Luna',1],['Una estrella',0],['La Tierra',1],['Marte',1]],
+        hint:'Solo las estrellas, como el Sol, tienen luz propia.'},
+      {t:'fill', q:'Completa.', parts:['Si la Luna tiene forma de D, está en ',0,'. Si tiene forma de C, está en ',1,'.'], answers:['cuarto creciente','cuarto menguante'], bank:['luna llena','luna nueva'], hint:'Creciente, como la D. Menguante, como la C.'},
+      {t:'tf', q:'De día no vemos las estrellas porque la luz del Sol no nos deja.', a:true, hint:'Las estrellas siguen ahí, pero el Sol brilla mucho más.'}
+    ]
+  }
+];
+const TEMA2_JEFE = {
+  id:'reto-universo', boss:true, villain:'Borrón Apagaestrellas', badge:'Guardián del cielo', title:'El apagón de estrellas', short:'Repaso de todo el tema', pages:'Págs. 28-35',
+  color:'--virus', icon:'trophy',
+  extra:[
+    {t:'match', q:'Une cada pregunta con su respuesta.', pairs:[['¿Qué gira alrededor de la Tierra?','La Luna'],['¿Alrededor de qué gira la Tierra?','El Sol'],['¿Qué capa de aire rodea la Tierra?','La atmósfera']], hint:'La Luna es el satélite de la Tierra y la Tierra gira alrededor del Sol.'},
+    {t:'mc', q:'¿Qué astro da luz y calor a la Tierra?', opts:['El Sol','La Luna','Marte'], a:0, hint:'Es la estrella más cercana.'}
+  ]
+};
+
 /* ---------- CURSO: situaciones y temas (títulos propios del juego) ---------- */
 const CURSO = {
   asignatura: 'Ciencias Sociales · 2.º de Primaria',
@@ -230,7 +344,24 @@ const CURSO = {
           no:[{e:'🏔️',n:'Cima'},{e:'🚜',n:'Granja'},{e:'🌲',n:'Valle'},{e:'🚇',n:'Túnel'}] },
         { meta:'Atrapa las ROCAS DURAS', ok:[{e:'🪨',n:'Granito'},{e:'🗿',n:'Mármol'},{e:'🌋',n:'Basalto'}],
           no:[{e:'🧱',n:'Arcilla'},{e:'🏜️',n:'Arenisca'},{e:'🏚️',n:'Pizarra'}] } ] } },
-    { id:'tema2', n:2, title:'Viaje a las estrellas', short:'Próximamente', pages:'Págs. 26-41', color:'--sense', icon:'sun', map:'universo', missions:[] },
+    { id:'tema2', n:2, title:'Viaje a las estrellas', short:'Astros, la Tierra, sus movimientos y la Luna', pages:'Págs. 26-41',
+      color:'--sense', icon:'sun', map:'universo', starsBadge:'Constelación viajera',
+      missions: TEMA2_MISIONES, boss: TEMA2_JEFE,
+      /* Minijuego de premio: carrera (buenos = se recogen, malos = se saltan; de cada partida salen 3 preguntas) */
+      minijuego: { tipo:'carrera', titulo:'Carrera espacial', fondo:'espacio',
+        intro:'Corre por la Luna, recoge los astros y salta los peligros. En las puertas de pregunta, salta para cruzar la de arriba o sigue por el suelo para la de abajo.',
+        fin:'Recuerda: la Tierra gira sobre sí misma en un día y alrededor del Sol en un año.',
+        buenos:[{e:'☀️',n:'Sol'},{e:'🌍',n:'Tierra'},{e:'🌙',n:'Luna'},{e:'🪐',n:'Saturno'},{e:'⭐',n:'Estrella'},{e:'🔴',n:'Marte'}],
+        malos:[{e:'☄️',n:'Meteorito'},{e:'🗑️',n:'Basura espacial'},{e:'🛸',n:'Ovni'}],
+        preguntas:[
+        {q:'¿Qué astro da luz y calor?', ok:'El Sol', no:'La Luna'},
+        {q:'¿Qué es la Luna?', ok:'Un satélite', no:'Una estrella'},
+        {q:'¿Cuántos planetas tiene el sistema solar?', ok:'Ocho', no:'Tres'},
+        {q:'¿Qué planeta está más cerca del Sol?', ok:'Mercurio', no:'Neptuno'},
+        {q:'¿Cuánto tarda la Tierra en girar sobre sí misma?', ok:'Un día', no:'Un año'},
+        {q:'¿Por dónde sale el Sol?', ok:'Por el este', no:'Por el oeste'},
+        {q:'¿Cómo se ve la luna llena?', ok:'Redonda', no:'No se ve'},
+        {q:'¿En qué continente vivimos?', ok:'Europa', no:'Asia'} ] } },
     { id:'tema3', n:3, title:'Gotas y vientos', short:'Próximamente', pages:'Págs. 46-63', color:'--lung', icon:'drop', map:'clima', missions:[] },
     { id:'tema4', n:4, title:'Manos que trabajan', short:'Próximamente', pages:'Págs. 64-79', color:'--food', icon:'gear', map:'trabajos', missions:[] },
     { id:'tema5', n:5, title:'Mi pueblo, mi ciudad', short:'Próximamente', pages:'Págs. 84-99', color:'--virus', icon:'building', map:'ciudad', missions:[] },
@@ -260,7 +391,22 @@ const ESQUEMAS = {
   paisaje5: { titulo:'Las [[rocas]]', nodos:[
     {txt:'Rocas [[duras]]: resistentes', hijos:[{txt:'Granito, mármol, [[basalto]]'}]},
     {txt:'Rocas [[blandas]]: frágiles', hijos:[{txt:'Arenisca, pizarra, [[arcilla]]'}]},
-    {txt:'Están formadas por [[minerales]]'} ], extra:['madera','plástico'] }
+    {txt:'Están formadas por [[minerales]]'} ], extra:['madera','plástico'] },
+  /* Tema 2 */
+  universo1: { titulo:'El [[universo]]', nodos:[
+    {txt:'[[Estrellas]]: dan luz y calor', hijos:[{txt:'El [[Sol]]'}]},
+    {txt:'[[Planetas]]: giran alrededor de una estrella', hijos:[{txt:'La [[Tierra]]'}]},
+    {txt:'[[Satélites]]: giran alrededor de un planeta', hijos:[{txt:'La [[Luna]]'}]} ], extra:['Europa','océano'] },
+  universo2: { titulo:'El planeta [[Tierra]]', nodos:[
+    {txt:'[[Continentes]]: tierra firme', hijos:[{txt:'Hay [[seis]]. Vivimos en Europa'}]},
+    {txt:'[[Océanos]]: agua salada'},
+    {txt:'[[Atmósfera]]: capa de aire'},
+    {txt:'La vemos en el [[globo]] terráqueo y en los mapas'} ], extra:['luz','satélites'] },
+  universo3: { titulo:'Los movimientos de la [[Tierra]]', nodos:[
+    {txt:'Gira sobre sí misma', hijos:[{txt:'Tarda un [[día]]'},{txt:'Hay día y [[noche]]'}]},
+    {txt:'Gira alrededor del [[Sol]]', hijos:[{txt:'Tarda un [[año]]: 365 días'},{txt:'Hay cuatro [[estaciones]]'}]} ], extra:['mes','continentes'] },
+  universo4: { tipo:'flujo', titulo:'Las fases de la [[Luna]]', nodos:[
+    {txt:'Luna [[nueva]]: no se ve'}, {txt:'Cuarto [[creciente]]: forma de D'}, {txt:'Luna [[llena]]: se ve redonda'}, {txt:'Cuarto [[menguante]]: forma de C'} ], extra:['estrella','día'] }
 };
 CURSO.temas.forEach(t => (t.missions || []).forEach(m => {
   const e = ESQUEMAS[m.id]; if (!e) return;
@@ -273,9 +419,12 @@ CURSO.temas.forEach(t => (t.missions || []).forEach(m => {
    retos:     excepciones para un reto concreto, con la clave «misión#número» (el número empieza en 0;
               en los jefes, los retos propios del jefe son «jefe#x0», «jefe#x1»...). */
 const EVALUACION = {
-  tema1: { criterios:['4.1','4.2','5.1','3.1'], saberes:['C.4.1','C.1.3'],
+  tema1: { criterios:['4.1','4.2','5.1','3.1'], saberes:['C.4.1'],
     misiones:{ paisaje1:['4.1'], paisaje2:['4.1'], paisaje3:['4.1'], paisaje4:['4.1'], paisaje5:['4.1'], 'reto-paisajes':['4.1'] },
-    retos:{ 'paisaje1#6':['5.1'], 'paisaje3#2':['4.2'], 'paisaje3#7':['4.2'], 'paisaje4#3':['4.2'], 'paisaje4#7':['4.2'], 'paisaje5#1':['4.2'], 'paisaje5#6':['4.2'], 'paisaje5#7':['4.2'] } }
+    retos:{ 'paisaje1#6':['5.1'], 'paisaje3#2':['4.2'], 'paisaje3#7':['4.2'], 'paisaje4#3':['4.2'], 'paisaje4#7':['4.2'], 'paisaje5#1':['4.2'], 'paisaje5#6':['4.2'], 'paisaje5#7':['4.2'] } },
+  tema2: { criterios:['4.1','4.2','6.1','2.1'], saberes:['C.1.1','C.1.3','C.2.1'],
+    misiones:{ universo1:['4.1'], universo2:['4.1'], universo3:['4.2'], universo4:['4.1'], 'reto-universo':['4.1'] },
+    retos:{ 'universo3#0':['6.1'], 'universo3#1':['6.1'], 'universo3#6':['6.1'], 'universo3#7':['6.1'], 'universo4#2':['6.1'], 'universo4#5':['6.1'], 'universo4#4':['4.2'], 'universo4#8':['4.2'] } }
 };
 CURSO.temas.forEach(t => {
   const e = EVALUACION[t.id]; if (!e) return;

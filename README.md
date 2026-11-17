@@ -6,7 +6,7 @@ Es una adaptación de [*Exploradores de la Naturaleza*](https://github.com/damp8
 
 | Curso | Enlace para el alumnado | Estado |
 |---|---|---|
-| 2.º de Primaria | `https://damp83.github.io/AulaSociales/?curso=2-primaria` | Tema 1 completo (castellano e inglés); temas 2-6 en preparación |
+| 2.º de Primaria | `https://damp83.github.io/AulaSociales/?curso=2-primaria` | Temas 1 y 2 completos (castellano e inglés); temas 3-6 en preparación |
 | 3.º de Primaria | `https://damp83.github.io/AulaSociales/?curso=3-primaria` | Temas pendientes de contenidos |
 
 ### 2.º de Primaria
@@ -14,7 +14,7 @@ Es una adaptación de [*Exploradores de la Naturaleza*](https://github.com/damp8
 | Situación | Tema | Estado |
 |---|---|---|
 | Mochila al hombro | 1. Mirador de paisajes | 5 misiones + jefe (Borrón de la Niebla) + minijuego *Lluvia en el mirador* |
-| | 2. Viaje a las estrellas | Próximamente |
+| | 2. Viaje a las estrellas | 4 misiones + jefe (Borrón Apagaestrellas) + minijuego *Carrera espacial* |
 | Guardianes de cada gota | 3. Gotas y vientos | Próximamente |
 | | 4. Manos que trabajan | Próximamente |
 | Mi rincón del mundo | 5. Mi pueblo, mi ciudad | Próximamente |
@@ -61,7 +61,7 @@ Los contenidos de cada curso están en `cursos/<curso>/contenidos.js`. Cada tema
 
 Cada tema puede tener un mapa ilustrado: añade `map:'pueblo'` (o `barrio`, `ciudad`, `relieve`, `clima`, `universo`, `historia`, `trabajos`, `mapa`, `cultura`, `huerto`, `bosque`, `rio`, `mundo`, `digital`) en el tema. Los escenarios están en `ESCENAS`, en `index.html`. Sin `map`, el tema usa el camino sencillo.
 
-Para dar a un tema la *Carrera saludable* como premio, añade en ese tema `minijuego: { tipo:'carrera', titulo:'Carrera saludable', preguntas:[{q:'Pregunta', ok:'Respuesta correcta', no:'Respuesta incorrecta'}, …] }` (de cada partida salen 3 preguntas al azar). Para *Rescate en el bosque*: `minijuego: { tipo:'rescate', titulo:'Rescate en el bosque', refugios:['Grupo A','Grupo B','Grupo C'], animales:[{e:'🐙', n:'Pulpo', g:1}, …] }`, donde `g` es la posición del refugio correcto (empezando en 0); en cada partida salen 8 animales al azar. La carrera admite además `buenos`, `malos` (listas `{e:'🛡️', n:'Antivirus'}`), `intro`, `fin` y `fondo:'digital'`; el rescate, `cosas:true`, `intro` y `fondo:'lab'`. Para las parejas: `minijuego: { tipo:'memoria', titulo, parejas:[['Vista','Ojos'], …] }`. Para la lluvia: `minijuego: { tipo:'lluvia', titulo, necesarios:5, rondas:[{meta:'Atrapa los sólidos', ok:[{e:'🧊', n:'Hielo'}], no:[{e:'💧', n:'Agua'}]}] }`. Si el curso tiene inglés, pon también los textos del minijuego en `contenidos-en.js`.
+Para dar a un tema la *Carrera saludable* como premio, añade en ese tema `minijuego: { tipo:'carrera', titulo:'Carrera saludable', preguntas:[{q:'Pregunta', ok:'Respuesta correcta', no:'Respuesta incorrecta'}, …] }` (de cada partida salen 3 preguntas al azar). Para *Rescate en el bosque*: `minijuego: { tipo:'rescate', titulo:'Rescate en el bosque', refugios:['Grupo A','Grupo B','Grupo C'], animales:[{e:'🐙', n:'Pulpo', g:1}, …] }`, donde `g` es la posición del refugio correcto (empezando en 0); en cada partida salen 8 animales al azar. La carrera admite además `buenos`, `malos` (listas `{e:'🛡️', n:'Antivirus'}`), `intro`, `fin` y `fondo:'digital'` o `fondo:'espacio'`; el rescate, `cosas:true`, `intro` y `fondo:'lab'`. Para las parejas: `minijuego: { tipo:'memoria', titulo, parejas:[['Vista','Ojos'], …] }`. Para la lluvia: `minijuego: { tipo:'lluvia', titulo, necesarios:5, rondas:[{meta:'Atrapa los sólidos', ok:[{e:'🧊', n:'Hielo'}], no:[{e:'💧', n:'Agua'}]}] }`. Si el curso tiene inglés, pon también los textos del minijuego en `contenidos-en.js`.
 
 ## Pruebas automáticas
 Antes de publicar cambios, conviene ejecutar:

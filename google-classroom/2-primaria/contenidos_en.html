@@ -83,7 +83,21 @@ const CONTENIDOS_EN = {
           no: [{e:'🏔️',n:'Summit'},{e:'🚜',n:'Farm'},{e:'🌲',n:'Valley'},{e:'🚇',n:'Tunnel'}] },
         { meta: 'Catch the HARD ROCKS', ok: [{e:'🪨',n:'Granite'},{e:'🗿',n:'Marble'},{e:'🌋',n:'Basalt'}],
           no: [{e:'🧱',n:'Clay'},{e:'🏜️',n:'Sandstone'},{e:'🏚️',n:'Slate'}] } ] } },
-    tema2: { title: 'Trip to the stars', short: 'Coming soon' },
+    tema2: { title: 'Trip to the stars', short: 'Stars and planets, the Earth, its movements and the Moon', starsBadge: 'Travelling constellation',
+      minijuego: { titulo: 'Space race',
+        intro: 'Run across the Moon, collect the space objects and jump over the dangers. At the question gates, jump to go through the top gate or stay on the ground for the bottom one.',
+        fin: 'Remember: the Earth spins round once a day and goes round the Sun once a year.',
+        buenos: [{e:'☀️',n:'Sun'},{e:'🌍',n:'Earth'},{e:'🌙',n:'Moon'},{e:'🪐',n:'Saturn'},{e:'⭐',n:'Star'},{e:'🔴',n:'Mars'}],
+        malos: [{e:'☄️',n:'Meteorite'},{e:'🗑️',n:'Space rubbish'},{e:'🛸',n:'UFO'}],
+        preguntas: [
+        {q: 'Which one gives us light and heat?', ok: 'The Sun', no: 'The Moon'},
+        {q: 'What is the Moon?', ok: 'A satellite', no: 'A star'},
+        {q: 'How many planets are in the solar system?', ok: 'Eight', no: 'Three'},
+        {q: 'Which planet is closest to the Sun?', ok: 'Mercury', no: 'Neptune'},
+        {q: 'How long does the Earth take to spin round once?', ok: 'One day', no: 'One year'},
+        {q: 'Where does the Sun rise?', ok: 'In the east', no: 'In the west'},
+        {q: 'What does a full moon look like?', ok: 'Round', no: 'You cannot see it'},
+        {q: 'Which continent do we live in?', ok: 'Europe', no: 'Asia'} ] } },
     tema3: { title: 'Drops and winds', short: 'Coming soon' },
     tema4: { title: 'Busy hands', short: 'Coming soon' },
     tema5: { title: 'My town, my city', short: 'Coming soon' },
@@ -217,6 +231,108 @@ const CONTENIDOS_EN = {
       extra: [
         { q: 'Is it a coast or an inland landscape?', bins: ['Coast', 'Inland'], items: ['Beach', 'Mountain', 'Cliff', 'Valley', 'Bay', 'Plateau', 'Cape', 'Hill'], hint: 'The coast is next to the sea. Inland is far from the sea.' },
         { q: 'It is water that flows all the time, starts in the mountains and reaches the sea. What is it?', opts: ['A river', 'A lake', 'A bay'], hint: 'It has an upper, middle and lower course.' }
+      ] },
+    /* ---------- TOPIC 2 · Trip to the stars ---------- */
+    universo1: { title: 'Space neighbours', short: 'Stars, planets and the solar system', badge: 'Star catcher',
+      learn: [
+        { h: 'The universe', p: 'The <mark>universe</mark> is huge. It is made of lots of <mark>space objects</mark>: stars, planets and satellites.' },
+        { h: 'Stars', p: '<mark>Stars</mark> give <mark>light and heat</mark>. The <mark>Sun</mark> is the closest star to the Earth.' },
+        { h: 'Planets and satellites', p: 'Planets and satellites do not have their own light.',
+          extra: '<div class="senses"><b>Planet</b><span>it goes round a star, like the Earth</span><b>Satellite</b><span>it goes round a planet, like the Moon</span></div>' },
+        { h: 'The solar system', p: 'The Sun, the <mark>eight planets</mark> that go round it and other smaller objects make the <mark>solar system</mark>. These are the planets, from the closest to the Sun to the furthest:',
+          extra: '<ol class="steps"><li>Mercury</li><li>Venus</li><li>Earth</li><li>Mars</li><li>Jupiter</li><li>Saturn</li><li>Uranus</li><li>Neptune</li></ol>' },
+        { h: 'Who studies the universe?', p: 'People who study the universe are called <mark>astronomers</mark>.' }
+      ],
+      ch: [
+        { q: 'Match each space object with its type.', pairs: [['☀️ Sun', 'Star'], ['🌍 Earth', 'Planet'], ['🌙 Moon', 'Satellite']], hint: 'The Sun gives light. The Earth goes round the Sun. The Moon goes round the Earth.' },
+        { q: 'Is it a star, a planet or a satellite?', bins: ['Star', 'Planet', 'Satellite'], items: ['It gives light and heat', 'It goes round a star', 'It goes round a planet', 'The Sun', 'Mars', 'The Moon', 'Jupiter'], hint: 'Stars give light. Planets go round a star. Satellites go round a planet.' },
+        { q: 'The Moon has its own light.', hint: 'Satellites, like the Moon, do not have their own light.' },
+        { q: 'The Sun goes round the Earth.', hint: 'It is the other way round: the Earth goes round the Sun.' },
+        { q: 'Put the four planets closest to the Sun in order, from the closest to the furthest.', items: ['Mercury', 'Venus', 'Earth', 'Mars'], hint: 'Mercury is the closest. Our planet is the third one.' },
+        { q: 'Complete the furthest planets.', parts: ['After Mars come Jupiter, ', 0, ', Uranus and ', 1, '.'], answers: ['Saturn', 'Neptune'], bank: ['Venus', 'Moon'], hint: 'Neptune is the furthest planet from the Sun.' },
+        { q: 'What do the Sun and everything that goes round it make?', opts: ['The solar system', 'A continent', 'The atmosphere'], hint: 'It is named after the Sun.' },
+        { q: 'Tap the planets.', opts: ['Mars', 'Sun', 'Saturn', 'Moon', 'Venus', 'Neptune'], hint: 'The Sun is a star and the Moon is a satellite.' },
+        { q: 'What do we call people who study the universe?', opts: ['Astronomers', 'Astronauts', 'Architects'], hint: 'Astronauts travel into space. Astronomers study it.' },
+        { titulo: 'The [[universe]]', nodos: [
+          { txt: '[[Stars]]: they give light and heat', hijos: [{ txt: 'The [[Sun]]' }] },
+          { txt: '[[Planets]]: they go round a star', hijos: [{ txt: 'The [[Earth]]' }] },
+          { txt: '[[Satellites]]: they go round a planet', hijos: [{ txt: 'The [[Moon]]' }] } ], extra: ['Europe', 'ocean'] }
+      ] },
+    universo2: { title: 'Our blue planet', short: 'Continents, oceans and maps', badge: 'Blue planet',
+      learn: [
+        { h: 'A planet with life', p: 'The <mark>Earth</mark> is the only planet in the solar system where we know there is <mark>life</mark>.' },
+        { h: 'Land and water', p: 'The Earth has a small part of <mark>land</mark> and a very big part of <mark>water</mark>. The land is divided into six <mark>continents</mark>. We live in <mark>Europe</mark>.',
+          extra: '<div class="tags"><span class="tag">America</span><span class="tag">Europe</span><span class="tag">Africa</span><span class="tag">Asia</span><span class="tag">Oceania</span><span class="tag">Antarctica</span></div>' },
+        { h: 'Oceans and atmosphere', p: 'Nearly all the water is in the <mark>oceans</mark>: huge areas of salt water. There are five. Around the Earth there is a layer of air: the <mark>atmosphere</mark>.',
+          extra: '<div class="tags"><span class="tag">Pacific</span><span class="tag">Atlantic</span><span class="tag">Indian</span><span class="tag">Arctic</span><span class="tag">Southern</span></div>' },
+        { h: 'Globe and world map', p: 'To see what the Earth is like we use a <mark>globe</mark>, which is round like the Earth, and <mark>maps</mark>. A <mark>world map</mark> shows all the continents and oceans. On it we see that Asia is east of Europe and Antarctica is in the south.' },
+        { h: 'The compass points', p: 'A <mark>compass rose</mark> shows the four <mark>compass points</mark>:',
+          extra: '<div class="senses"><b>N</b><span>North</span><b>E</b><span>East</span><b>S</b><span>South</span><b>W</b><span>West</span></div>' }
+      ],
+      ch: [
+        { q: 'Match each word with its meaning.', pairs: [['Atmosphere', 'Layer of air around the Earth'], ['Continents', 'Parts of the land'], ['Oceans', 'Huge areas of salt water']], hint: 'Look at the cards “Land and water” and “Oceans and atmosphere”.' },
+        { q: 'Fill in the gaps.', parts: ['The Earth has a little ', 0, ' and a lot of ', 1, '.'], answers: ['land', 'water'], bank: ['light', 'sand'], hint: 'That is why the Earth looks blue from space.' },
+        { q: 'Is it a continent or an ocean?', bins: ['Continent', 'Ocean'], items: ['Europe', 'Pacific', 'Africa', 'Atlantic', 'Asia', 'Indian', 'Oceania', 'Antarctica'], hint: 'The oceans are the Pacific, Atlantic, Indian, Arctic and Southern.' },
+        { q: 'There are six continents and six oceans on the Earth.', hint: 'There are six continents, but only five oceans.' },
+        { q: 'Which continent do we live in?', opts: ['Europe', 'Asia', 'America'], hint: 'Spain is in Europe.' },
+        { q: 'What is the map with all the continents and oceans called?', opts: ['World map', 'Globe', 'Compass rose'], hint: 'A globe is round, it is not a flat map.' },
+        { q: 'Tap the true sentences.', opts: ['Asia is east of Europe', 'The Indian and the Pacific are continents', 'Antarctica is in the south', 'The Atlantic is a continent'], hint: 'The Indian, the Pacific and the Atlantic are oceans.' },
+        { q: 'Put the compass points in order, clockwise, starting with north.', items: ['North', 'East', 'South', 'West'], hint: 'North is at the top and east is on the right.' },
+        { q: 'A compass rose shows the compass points.', hint: 'It shows north, south, east and west.' },
+        { titulo: 'Planet [[Earth]]', nodos: [
+          { txt: '[[Continents]]: the land', hijos: [{ txt: 'There are [[six]]. We live in Europe' }] },
+          { txt: '[[Oceans]]: salt water' },
+          { txt: '[[Atmosphere]]: a layer of air' },
+          { txt: 'We see it on a [[globe]] and on maps' } ], extra: ['light', 'satellites'] }
+      ] },
+    universo3: { title: 'The Earth never stops', short: 'Day and night, the year and the seasons', badge: 'Cosmic spinning top',
+      learn: [
+        { h: 'The Earth spins round', p: 'The Earth <mark>spins round</mark>, like a spinning top. It takes <mark>one day</mark> to spin round once.' },
+        { h: 'Day and night', p: 'The part of the Earth that gets light from the Sun has <mark>day</mark>. The other part is dark: there it is <mark>night</mark>.' },
+        { h: 'The Sun during the day', p: 'In the <mark>morning</mark> the Sun rises in the <mark>east</mark>. At <mark>midday</mark> it is high. In the <mark>afternoon</mark> it sets in the <mark>west</mark>. Then <mark>night</mark> comes.' },
+        { h: 'The Earth travels round the Sun', p: 'The Earth also <mark>goes round the Sun</mark>. It takes <mark>one year</mark> to go round once. A year has <mark>365 days</mark>.' },
+        { h: 'The seasons', p: 'As the Earth travels, sunlight reaches us in different ways. That is why we have four <mark>seasons</mark>:',
+          extra: '<div class="senses"><b>Spring</b><span>every day there are more minutes of light</span><b>Summer</b><span>days are longer than nights</span><b>Autumn</b><span>every day there are fewer minutes of light</span><b>Winter</b><span>days are shorter than nights</span></div>' }
+      ],
+      ch: [
+        { q: 'Match each movement with how long it takes.', pairs: [['The Earth spins round', 'One day'], ['The Earth goes round the Sun', 'One year']], hint: 'Going round the Sun takes much longer.' },
+        { q: 'Put the parts of the day in order, starting with the morning.', items: ['Morning', 'Midday', 'Afternoon', 'Night'], hint: 'Follow the Sun across the sky.' },
+        { q: 'Where does the Sun rise?', opts: ['In the east', 'In the west', 'In the north'], hint: 'The Sun rises in the east and sets in the west.' },
+        { q: 'The Sun sets in the west.', hint: 'In the afternoon the Sun goes down in the west.' },
+        { q: 'Is it day or night?', bins: ['Day', 'Night'], items: ['This part of the Earth gets sunlight', 'This part of the Earth is dark', 'We see the Sun in the sky', 'We see lots of stars'], hint: 'Where the sunlight reaches, it is day.' },
+        { q: 'Match each season with its days.', pairs: [['Spring', 'More light every day'], ['Summer', 'Days longer than nights'], ['Autumn', 'Less light every day'], ['Winter', 'Days shorter than nights']], hint: 'In summer there is lots of light and in winter, little.' },
+        { q: 'Fill in the gap.', parts: ['A year has ', 0, ' days.'], answers: ['365'], bank: ['28', '7', '100'], hint: 'It is the time the Earth takes to go round the Sun.' },
+        { q: 'The Earth takes one day to go round the Sun.', hint: 'It takes one year. In one day it spins round once.' },
+        { q: 'Tap the seasons of the year.', opts: ['Spring', 'Morning', 'Summer', 'Autumn', 'Midday', 'Winter'], hint: 'Morning and midday are parts of the day.' },
+        { titulo: 'How the [[Earth]] moves', nodos: [
+          { txt: 'It spins round', hijos: [{ txt: 'It takes one [[day]]' }, { txt: 'We have day and [[night]]' }] },
+          { txt: 'It goes round the [[Sun]]', hijos: [{ txt: 'It takes one [[year]]: 365 days' }, { txt: 'There are four [[seasons]]' }] } ], extra: ['month', 'continents'] }
+      ] },
+    universo4: { title: 'Guardians of the night', short: 'Stars and the phases of the Moon', badge: 'Owl eyes',
+      learn: [
+        { h: 'The night sky', p: 'At night we see things that sunlight does not let us see in the day, like the <mark>Moon</mark> and the <mark>stars</mark>.' },
+        { h: 'Stars', p: 'Stars are <mark>very big</mark> and shine with their <mark>own light</mark>. They are <mark>very far</mark> from the Earth. That is why they look so small.' },
+        { h: 'The Moon', p: 'The Moon <mark>does not have its own light</mark>: it reflects the light of the Sun. It spins round and goes round the Earth. It takes about <mark>28 days</mark> to go round the Earth.' },
+        { h: 'The phases of the Moon', p: 'That is why we do not always see it lit up the same. These are the <mark>phases of the Moon</mark>:',
+          extra: '<div class="senses"><b>New moon</b><span>you cannot see it</span><b>First quarter</b><span>it looks like a D</span><b>Full moon</b><span>it looks round</span><b>Last quarter</b><span>it looks like a C</span></div>' }
+      ],
+      ch: [
+        { q: 'Tap the true sentences about stars.', opts: ['They have their own light', 'They are very close to the Earth', 'They are very big', 'They are satellites'], hint: 'Stars are big and very far away.' },
+        { q: 'Match each phase with how it looks.', pairs: [['Full moon', 'It looks round'], ['Last quarter', 'It looks like a C'], ['New moon', 'You cannot see it'], ['First quarter', 'It looks like a D']], hint: 'First quarter, like a D. Last quarter, like a C.' },
+        { q: 'How long does the Moon take to go round the Earth?', opts: ['About 28 days', 'One day', 'One year'], hint: 'It is almost a month.' },
+        { q: 'The Moon shines because it reflects the light of the Sun.', hint: 'The Moon does not have its own light.' },
+        { q: 'Stars look very small because…', opts: ['they are very far away', 'they are very small', 'they have no light'], hint: 'In fact they are huge.' },
+        { q: 'Put the phases of the Moon in order, starting with the new moon.', items: ['New moon', 'First quarter', 'Full moon', 'Last quarter'], hint: 'First it grows until it looks round, then it gets smaller.' },
+        { q: 'Does it have its own light?', bins: ['Own light', 'No own light'], items: ['The Sun', 'The Moon', 'A star', 'The Earth', 'Mars'], hint: 'Only stars, like the Sun, have their own light.' },
+        { q: 'Fill in the gaps.', parts: ['If the Moon looks like a D, it is the ', 0, '. If it looks like a C, it is the ', 1, '.'], answers: ['first quarter', 'last quarter'], bank: ['full moon', 'new moon'], hint: 'First quarter, like a D. Last quarter, like a C.' },
+        { q: 'In the day we cannot see the stars because the sunlight does not let us.', hint: 'The stars are still there, but the Sun is much brighter.' },
+        { tipo: 'flujo', titulo: 'The phases of the [[Moon]]', nodos: [
+          { txt: '[[New]] moon: you cannot see it' }, { txt: 'First [[quarter]]: like a D' }, { txt: '[[Full]] moon: it looks round' }, { txt: '[[Last]] quarter: like a C' } ], extra: ['star', 'day'] }
+      ] },
+    'reto-universo': { title: 'The great star blackout', short: 'Review of the whole topic', badge: 'Sky guardian', villain: 'Starblot',
+      extra: [
+        { q: 'Match each question with its answer.', pairs: [['What goes round the Earth?', 'The Moon'], ['What does the Earth go round?', 'The Sun'], ['What layer of air is around the Earth?', 'The atmosphere']], hint: 'The Moon is the Earth’s satellite and the Earth goes round the Sun.' },
+        { q: 'Which one gives light and heat to the Earth?', opts: ['The Sun', 'The Moon', 'Mars'], hint: 'It is the closest star.' }
       ] }
   }
 };
