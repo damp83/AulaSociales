@@ -103,8 +103,10 @@ function ficha(tema, mision, k, e, resuelta) {
     esquema = `<div class="esquema flujo">${titulo}<ol>${e.nodos.map((n, i) => `<li><span class="num">${i + 1}</span><span class="caja">${txt(n.txt)}</span></li>`).join('')}</ol></div>`;
   } else {
     const cols = e.nodos.length === 4 ? 2 : Math.min(e.nodos.length, 3);
+    // Listas largas de palabras cortas (por ejemplo, los ocho planetas): más juntas para que quepan en la página
+    const lista = hs => hs.length > 4 && hs.every(h => h.txt.replace(/\[\[|\]\]/g, '').length <= 14);
     esquema = `<div class="esquema arbol">${titulo}<div class="ramas" style="grid-template-columns:repeat(${cols},1fr)">${e.nodos.map(n => `
-      <div class="rama"><div class="caja">${txt(n.txt)}</div>${(n.hijos || []).length ? `<ul>${n.hijos.map(h => `<li>${txt(h.txt)}</li>`).join('')}</ul>` : ''}</div>`).join('')}</div></div>`;
+      <div class="rama"><div class="caja">${txt(n.txt)}</div>${(n.hijos || []).length ? `<ul${lista(n.hijos) ? ' class="lista"' : ''}>${n.hijos.map(h => `<li>${txt(h.txt)}</li>`).join('')}</ul>` : ''}</div>`).join('')}</div></div>`;
   }
 
   const banco = barajar(ans, mision.id);
@@ -173,6 +175,9 @@ h1{font-family:'Lilita One';font-weight:400;color:var(--fuerte);font-size:23pt;m
 .caja{display:block;border:2.5px solid var(--fuerte);border-radius:4mm;padding:2mm 3mm;text-align:center;font-weight:700;line-height:2.1;background:#fff}
 .rama ul{list-style:none;margin:0;padding:0 0 0 4mm;border-left:2.5px solid var(--fuerte);display:flex;flex-direction:column;gap:2mm}
 .rama li{border:1.5px solid #bbb;border-radius:3mm;padding:1.5mm 3mm;line-height:2.1;font-size:14pt}
+.rama ul.lista{gap:1mm}
+.rama ul.lista li{padding:.4mm 3mm;line-height:1.75;font-size:13pt}
+.rama ul.lista .hueco{max-width:70%}
 .flujo ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:2.2mm;width:100%}
 .flujo li{display:flex;align-items:center;gap:3mm;width:150mm;position:relative}
 .flujo li+li{margin-top:4mm}

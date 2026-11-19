@@ -394,8 +394,8 @@ const ESQUEMAS = {
   /* Tema 2 */
   universo1: { titulo:'El [[universo]]', nodos:[
     {txt:'[[Estrellas]]: dan luz y calor', hijos:[{txt:'El [[Sol]]'}]},
-    {txt:'[[Planetas]]: giran alrededor de una estrella', hijos:[{txt:'La [[Tierra]]'}]},
-    {txt:'[[Satélites]]: giran alrededor de un planeta', hijos:[{txt:'La [[Luna]]'}]} ], extra:['Europa','océano'] },
+    {txt:'[[Planetas]]: giran alrededor de una estrella', hijos:[{txt:'1. Mercurio'},{txt:'2. Venus'},{txt:'3. [[Tierra]]'},{txt:'4. Marte'},{txt:'5. [[Júpiter]]'},{txt:'6. Saturno'},{txt:'7. Urano'},{txt:'8. [[Neptuno]]'}]},
+    {txt:'[[Satélites]]: giran alrededor de un planeta', hijos:[{txt:'La [[Luna]]'}]} ], extra:['Plutón','océano'] },
   universo2: { titulo:'El planeta [[Tierra]]', nodos:[
     {txt:'[[Continentes]]: tierra firme', hijos:[{txt:'Hay [[seis]]. Vivimos en Europa'}]},
     {txt:'[[Océanos]]: agua salada'},
